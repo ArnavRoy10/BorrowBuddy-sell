@@ -1,0 +1,250 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Checkout - BorrowBuddy</title>
+
+    <!-- Razorpay SDK (replaces Stripe) -->
+    <script src="config.js"></script>
+    <script src="https://checkout.razorpay.com/v1/checkout.js"></script>
+
+    <!-- Font Awesome -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+
+    <!-- CSS -->
+    <link rel="stylesheet" href="checkout.css">
+    <!-- BorrowBuddy UX modules -->
+    <link rel="stylesheet" href="skeletons.css">
+    <link rel="stylesheet" href="empty-states.css">
+    <link rel="stylesheet" href="onboarding.css">
+    <link rel="stylesheet" href="pwa.css">
+    <link rel="manifest" href="manifest.json">
+    <meta name="theme-color" content="#2563eb">
+    <link rel="apple-touch-icon" href="icons/icon-192.png">
+</head>
+<body>
+    <!-- Header -->
+    <header class="checkout-header">
+        <div class="container">
+            <div class="logo">
+                <i class="fas fa-exchange-alt"></i>
+                <span>BorrowBuddy</span>
+            </div>
+            <div class="secure-badge">
+                <i class="fas fa-lock"></i>
+                <span>Secure Checkout</span>
+            </div>
+        </div>
+    </header>
+
+    <!-- Main Content -->
+    <div class="checkout-container">
+        <div class="checkout-grid">
+            <!-- Left Side - Payment Methods -->
+            <div class="checkout-main">
+                <h1>Select a payment method</h1>
+
+                <div class="payment-methods">
+                    <!-- Credit/Debit Card -->
+                    <div class="payment-option" onclick="selectPaymentMethod('card')">
+                        <div class="payment-option-header">
+                            <div class="radio-wrapper">
+                                <input type="radio" name="paymentMethod" id="card" checked>
+                                <label for="card">Credit or Debit Card</label>
+                            </div>
+                            <div class="card-icons">
+                                <i class="fab fa-cc-visa"></i>
+                                <i class="fab fa-cc-mastercard"></i>
+                                <i class="fab fa-cc-amex"></i>
+                                <i class="fas fa-credit-card"></i>
+                            </div>
+                        </div>
+                        <div class="payment-option-content" id="cardContent">
+                            <div class="card-form">
+                                <p style="color:#555;font-size:.9rem;margin:0">
+                                    <i class="fas fa-info-circle" style="color:#6366f1;margin-right:.4rem"></i>
+                                    Click <strong>"Use this payment method"</strong> to open the secure Razorpay payment window where you can enter your card details.
+                                </p>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- UPI -->
+                    <div class="payment-option" onclick="selectPaymentMethod('upi')">
+                        <div class="payment-option-header">
+                            <div class="radio-wrapper">
+                                <input type="radio" name="paymentMethod" id="upi">
+                                <label for="upi">UPI</label>
+                            </div>
+                            <div class="upi-icons">
+                                <img src="https://cdn.iconscout.com/icon/free/png-256/free-google-pay-logo-icon-download-in-svg-png-gif-file-formats--brand-payment-pack-logos-icons-1520093.png?f=webp&w=256" alt="GPay" class="payment-logo">
+                                <img src="https://cdn.iconscout.com/icon/free/png-256/free-phonepe-logo-icon-download-in-svg-png-gif-file-formats--brand-payment-app-pack-logos-icons-2728893.png?f=webp&w=256" alt="PhonePe" class="payment-logo">
+                                <img src="https://cdn.iconscout.com/icon/free/png-256/free-paytm-logo-icon-download-in-svg-png-gif-file-formats--payment-brand-wallet-pack-logos-icons-2728879.png?f=webp&w=256" alt="Paytm" class="payment-logo">
+                            </div>
+                        </div>
+                        <div class="payment-option-content hidden" id="upiContent">
+                            <div class="upi-form">
+                                <div class="form-row">
+                                    <label>Enter UPI ID (optional pre-fill)</label>
+                                    <input type="text" id="upiId" placeholder="yourname@paytm">
+                                    <small>You can also enter UPI ID directly in the Razorpay window.</small>
+                                </div>
+                                <button class="verify-upi-btn" onclick="verifyUPI()">Verify UPI ID</button>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Net Banking -->
+                    <div class="payment-option" onclick="selectPaymentMethod('netbanking')">
+                        <div class="payment-option-header">
+                            <div class="radio-wrapper">
+                                <input type="radio" name="paymentMethod" id="netbanking">
+                                <label for="netbanking">Net Banking</label>
+                            </div>
+                            <div class="bank-text">
+                                <span>All Indian Banks</span>
+                            </div>
+                        </div>
+                        <div class="payment-option-content hidden" id="netbankingContent">
+                            <div class="netbanking-form">
+                                <p style="color:#555;font-size:.9rem;margin:0">
+                                    <i class="fas fa-info-circle" style="color:#6366f1;margin-right:.4rem"></i>
+                                    Select your bank in the Razorpay window after clicking "Use this payment method".
+                                </p>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Wallets -->
+                    <div class="payment-option" onclick="selectPaymentMethod('wallet')">
+                        <div class="payment-option-header">
+                            <div class="radio-wrapper">
+                                <input type="radio" name="paymentMethod" id="wallet">
+                                <label for="wallet">Wallets</label>
+                            </div>
+                            <div class="wallet-icons">
+                                <img src="https://cdn.iconscout.com/icon/free/png-256/free-paytm-logo-icon-download-in-svg-png-gif-file-formats--payment-brand-wallet-pack-logos-icons-2728879.png?f=webp&w=256" alt="Paytm" class="payment-logo">
+                                <span class="wallet-text">Paytm, PhonePe & more</span>
+                            </div>
+                        </div>
+                        <div class="payment-option-content hidden" id="walletContent">
+                            <p style="color:#555;font-size:.9rem;margin:.5rem 0 0">
+                                <i class="fas fa-info-circle" style="color:#6366f1;margin-right:.4rem"></i>
+                                Choose your wallet in the Razorpay window after clicking "Use this payment method".
+                            </p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Right Side - Order Summary -->
+            <div class="checkout-sidebar">
+                <div class="order-summary-card">
+                    <button class="use-payment-btn" onclick="proceedToPayment()">
+                        Use this payment method
+                    </button>
+
+                    <hr>
+
+                    <h3>Order Summary</h3>
+
+                    <div class="item-details">
+                        <img id="itemImage" src="" alt="Item" class="item-image">
+                        <div class="item-info">
+                            <h4 id="itemName">Loading...</h4>
+                            <p id="itemDescription"></p>
+                        </div>
+                    </div>
+
+                    <hr>
+
+                    <div class="price-breakdown">
+                        <div class="price-row">
+                            <span>Item Deposit:</span>
+                            <span id="depositAmount">₹0.00</span>
+                        </div>
+                        <div class="price-row">
+                            <span>Service Fee:</span>
+                            <span id="serviceFee">₹5.00</span>
+                        </div>
+                        <div class="price-row">
+                            <span>Rental Period:</span>
+                            <span id="rentalPeriod">-</span>
+                        </div>
+                    </div>
+
+                    <hr>
+
+                    <div class="total-section">
+                        <div class="price-row total">
+                            <strong>Order Total:</strong>
+                            <strong class="total-price" id="totalAmount">₹0.00</strong>
+                        </div>
+                    </div>
+
+                    <div class="refund-policy">
+                        <i class="fas fa-info-circle"></i>
+                        <p>Deposit will be refunded after item return</p>
+                    </div>
+                </div>
+
+                <div class="security-badges">
+                    <div class="badge">
+                        <i class="fas fa-lock"></i>
+                        <span>Secure Payment</span>
+                    </div>
+                    <div class="badge">
+                        <i class="fas fa-shield-alt"></i>
+                        <span>Buyer Protection</span>
+                    </div>
+                    <div class="badge">
+                        <i class="fas fa-undo"></i>
+                        <span>Easy Refunds</span>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Loading Overlay -->
+    <div id="loadingOverlay" class="loading-overlay hidden">
+        <div class="loading-spinner">
+            <div class="spinner"></div>
+            <p>Processing your payment...</p>
+        </div>
+    </div>
+
+    <!-- Success Modal -->
+    <div id="successModal" class="modal hidden">
+        <div class="modal-content">
+            <div class="success-icon">
+                <i class="fas fa-check-circle"></i>
+            </div>
+            <h2>Payment Successful!</h2>
+            <p>Your booking has been confirmed. You can now message the owner for contact details.</p>
+            <p class="booking-id">Payment ID: <span id="bookingId"></span></p>
+            <button class="btn-primary" onclick="goToDashboard()">View My Bookings</button>
+        </div>
+    </div>
+
+    <!-- Error Modal -->
+    <div id="errorModal" class="modal hidden">
+        <div class="modal-content error">
+            <div class="error-icon">
+                <i class="fas fa-times-circle"></i>
+            </div>
+            <h2>Payment Failed</h2>
+            <p id="errorMessage">Something went wrong. Please try again.</p>
+            <button class="btn-primary" onclick="hideError()">Try Again</button>
+        </div>
+    </div>
+
+    <!-- JavaScript -->
+    <script src="checkout.js"></script>
+    <script src="skeletons.js"></script>
+    <script src="empty-states.js"></script>
+    <script src="onboarding.js"></script>
+    <script src="pwa.js"></script>
+</body>
+</html>

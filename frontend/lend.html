@@ -1,0 +1,365 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>List New Item - BorrowBuddy</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <link rel="stylesheet" href="styles.css">
+    <link rel="stylesheet" href="dashboard.css">
+    <link rel="stylesheet" href="bottom-nav.css">
+    <link rel="stylesheet" href="dark-mode.css">
+    <link rel="stylesheet" href="lend.css">
+    <link rel="stylesheet" href="ai-assistant.css">
+    <link rel="stylesheet" href="location-search.css">
+    <style>
+        /* ── Multi-image upload grid ── */
+        .multi-upload-area {
+            border: 2px dashed #d1d5db;
+            border-radius: 12px;
+            padding: 2rem;
+            text-align: center;
+            cursor: pointer;
+            transition: border-color 0.2s, background 0.2s;
+            background: #fafafa;
+        }
+        .multi-upload-area:hover { border-color: #2563eb; background: #f0f4ff; }
+        .multi-upload-area i { font-size: 2rem; color: #9ca3af; margin-bottom: 0.5rem; display: block; }
+        .multi-upload-area p  { margin: 0 0 0.25rem; color: #374151; font-weight: 500; }
+        .multi-upload-area small { color: #9ca3af; font-size: 0.8rem; }
+
+        .images-preview-grid {
+            display: none;
+            grid-template-columns: repeat(auto-fill, minmax(110px, 1fr));
+            gap: 0.75rem;
+            margin-top: 1rem;
+        }
+        .preview-thumb {
+            position: relative;
+            aspect-ratio: 1;
+            border-radius: 10px;
+            overflow: hidden;
+            border: 2px solid #e5e7eb;
+        }
+        .preview-thumb img { width: 100%; height: 100%; object-fit: cover; display: block; }
+        .preview-thumb .remove-thumb {
+            position: absolute;
+            top: 4px; right: 4px;
+            background: rgba(0,0,0,0.65);
+            color: white;
+            border: none;
+            border-radius: 50%;
+            width: 24px; height: 24px;
+            cursor: pointer;
+            font-size: 13px;
+            display: flex; align-items: center; justify-content: center;
+            line-height: 1;
+        }
+        .preview-thumb .remove-thumb:hover { background: #ef4444; }
+        .preview-thumb .thumb-badge {
+            position: absolute;
+            bottom: 4px; left: 4px;
+            background: rgba(37,99,235,0.85);
+            color: white;
+            font-size: 0.65rem;
+            padding: 1px 6px;
+            border-radius: 6px;
+        }
+        .img-count-text {
+            margin-top: 0.5rem;
+            font-size: 0.8rem;
+            color: #6b7280;
+        }
+    </style>
+    <!-- BorrowBuddy UX modules -->
+    <link rel="stylesheet" href="skeletons.css">
+    <link rel="stylesheet" href="empty-states.css">
+    <link rel="stylesheet" href="onboarding.css">
+    <link rel="stylesheet" href="pwa.css">
+    <link rel="manifest" href="manifest.json">
+    <meta name="theme-color" content="#2563eb">
+    <link rel="apple-touch-icon" href="icons/icon-192.png">
+</head>
+<body>
+    <nav class="navbar">
+        <div class="nav-container">
+            <div class="nav-brand">
+                <i class="fas fa-exchange-alt"></i>
+                <span>Borrow & Lend</span>
+            </div>
+            <div class="nav-menu" id="navMenu">
+                <a href="index.html" class="nav-item"><i class="fas fa-home"></i> Home</a>
+                <a href="browse.html" class="nav-item"><i class="fas fa-search"></i> Browse</a>
+                <a href="dashboard-enhanced.html" class="nav-item"><i class="fas fa-th-large"></i> Dashboard</a>
+                <a href="lend.html" class="nav-item active"><i class="fas fa-plus-circle"></i> Add Item</a>
+                <a href="cart.html" class="nav-item">
+                    <i class="fas fa-shopping-cart"></i> Cart
+                    <span class="badge" id="cartBadge">0</span>
+                </a>
+                <a href="disputes.html" class="nav-item"><i class="fas fa-shield-halved"></i> Disputes</a>                <a href="settings.html" class="nav-item"><i class="fas fa-cog"></i> Settings</a>
+                    <a href="#" onclick="logout()" class="nav-item"><i class="fas fa-sign-out-alt"></i> Logout</a>
+            </div>
+            <button class="nav-toggle" id="navToggle"><i class="fas fa-bars"></i></button>
+        </div>
+    </nav>
+
+    <main class="lend-container">
+        <div class="success-banner" id="successBanner">
+            <i class="fas fa-check-circle"></i>
+            <h3>Item Listed Successfully!</h3>
+            <p>Your item is now available for others to borrow</p>
+        </div>
+
+        <div class="lend-header">
+            <h1><i class="fas fa-plus-circle"></i> List a New Item</h1>
+            <p>Share your items with the community and earn</p>
+        </div>
+
+        <div class="lend-form-card">
+            <form id="lendForm">
+
+                <!-- Basic Information -->
+                <div class="form-section">
+                    <h3><i class="fas fa-info-circle"></i> Basic Information</h3>
+
+                    <div class="form-group">
+                        <label for="itemName"><i class="fas fa-tag"></i> Item Name <span class="required">*</span></label>
+                        <input type="text" id="itemName" placeholder="e.g., Canon DSLR Camera, Electric Drill" required>
+                        <div class="help-text"><i class="fas fa-lightbulb"></i><span>Choose a clear, descriptive name</span></div>
+                    </div>
+
+                    <div class="form-group">
+                        <label for="category"><i class="fas fa-list"></i> Category <span class="required">*</span></label>
+                        <select id="category" required>
+                            <option value="">Select a category</option>
+                            <option value="electronics">Electronics</option>
+                            <option value="books">Books</option>
+                            <option value="tools">Tools</option>
+                            <option value="sports">Sports</option>
+                            <option value="stationery">Stationery</option>
+                            <option value="vehicles">Vehicles</option>
+                            <option value="appliances">Appliances</option>
+                            <option value="furniture">Furniture & Blankets</option>
+                            <option value="fashion">Fashion</option>
+                            <option value="properties">Properties</option>
+                            <option value="others">Others</option>
+                        </select>
+                    </div>
+
+                    <div class="form-group">
+                        <label for="description"><i class="fas fa-align-left"></i> Description <span class="required">*</span></label>
+                        <textarea id="description" placeholder="Describe your item in detail..." required></textarea>
+                        <div class="help-text"><i class="fas fa-lightbulb"></i><span>Detailed descriptions help borrowers make informed decisions</span></div>
+                    </div>
+                </div>
+
+                <!-- Condition -->
+                <div class="form-section">
+                    <h3><i class="fas fa-star"></i> Item Condition</h3>
+                    <div class="condition-options">
+                        <div class="condition-option">
+                            <input type="radio" id="conditionNew" name="condition" value="new" required>
+                            <label for="conditionNew" class="condition-label"><i class="fas fa-certificate"></i><span>New</span></label>
+                        </div>
+                        <div class="condition-option">
+                            <input type="radio" id="conditionGood" name="condition" value="good" checked>
+                            <label for="conditionGood" class="condition-label"><i class="fas fa-check-circle"></i><span>Good</span></label>
+                        </div>
+                        <div class="condition-option">
+                            <input type="radio" id="conditionUsed" name="condition" value="used">
+                            <label for="conditionUsed" class="condition-label"><i class="fas fa-thumbs-up"></i><span>Used</span></label>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Pricing -->
+                <div class="form-section">
+                    <h3><i class="fas fa-rupee-sign"></i> Pricing</h3>
+                    <div class="price-input-group">
+                        <div class="form-group" style="margin:0">
+                            <label for="pricePerDay"><i class="fas fa-rupee-sign"></i> Price per Day</label>
+                            <div class="input-with-icon">
+                                <span class="input-icon">₹</span>
+                                <input type="number" id="pricePerDay" placeholder="0.00" min="0" step="0.01">
+                            </div>
+                        </div>
+                        <div class="free-checkbox">
+                            <input type="checkbox" id="isFree">
+                            <label for="isFree">Free to Borrow</label>
+                        </div>
+                    </div>
+
+                    <div class="form-group">
+                        <label for="securityDeposit"><i class="fas fa-shield-alt"></i> Security Deposit</label>
+                        <div class="input-with-icon">
+                            <span class="input-icon">₹</span>
+                            <input type="number" id="securityDeposit" placeholder="0.00" min="0" step="0.01" value="0">
+                        </div>
+                        <div class="help-text"><i class="fas fa-lightbulb"></i><span>Refundable amount to protect against damage or loss (optional)</span></div>
+                    </div>
+                </div>
+
+                <!-- Contact & Location -->
+                <div class="form-section">
+                    <h3><i class="fas fa-address-card"></i> Contact Information</h3>
+
+                    <div class="form-group">
+                        <label for="phoneNumber">Phone Number <span class="required">*</span></label>
+                        <div class="input-with-icon">
+                            <span class="input-icon"><i class="fas fa-phone"></i></span>
+                            <input type="tel" id="phoneNumber" name="phoneNumber" placeholder="+91 98765 43210" required>
+                        </div>
+                        <div class="help-text"><i class="fas fa-info-circle"></i><span>Hidden until payment is confirmed</span></div>
+                    </div>
+
+                    <!-- ═══════════ LOCATION SEARCH ═══════════ -->
+                    <div class="form-group location-group">
+                        <label for="locationInput">Pickup Location <span class="required">*</span></label>
+
+                        <div class="location-search-wrapper" id="locationSearchWrapper">
+                            <span class="loc-icon" id="locIcon">
+                                <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                                    <path d="M21 10c0 7-9 13-9 13s-9-6-9-13a9 9 0 0 1 18 0z"/>
+                                    <circle cx="12" cy="10" r="3"/>
+                                </svg>
+                            </span>
+
+                            <!-- Hidden fields saved to DB -->
+                            <input type="hidden" id="location"        name="location">
+                            <input type="hidden" id="locationLat"     name="locationLat">
+                            <input type="hidden" id="locationLng"     name="locationLng">
+                            <input type="hidden" id="locationPrimary" name="locationPrimary">
+
+                            <input type="text" id="locationInput" class="loc-input"
+                                placeholder="Search your area, e.g. Salt Lake, Kolkata"
+                                autocomplete="off" required>
+
+                            <button type="button" class="loc-clear" id="locClear" title="Clear" style="display:none">
+                                <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round">
+                                    <line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/>
+                                </svg>
+                            </button>
+
+                            <span class="loc-spinner" id="locSpinner" style="display:none">
+                                <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" class="spin">
+                                    <path d="M21 12a9 9 0 1 1-6.219-8.56"/>
+                                </svg>
+                            </span>
+
+                            <ul class="loc-dropdown" id="locDropdown" role="listbox"></ul>
+                        </div>
+
+                        <!-- Confirmation pill shown after selecting -->
+                        <div class="loc-selected" id="locSelected" style="display:none">
+                            <span class="loc-selected-icon">📍</span>
+                            <div class="loc-selected-text">
+                                <span class="loc-selected-primary" id="locSelectedPrimary"></span>
+                                <span class="loc-selected-full"    id="locSelectedFull"></span>
+                            </div>
+                            <span class="loc-selected-coords" id="locSelectedCoords"></span>
+                        </div>
+
+                        <div class="help-text">
+                            <i class="fas fa-info-circle"></i>
+                            <span>Full address saved privately. Only general area shown to borrowers.</span>
+                        </div>
+                    </div>
+                    <!-- ═══════════ END LOCATION ═══════════ -->
+
+                    <div class="form-group">
+                        <label for="pickupInstructions">Pickup Instructions (Optional)</label>
+                        <textarea id="pickupInstructions" name="pickupInstructions" rows="3"
+                            placeholder="Any specific instructions for pickup location, timing, parking, etc..."></textarea>
+                        <div class="help-text"><i class="fas fa-lightbulb"></i><span>Visible only after payment confirmation</span></div>
+                    </div>
+                </div>
+
+                <!-- ═══════════ MULTI-IMAGE UPLOAD ═══════════ -->
+                <div class="form-section">
+                    <h3><i class="fas fa-camera"></i> Upload Images (up to 5)</h3>
+
+                    <div class="form-group">
+                        <!-- Click area -->
+                        <div class="multi-upload-area" id="uploadArea" onclick="document.getElementById('itemImages').click()">
+                            <input type="file" id="itemImages" accept="image/*" multiple style="display:none">
+                            <i class="fas fa-cloud-upload-alt"></i>
+                            <p>Click to upload images</p>
+                            <small>PNG, JPG, GIF — up to 5 images, 7MB each</small>
+                        </div>
+
+                        <!-- Preview grid -->
+                        <div class="images-preview-grid" id="imagesPreviewGrid"></div>
+                        <p class="img-count-text" id="imgCountText"></p>
+                    </div>
+                </div>
+                <!-- ═══════════ END IMAGES ═══════════ -->
+
+                <div class="submit-section">
+                    <button type="button" class="btn-cancel" onclick="window.history.back()">
+                        <i class="fas fa-times"></i> Cancel
+                    </button>
+                    <button type="submit" class="btn-submit">
+                        <i class="fas fa-check"></i> List Item
+                    </button>
+                </div>
+            </form>
+        </div>
+    </main>
+
+    <footer class="footer">
+        <div class="footer-content">
+            <div class="footer-section">
+                <h3><i class="fas fa-exchange-alt"></i> BorrowBuddy</h3>
+                <p>Share resources, build community</p>
+            </div>
+            <div class="footer-section">
+                <h4>Quick Links</h4>
+                <a href="about.html">About Us</a>
+                <a href="contact.html">Contact</a>
+                <a href="faq.html">FAQ</a>
+            </div>
+            <div class="footer-section">
+                <h4>Legal</h4>
+                <a href="terms.html">Terms of Service</a>
+                <a href="privacy.html">Privacy Policy</a>
+            </div>
+            <div class="footer-section">
+                <h4>Follow Us</h4>
+                <div class="social-links">
+                    <a href="#"><i class="fab fa-facebook"></i></a>
+                    <a href="#"><i class="fab fa-twitter"></i></a>
+                    <a href="#"><i class="fab fa-instagram"></i></a>
+                </div>
+            </div>
+        </div>
+        <div class="footer-bottom">
+            <p>&copy; 2026 BorrowBuddy Platform. All rights reserved.</p>
+        </div>
+    </footer>
+
+    <script src="config.js"></script>
+
+    <script src="auth.js"></script>
+    <script src="dashboard.js"></script>
+    <script src="lend.js"></script>
+    <script src="location-search.js"></script>
+    <script src="ai-assistant.js"></script>
+    <script src="storage-sync.js"></script>
+    <script>
+        document.getElementById('navToggle')?.addEventListener('click', function() {
+            document.getElementById('navMenu')?.classList.toggle('active');
+        });
+        window.addEventListener('DOMContentLoaded', () => {
+            const cart  = JSON.parse(localStorage.getItem('cart') || '[]');
+            const badge = document.getElementById('cartBadge');
+            if (badge) { badge.textContent = cart.length; badge.style.display = cart.length > 0 ? 'inline-block' : 'none'; }
+        });
+    </script>
+    <script src="dark-mode.js"></script>
+    <script src="bottom-nav.js"></script>
+    <script src="skeletons.js"></script>
+    <script src="empty-states.js"></script>
+    <script src="onboarding.js"></script>
+    <script src="pwa.js"></script>
+</body>
+</html>

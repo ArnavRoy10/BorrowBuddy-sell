@@ -1,0 +1,90 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Disputes & Refunds - BorrowBuddy</title>
+    <meta name="description" content="Report damaged or missing items and request refunds on BorrowBuddy.">
+
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <link rel="stylesheet" href="styles.css">
+    <link rel="stylesheet" href="dashboard.css">
+    <link rel="stylesheet" href="bottom-nav.css">
+    <link rel="stylesheet" href="dark-mode.css">
+    <link rel="stylesheet" href="skeletons.css">
+    <link rel="stylesheet" href="empty-states.css">
+    <link rel="stylesheet" href="onboarding.css">
+    <link rel="stylesheet" href="pwa.css">
+    <link rel="stylesheet" href="disputes.css">
+
+    <link rel="manifest" href="manifest.json">
+    <meta name="theme-color" content="#2563eb">
+    <link rel="apple-touch-icon" href="icons/icon-192.png">
+    <link rel="stylesheet" href="offline-queue.css">
+</head>
+<body>
+    <nav class="navbar">
+        <div class="nav-container">
+            <div class="nav-brand">
+                <i class="fas fa-exchange-alt"></i>
+                <span>Borrow &amp; Lend</span>
+            </div>
+            <div class="nav-menu" id="navMenu">
+                <a href="index.html" class="nav-item"><i class="fas fa-home"></i> Home</a>
+                <a href="browse.html" class="nav-item"><i class="fas fa-search"></i> Browse</a>
+                <a href="dashboard-enhanced.html" class="nav-item"><i class="fas fa-th-large"></i> Dashboard</a>
+                <a href="disputes.html" class="nav-item active"><i class="fas fa-shield-halved"></i> Disputes</a>
+                <a href="sync-history.html" class="nav-item"><i class="fas fa-clock-rotate-left"></i> Sync history</a>
+                <a href="settings.html" class="nav-item"><i class="fas fa-cog"></i> Settings</a>
+                <a href="#" onclick="logout()" class="nav-item"><i class="fas fa-sign-out-alt"></i> Logout</a>
+            </div>
+            <button class="nav-toggle" id="navToggle"><i class="fas fa-bars"></i></button>
+        </div>
+    </nav>
+
+    <main class="dispute-container">
+        <div class="dispute-header">
+            <div>
+                <h1><i class="fas fa-shield-halved"></i> Disputes &amp; Refunds</h1>
+                <p>Report a damaged, lost or unreturned item and request a refund of your payment or deposit.</p>
+            </div>
+            <div class="dispute-header-actions">
+                <a class="btn-history" href="sync-history.html"><i class="fas fa-clock-rotate-left"></i> Sync history</a>
+                <button class="btn-report" onclick="openDisputeModal()">
+                    <i class="fas fa-flag"></i> Report an issue
+                </button>
+            </div>
+        </div>
+
+        <div class="dispute-tabs" id="disputeTabs">
+            <button class="dispute-tab active" data-status="all">All</button>
+            <button class="dispute-tab" data-status="open">Open</button>
+            <button class="dispute-tab" data-status="under_review">Under review</button>
+            <button class="dispute-tab" data-status="resolved">Resolved</button>
+            <button class="dispute-tab" data-status="rejected">Rejected</button>
+            <button class="dispute-tab" data-status="withdrawn">Withdrawn</button>
+        </div>
+
+        <div class="dispute-list" id="disputeList"></div>
+    </main>
+
+    <!-- Report / detail modal -->
+    <div class="dispute-modal-backdrop" id="disputeModalBackdrop">
+        <div class="dispute-modal" id="disputeModal" role="dialog" aria-modal="true"></div>
+    </div>
+
+    <script src="config.js"></script>
+
+    <script src="api-service.js"></script>
+    <script src="utils.js"></script>
+    <script src="skeletons.js"></script>
+    <script src="empty-states.js"></script>
+    <script src="dark-mode.js"></script>
+    <script src="bottom-nav.js"></script>
+    <script src="onboarding.js"></script>
+    <script src="pwa.js"></script>
+    <script src="queue-db.js"></script>
+    <script src="offline-queue.js"></script>
+    <script src="disputes.js"></script>
+</body>
+</html>

@@ -1,0 +1,22 @@
+{
+  "name": "BorrowBuddy — Borrow & Lend",
+  "short_name": "BorrowBuddy",
+  "description": "Borrow what you need and lend what you don't from people nearby.",
+  "start_url": "./index.html",
+  "scope": "./",
+  "display": "standalone",
+  "orientation": "portrait",
+  "background_color": "#f8fafc",
+  "theme_color": "#2563eb",
+  "categories": ["shopping", "lifestyle", "utilities"],
+  "icons": [
+    { "src": "icons/icon-192.png", "sizes": "192x192", "type": "image/png", "purpose": "any" },
+    { "src": "icons/icon-512.png", "sizes": "512x512", "type": "image/png", "purpose": "any" },
+    { "src": "icons/icon-512.png", "sizes": "512x512", "type": "image/png", "purpose": "maskable" }
+  ],
+  "shortcuts": [
+    { "name": "Browse items", "url": "./browse.html", "description": "Find something to borrow" },
+    { "name": "List an item", "url": "./lend.html", "description": "Lend something out" },
+    { "name": "My requests", "url": "./requests.html", "description": "Manage borrow requests" }
+  ]
+}

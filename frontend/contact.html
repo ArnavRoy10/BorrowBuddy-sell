@@ -1,0 +1,93 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Contact Us - BorrowBuddy</title>
+    <link rel="icon" type="image/x-icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><text y='.9em' font-size='90'>🤝</text></svg>">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <link rel="stylesheet" href="styles.css">
+    <!-- BorrowBuddy UX modules -->
+    <link rel="stylesheet" href="skeletons.css">
+    <link rel="stylesheet" href="empty-states.css">
+    <link rel="stylesheet" href="onboarding.css">
+    <link rel="stylesheet" href="pwa.css">
+    <link rel="manifest" href="manifest.json">
+    <meta name="theme-color" content="#2563eb">
+    <link rel="apple-touch-icon" href="icons/icon-192.png">
+</head>
+<body>
+    <nav class="navbar navbar-landing">
+        <div class="nav-container">
+            <div class="nav-brand"><i class="fas fa-exchange-alt"></i><span>BorrowBuddy</span></div>
+            <div class="nav-menu" id="navMenu">
+                <a href="index.html" class="nav-item">Home</a>
+                <a href="about.html" class="nav-item">About</a>
+                <a href="contact.html" class="nav-item active">Contact</a>
+                <a href="faq.html" class="nav-item">FAQ</a>
+                <a href="login.html" class="nav-item nav-item-button"><i class="fas fa-sign-in-alt"></i> Login</a>
+                <a href="signup.html" class="nav-item nav-item-button-primary"><i class="fas fa-user-plus"></i> Sign Up</a>
+            </div>
+            <button class="nav-toggle" id="navToggle"><i class="fas fa-bars"></i></button>
+        </div>
+    </nav>
+    <section class="content-page" style="padding: 4rem 2rem; max-width: 800px; margin: 0 auto;">
+        <h1 style="text-align: center; margin-bottom: 3rem; color: var(--primary-color);">Contact Us</h1>
+        <div class="contact-info" style="display: grid; gap: 2rem; margin-bottom: 3rem;">
+            <div style="display: flex; gap: 1rem; align-items: start; padding: 1.5rem; background: #f9fafb; border-radius: 12px;">
+                <i class="fas fa-envelope" style="font-size: 1.5rem; color: var(--primary-color);"></i>
+                <div><h3 style="margin: 0 0 0.5rem 0;">Email</h3><p style="margin: 0; color: var(--text-gray);">support@yourapp.com</p></div>
+            </div>
+            <div style="display: flex; gap: 1rem; align-items: start; padding: 1.5rem; background: #f9fafb; border-radius: 12px;">
+                <i class="fas fa-phone" style="font-size: 1.5rem; color: var(--accent-green);"></i>
+                <div><h3 style="margin: 0 0 0.5rem 0;">Phone</h3><p style="margin: 0; color: var(--text-gray);">+91 7635892487</p></div>
+            </div>
+            <div style="display: flex; gap: 1rem; align-items: start; padding: 1.5rem; background: #f9fafb; border-radius: 12px;">
+                <i class="fas fa-map-marker-alt" style="font-size: 1.5rem; color: var(--accent-orange);"></i>
+                <div><h3 style="margin: 0 0 0.5rem 0;">Address</h3><p style="margin: 0; color: var(--text-gray);">Diphu, Assam, India</p></div>
+            </div>
+        </div>
+        <form id="contactForm" style="background: white; padding: 2rem; border-radius: 12px; box-shadow: 0 2px 8px rgba(0,0,0,0.1);">
+            <h2 style="margin: 0 0 1.5rem 0;">Send us a Message</h2>
+            <div style="margin-bottom: 1.5rem;">
+                <label style="display: block; margin-bottom: 0.5rem; font-weight: 500;">Name</label>
+                <input type="text" id="name" required style="width: 100%; padding: 0.75rem; border: 1px solid #d1d5db; border-radius: 8px; font-size: 1rem;">
+            </div>
+            <div style="margin-bottom: 1.5rem;">
+                <label style="display: block; margin-bottom: 0.5rem; font-weight: 500;">Email</label>
+                <input type="email" id="email" required style="width: 100%; padding: 0.75rem; border: 1px solid #d1d5db; border-radius: 8px; font-size: 1rem;">
+            </div>
+            <div style="margin-bottom: 1.5rem;">
+                <label style="display: block; margin-bottom: 0.5rem; font-weight: 500;">Subject</label>
+                <input type="text" id="subject" required style="width: 100%; padding: 0.75rem; border: 1px solid #d1d5db; border-radius: 8px; font-size: 1rem;">
+            </div>
+            <div style="margin-bottom: 1.5rem;">
+                <label style="display: block; margin-bottom: 0.5rem; font-weight: 500;">Message</label>
+                <textarea id="message" required rows="5" style="width: 100%; padding: 0.75rem; border: 1px solid #d1d5db; border-radius: 8px; font-size: 1rem; resize: vertical;"></textarea>
+            </div>
+            <button type="submit" class="btn btn-primary" style="width: 100%;"><i class="fas fa-paper-plane"></i> Send Message</button>
+        </form>
+    </section>
+    <footer class="footer">
+        <div class="footer-content">
+            <div class="footer-section"><h3><i class="fas fa-exchange-alt"></i> BorrowBuddy</h3><p>Share resources, build community</p></div>
+            <div class="footer-section"><h4>Platform</h4><a href="browse.html">Browse Items</a><a href="signup.html">Sign Up</a></div>
+            <div class="footer-section"><h4>Company</h4><a href="about.html">About Us</a><a href="faq.html">FAQ</a></div>
+            <div class="footer-section"><h4>Legal</h4><a href="terms.html">Terms</a><a href="privacy.html">Privacy</a></div>
+        </div>
+        <div class="footer-bottom"><p>&copy; 2026 BorrowBuddy. All rights reserved.</p></div>
+    </footer>
+    <script>
+        document.getElementById('navToggle').addEventListener('click', () => document.getElementById('navMenu').classList.toggle('active'));
+        document.getElementById('contactForm').addEventListener('submit', (e) => {
+            e.preventDefault();
+            alert('Thank you for your message! We will get back to you soon.');
+            e.target.reset();
+        });
+    </script>
+    <script src="skeletons.js"></script>
+    <script src="empty-states.js"></script>
+    <script src="onboarding.js"></script>
+    <script src="pwa.js"></script>
+</body>
+</html>

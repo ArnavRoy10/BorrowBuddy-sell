@@ -1,0 +1,145 @@
+ BorrowBuddy — offline queue banner, toast and queued dispute cards */
+
+.oq-banner {
+    position: fixed;
+    left: 50%;
+    transform: translateX(-50%);
+    bottom: 84px;
+    z-index: 1200;
+    display: flex;
+    align-items: center;
+    gap: .6rem;
+    max-width: min(92vw, 640px);
+    padding: .7rem 1rem;
+    border-radius: 12px;
+    font-size: .9rem;
+    line-height: 1.35;
+    box-shadow: 0 8px 24px rgba(0, 0, 0, .18);
+}
+
+.oq-banner.offline { background: #3b3b3b; color: #fff; }
+.oq-banner.syncing { background: #fff4e0; color: #7a4b00; border: 1px solid #f0c67d; }
+
+.oq-banner button {
+    margin-left: auto;
+    border: 0;
+    background: #7a4b00;
+    color: #fff;
+    padding: .35rem .7rem;
+    border-radius: 8px;
+    font-size: .82rem;
+    cursor: pointer;
+}
+
+.oq-banner .spin { animation: oq-spin 1s linear infinite; }
+@keyframes oq-spin { to { transform: rotate(360deg); } }
+
+.oq-toast {
+    position: fixed;
+    left: 50%;
+    bottom: 140px;
+    transform: translate(-50%, 12px);
+    z-index: 1300;
+    background: #1f7a44;
+    color: #fff;
+    padding: .65rem 1rem;
+    border-radius: 10px;
+    font-size: .9rem;
+    opacity: 0;
+    transition: opacity .25s ease, transform .25s ease;
+}
+.oq-toast.show { opacity: 1; transform: translate(-50%, 0); }
+
+/* Queued dispute cards */
+.dispute-card.queued { opacity: .92; border-left: 3px solid #f0a500; }
+.d-badge.queued { background: #fff4e0; color: #7a4b00; }
+.d-badge.failed { background: #fde8e8; color: #a11; }
+
+.queued-actions {
+    display: flex;
+    gap: .5rem;
+    margin-top: .6rem;
+}
+.queued-actions button {
+    border: 1px solid var(--border-color, #ddd);
+    background: transparent;
+    color: inherit;
+    border-radius: 8px;
+    padding: .3rem .65rem;
+    font-size: .8rem;
+    cursor: pointer;
+}
+
+/* Per-attachment upload progress */
+.oq-attachments { display: flex; flex-direction: column; gap: .55rem; margin-top: .75rem; }
+
+.oq-att {
+    display: flex;
+    align-items: flex-start;
+    gap: .6rem;
+    padding: .5rem .65rem;
+    border: 1px solid var(--border-color, #e2e8f0);
+    border-radius: 10px;
+    font-size: .82rem;
+}
+body.dark-mode .oq-att { border-color: #2f3a4c; }
+
+.oq-att-icon { margin-top: .15rem; color: var(--text-gray, #64748b); }
+.oq-att.done .oq-att-icon { color: #10b981; }
+.oq-att.error .oq-att-icon { color: #b91c1c; }
+.oq-att.uploading .oq-att-icon { color: #2563eb; }
+.oq-att.dropped { opacity: .6; }
+
+.oq-att-main { flex: 1; min-width: 0; }
+.oq-att-top { display: flex; align-items: center; gap: .5rem; }
+.oq-att-name { font-weight: 600; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+.oq-att-size { color: var(--text-gray, #64748b); font-size: .76rem; }
+.oq-att-status { margin-left: auto; font-size: .76rem; font-weight: 600; color: var(--text-gray, #64748b); }
+.oq-att.error .oq-att-status { color: #b91c1c; }
+.oq-att.done .oq-att-status { color: #047857; }
+
+.oq-bar {
+    margin-top: .35rem;
+    height: 5px;
+    border-radius: 999px;
+    background: #e2e8f0;
+    overflow: hidden;
+}
+body.dark-mode .oq-bar { background: #2f3a4c; }
+.oq-bar span { display: block; height: 100%; background: #2563eb; border-radius: 999px; transition: width .2s ease; }
+.oq-att.done .oq-bar span { background: #10b981; }
+.oq-att.error .oq-bar span { background: #ef4444; }
+
+.oq-att-error { margin-top: .35rem; color: #b91c1c; font-size: .78rem; line-height: 1.4; }
+
+.oq-att-actions { display: flex; gap: .35rem; }
+.oq-att-actions button {
+    border: 1px solid var(--border-color, #e2e8f0);
+    background: transparent;
+    color: inherit;
+    border-radius: 8px;
+    padding: .25rem .55rem;
+    font-size: .76rem;
+    cursor: pointer;
+}
+
+.oq-error {
+    margin-top: .65rem;
+    padding: .5rem .7rem;
+    border-radius: 9px;
+    background: #fde8e8;
+    color: #a11;
+    font-size: .8rem;
+    line-height: 1.45;
+}
+body.dark-mode .oq-error { background: #3a1f1f; color: #f3b3b3; }
+
+/* Link to the full sync history from the disputes header */
+.dispute-header-actions { display: flex; gap: 10px; align-items: center; flex-wrap: wrap; }
+.btn-history {
+    display: inline-flex; align-items: center; gap: 8px;
+    border: 1px solid #d5dbe5; background: #fff; color: #334155;
+    padding: 10px 16px; border-radius: 10px; text-decoration: none; font-size: .92rem;
+}
+.btn-history:hover { background: #f1f5f9; }
+body.dark-mode .btn-history { background: #1e293b; border-color: #334155; color: #e2e8f0; }

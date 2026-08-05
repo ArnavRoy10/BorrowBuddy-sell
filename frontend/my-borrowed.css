@@ -1,0 +1,15 @@
+
+/* Remove Button for Returned Items */
+.btn.btn-small.remove-item-btn {
+    background: #dc2626;
+    color: white;
+    border: none;
+    cursor: pointer;
+    transition: all 0.2s;
+}
+
+.btn.btn-small.remove-item-btn:hover {
+    background: #b91c1c;
+    transform: translateY(-2px);
+    box-shadow: 0 4px 8px rgba(220, 38, 38, 0.3);
+}

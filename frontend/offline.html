@@ -1,0 +1,35 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Offline - BorrowBuddy</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <link rel="stylesheet" href="styles.css">
+    <link rel="stylesheet" href="empty-states.css">
+    <link rel="manifest" href="manifest.json">
+    <meta name="theme-color" content="#2563eb">
+    <!-- BorrowBuddy UX modules -->
+    <link rel="stylesheet" href="skeletons.css">
+    <link rel="stylesheet" href="empty-states.css">
+    <link rel="stylesheet" href="onboarding.css">
+    <link rel="stylesheet" href="pwa.css">
+    <link rel="manifest" href="manifest.json">
+    <meta name="theme-color" content="#2563eb">
+    <link rel="apple-touch-icon" href="icons/icon-192.png">
+</head>
+<body>
+    <main style="min-height:100vh;display:grid;place-items:center;padding:2rem 1rem;">
+        <div id="offlineState"></div>
+    </main>
+    <script src="empty-states.js"></script>
+    <script>
+        EmptyState.render('#offlineState', 'offline');
+        window.addEventListener('online', () => location.reload());
+    </script>
+    <script src="skeletons.js"></script>
+    <script src="empty-states.js"></script>
+    <script src="onboarding.js"></script>
+    <script src="pwa.js"></script>
+</body>
+</html>

@@ -1,0 +1,83 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Sync History - BorrowBuddy</title>
+    <meta name="description" content="Review every send attempt, upload failure and final status of your queued BorrowBuddy dispute reports.">
+
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <link rel="stylesheet" href="styles.css">
+    <link rel="stylesheet" href="dashboard.css">
+    <link rel="stylesheet" href="bottom-nav.css">
+    <link rel="stylesheet" href="dark-mode.css">
+    <link rel="stylesheet" href="skeletons.css">
+    <link rel="stylesheet" href="empty-states.css">
+    <link rel="stylesheet" href="pwa.css">
+    <link rel="stylesheet" href="offline-queue.css">
+    <link rel="stylesheet" href="sync-history.css">
+
+    <link rel="manifest" href="manifest.json">
+    <meta name="theme-color" content="#2563eb">
+    <link rel="apple-touch-icon" href="icons/icon-192.png">
+</head>
+<body>
+    <nav class="navbar">
+        <div class="nav-container">
+            <div class="nav-brand">
+                <i class="fas fa-exchange-alt"></i>
+                <span>Borrow &amp; Lend</span>
+            </div>
+            <div class="nav-menu" id="navMenu">
+                <a href="index.html" class="nav-item"><i class="fas fa-home"></i> Home</a>
+                <a href="browse.html" class="nav-item"><i class="fas fa-search"></i> Browse</a>
+                <a href="dashboard-enhanced.html" class="nav-item"><i class="fas fa-th-large"></i> Dashboard</a>
+                <a href="disputes.html" class="nav-item"><i class="fas fa-shield-halved"></i> Disputes</a>
+                <a href="sync-history.html" class="nav-item active"><i class="fas fa-clock-rotate-left"></i> Sync history</a>
+                <a href="settings.html" class="nav-item"><i class="fas fa-cog"></i> Settings</a>
+            </div>
+            <button class="nav-toggle" id="navToggle"><i class="fas fa-bars"></i></button>
+        </div>
+    </nav>
+
+    <main class="sh-container">
+        <div class="sh-header">
+            <div>
+                <h1><i class="fas fa-clock-rotate-left"></i> Sync history</h1>
+                <p>Every queued dispute report, with each send attempt, photo upload, failure reason and its final status — including work done by background sync while the app was closed.</p>
+            </div>
+            <div class="sh-actions">
+                <button class="sh-btn" onclick="reloadSyncHistory()"><i class="fas fa-arrows-rotate"></i> Refresh</button>
+                <button class="sh-btn" onclick="exportSyncHistory()"><i class="fas fa-download"></i> Export</button>
+                <button class="sh-btn danger" onclick="clearSyncHistory()"><i class="fas fa-trash"></i> Clear</button>
+                <a class="sh-btn primary" href="disputes.html"><i class="fas fa-shield-halved"></i> Disputes</a>
+            </div>
+        </div>
+
+        <div class="sh-stats" id="shStats"></div>
+
+        <div class="sh-filters">
+            <button class="sh-filter active" onclick="setHistoryFilter('all', this)">All</button>
+            <button class="sh-filter" onclick="setHistoryFilter('pending', this)">Waiting</button>
+            <button class="sh-filter" onclick="setHistoryFilter('sent', this)">Sent</button>
+            <button class="sh-filter" onclick="setHistoryFilter('failed', this)">Failed</button>
+            <button class="sh-filter" onclick="setHistoryFilter('discarded', this)">Discarded</button>
+        </div>
+
+        <div id="shList"></div>
+    </main>
+
+    <script src="config.js"></script>
+
+    <script src="utils.js"></script>
+    <script src="api-service.js"></script>
+    <script src="dark-mode.js"></script>
+    <script src="skeletons.js"></script>
+    <script src="empty-states.js"></script>
+    <script src="bottom-nav.js"></script>
+    <script src="pwa.js"></script>
+    <script src="queue-db.js"></script>
+    <script src="offline-queue.js"></script>
+    <script src="sync-history.js"></script>
+</body>
+</html>

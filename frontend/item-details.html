@@ -1,0 +1,284 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Item Details - BorrowBuddy</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <link rel="stylesheet" href="item-details.css">
+    <link rel="stylesheet" href="dark-mode.css">
+    <link rel="stylesheet" href="bottom-nav.css">
+    <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css">
+    <!-- BorrowBuddy UX modules -->
+    <link rel="stylesheet" href="skeletons.css">
+    <link rel="stylesheet" href="empty-states.css">
+    <link rel="stylesheet" href="onboarding.css">
+    <link rel="stylesheet" href="pwa.css">
+    <link rel="manifest" href="manifest.json">
+    <meta name="theme-color" content="#2563eb">
+    <link rel="apple-touch-icon" href="icons/icon-192.png">
+</head>
+<body>
+    <!-- Header -->
+    <header class="header">
+        <div class="container">
+            <div class="logo">
+                <i class="fas fa-exchange-alt"></i>
+                <span>BorrowBuddy</span>
+            </div>
+            <div class="header-actions">
+                <a href="browse.html" class="back-link">
+                    <i class="fas fa-arrow-left"></i> Back to Browse
+                </a>
+            </div>
+        </div>
+    </header>
+
+    <!-- Main Content -->
+    <div class="container main-container">
+        <div class="product-layout">
+            <!-- Left: Image Gallery -->
+            <div class="image-section">
+                <div class="main-image">
+                    <img id="mainImage" src="" alt="Item Image">
+                </div>
+                <div class="thumbnail-list" id="thumbnails">
+                    <!-- Thumbnails will be added here -->
+                </div>
+            </div>
+
+            <!-- Right: Product Info -->
+            <div class="info-section">
+                <h1 id="itemName" class="product-title">Loading...</h1>
+                
+                <!-- Rating -->
+                <div class="rating-section">
+                    <div class="stars" id="itemStars">
+                        <!-- Will be populated by JS -->
+                    </div>
+                    <span class="rating-text">
+                        <span id="ratingValue">0</span> rating
+                    </span>
+                    <span class="rating-count">
+                        <a href="#reviews" id="reviewCount">0 reviews</a>
+                    </span>
+                </div>
+
+                <hr>
+
+                <!-- Description -->
+                <div class="description-section">
+                    <h3>About this item</h3>
+                    <ul id="itemDescription" class="description-list">
+                        <li>Loading...</li>
+                    </ul>
+                </div>
+
+                <hr>
+
+                <!-- Availability -->
+                <div class="availability-section">
+                    <div class="availability-badge available">
+                        <i class="fas fa-check-circle"></i>
+                        <span>Available Now</span>
+                    </div>
+                    <p class="availability-text">Ready to borrow today</p>
+                </div>
+
+                <!-- Action Buttons -->
+                <div class="action-buttons">
+                    <button class="btn-borrow" id="borrowBtn">
+                        <i class="fas fa-shopping-cart"></i>
+                        Borrow Now
+                    </button>
+                </div>
+
+                <!-- Owner Info -->
+                <div class="owner-section">
+                    <h4>Lender Information</h4>
+                    <div class="owner-card">
+                        <div class="owner-avatar">
+                            <i class="fas fa-user-circle"></i>
+                        </div>
+                        <div class="owner-info">
+                            <div class="owner-name" id="ownerName">Loading...</div>
+                        </div>
+                    </div>
+                    
+                    <!-- Contact Information -->
+                    <div class="contact-info" id="contactInfo">
+                        <h5><i class="fas fa-address-card"></i> Contact Details</h5>
+                        <div class="contact-item">
+                            <i class="fas fa-phone"></i>
+                            <span id="ownerPhone">Loading...</span>
+                        </div>
+                        <div class="contact-item">
+                            <i class="fas fa-map-marker-alt"></i>
+                            <span id="ownerLocation">Loading...</span>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Product Details Section -->
+        <div class="details-section">
+            <h2>Product Details</h2>
+            <table class="details-table">
+                <tr>
+                    <td class="detail-label">Category:</td>
+                    <td class="detail-value" id="itemCategory">Electronics</td>
+                </tr>
+                <tr>
+                    <td class="detail-label">Condition:</td>
+                    <td class="detail-value" id="itemCondition">Good</td>
+                </tr>
+                <tr>
+                    <td class="detail-label">Location:</td>
+                    <td class="detail-value" id="itemLocationPrimary">
+                        <i class="fas fa-map-marker-alt" style="color:#007bff;margin-right:4px"></i>
+                        <span>Loading...</span>
+                    </td>
+                </tr>
+            </table>
+        </div>
+
+        <!-- Map Section -->
+        <div class="details-section" id="mapSection" style="display:none">
+            <h2><i class="fas fa-map" style="margin-right:8px;color:#007bff"></i>Approximate Location</h2>
+            <p style="color:#666;font-size:0.85rem;margin-bottom:0.75rem">
+                <i class="fas fa-lock" style="color:#f59e0b;margin-right:4px"></i>
+                Exact pickup address is revealed after borrowing.
+            </p>
+            <div id="itemMap" style="height:280px;border-radius:12px;overflow:hidden;border:1px solid #e5e7eb"></div>
+        </div>
+
+        <!-- Reviews Section -->
+        <div class="reviews-section" id="reviews">
+            <div class="reviews-header">
+                <h2>Customer Reviews</h2>
+                <button class="btn-write-review" onclick="showReviewModal()">
+                    <i class="fas fa-pen"></i> Write a Review
+                </button>
+            </div>
+
+            <!-- Rating Summary -->
+            <div class="rating-summary">
+                <div class="rating-overview">
+                    <div class="rating-number" id="avgRating">0</div>
+                    <div class="rating-stars" id="avgStars">
+                        <i class="far fa-star"></i>
+                        <i class="far fa-star"></i>
+                        <i class="far fa-star"></i>
+                        <i class="far fa-star"></i>
+                        <i class="far fa-star"></i>
+                    </div>
+                    <div class="rating-total" id="totalReviews">0 reviews</div>
+                </div>
+
+                <div class="rating-bars">
+                    <div class="rating-bar-row">
+                        <span>5 star</span>
+                        <div class="rating-bar">
+                            <div class="rating-bar-fill" id="bar5" style="width: 0%"></div>
+                        </div>
+                        <span id="percent5">0%</span>
+                    </div>
+                    <div class="rating-bar-row">
+                        <span>4 star</span>
+                        <div class="rating-bar">
+                            <div class="rating-bar-fill" id="bar4" style="width: 0%"></div>
+                        </div>
+                        <span id="percent4">0%</span>
+                    </div>
+                    <div class="rating-bar-row">
+                        <span>3 star</span>
+                        <div class="rating-bar">
+                            <div class="rating-bar-fill" id="bar3" style="width: 0%"></div>
+                        </div>
+                        <span id="percent3">0%</span>
+                    </div>
+                    <div class="rating-bar-row">
+                        <span>2 star</span>
+                        <div class="rating-bar">
+                            <div class="rating-bar-fill" id="bar2" style="width: 0%"></div>
+                        </div>
+                        <span id="percent2">0%</span>
+                    </div>
+                    <div class="rating-bar-row">
+                        <span>1 star</span>
+                        <div class="rating-bar">
+                            <div class="rating-bar-fill" id="bar1" style="width: 0%"></div>
+                        </div>
+                        <span id="percent1">0%</span>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Reviews List -->
+            <div class="reviews-list" id="reviewsList">
+                <!-- Reviews will be loaded here -->
+            </div>
+        </div>
+    </div>
+
+    <!-- Review Modal -->
+    <div id="reviewModal" class="modal hidden">
+        <div class="modal-overlay" onclick="hideReviewModal()"></div>
+        <div class="modal-content">
+            <div class="modal-header">
+                <h3>Write a Review</h3>
+                <button class="modal-close" onclick="hideReviewModal()">
+                    <i class="fas fa-times"></i>
+                </button>
+            </div>
+            <div class="modal-body">
+                <form id="reviewForm" onsubmit="submitReview(event)">
+                    <!-- Rating Stars -->
+                    <div class="form-group">
+                        <label>Your Rating</label>
+                        <div class="star-rating" id="starRating">
+                            <i class="far fa-star" data-rating="1"></i>
+                            <i class="far fa-star" data-rating="2"></i>
+                            <i class="far fa-star" data-rating="3"></i>
+                            <i class="far fa-star" data-rating="4"></i>
+                            <i class="far fa-star" data-rating="5"></i>
+                        </div>
+                        <input type="hidden" id="ratingInput" value="0">
+                    </div>
+
+                    <!-- Review Title -->
+                    <div class="form-group">
+                        <label for="reviewTitle">Review Title</label>
+                        <input type="text" id="reviewTitle" placeholder="Summarize your experience" required>
+                    </div>
+
+                    <!-- Review Text -->
+                    <div class="form-group">
+                        <label for="reviewText">Your Review</label>
+                        <textarea id="reviewText" rows="5" placeholder="Tell others about your experience with this item" required></textarea>
+                    </div>
+
+                    <!-- Submit Button -->
+                    <button type="submit" class="btn-submit-review">
+                        <i class="fas fa-check"></i> Submit Review
+                    </button>
+                </form>
+            </div>
+        </div>
+    </div>
+
+    <script src="config.js"></script>
+
+    <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
+    <script src="https://checkout.razorpay.com/v1/checkout.js"></script>
+    <script src="item-details.js"></script>
+    <script src="notifications.js"></script>
+    <script src="dark-mode.js"></script>
+    <script src="bottom-nav.js"></script>
+    <script src="skeletons.js"></script>
+    <script src="empty-states.js"></script>
+    <script src="onboarding.js"></script>
+    <script src="pwa.js"></script>
+</body>
+</html>

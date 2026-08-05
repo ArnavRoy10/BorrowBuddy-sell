@@ -1,0 +1,182 @@
+/* ═══════════════════════════════════════════════════════════════
+   BorrowBuddy — Dark Mode (Full-Page Invert Technique)
+   ─────────────────────────────────────────────────────────────
+   Applies filter: invert() to <html> itself (not just <body>), so
+   coverage is guaranteed regardless of page height, wrapper divs,
+   or min-height:100vh containers that don't reach the true bottom
+   of a scrollable page. This is the same technique real dark-mode
+   browser extensions (Dark Reader, etc.) use — it inverts every
+   rendered pixel, so nothing can "slip through" untouched.
+   Images/icons are un-inverted so photos look normal, not like
+   camera negatives.
+   ═══════════════════════════════════════════════════════════════ */
+
+html[data-theme="dark"] {
+    filter: invert(1) hue-rotate(180deg);
+    background: #fff; /* becomes near-black once inverted */
+}
+
+/* Ensure the inverted page still covers full scroll height */
+html[data-theme="dark"] body {
+    min-height: 100vh;
+    background: #fff;
+}
+
+/* ── Un-invert media so photos/icons/videos look normal ──────────*/
+html[data-theme="dark"] img,
+html[data-theme="dark"] video,
+html[data-theme="dark"] picture,
+html[data-theme="dark"] canvas,
+html[data-theme="dark"] iframe,
+html[data-theme="dark"] svg image,
+html[data-theme="dark"] embed,
+html[data-theme="dark"] object {
+    filter: invert(1) hue-rotate(180deg);
+}
+
+/* Elements explicitly marked to skip inversion (rare — brand marks) */
+html[data-theme="dark"] .no-invert {
+    filter: invert(1) hue-rotate(180deg);
+}
+
+/* ── Floating buttons already have hand-built dark styles —
+   un-invert them so they render as designed, not double-inverted ──*/
+html[data-theme="dark"] #darkModeQuickToggle,
+html[data-theme="dark"] #aiAssistantWidget,
+html[data-theme="dark"] .ai-assistant-container,
+html[data-theme="dark"] #bottomNav,
+html[data-theme="dark"] #bnMoreSheet {
+    filter: invert(1) hue-rotate(180deg);
+}
+
+/* ── Scrollbar (filter doesn't affect these, style separately) ───*/
+html[data-theme="dark"] ::-webkit-scrollbar {
+    width: 10px;
+    height: 10px;
+}
+html[data-theme="dark"] ::-webkit-scrollbar-track {
+    background: #0f1117;
+}
+html[data-theme="dark"] ::-webkit-scrollbar-thumb {
+    background: #2a2f3f;
+    border-radius: 6px;
+}
+html[data-theme="dark"] ::-webkit-scrollbar-thumb:hover {
+    background: #3a4050;
+}
+
+/* ── Settings-page toggle switch component — real light/dark
+   colors, not dependent on the invert filter ────────────────────*/
+.theme-toggle-wrap {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding: 1rem 1.25rem;
+    background: white;
+    border: 1px solid #e5e7eb;
+    border-radius: 14px;
+}
+
+.theme-toggle-label {
+    display: flex;
+    align-items: center;
+    gap: 0.75rem;
+    font-weight: 600;
+    font-size: 0.95rem;
+    color: #1f2937;
+}
+
+.theme-toggle-icon {
+    width: 40px;
+    height: 40px;
+    border-radius: 10px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    background: linear-gradient(135deg, #fbbf24, #f59e0b);
+    color: white;
+    font-size: 1.1rem;
+    flex-shrink: 0;
+    transition: background 0.3s;
+}
+
+.theme-switch {
+    position: relative;
+    display: inline-block;
+    width: 52px;
+    height: 28px;
+    flex-shrink: 0;
+}
+.theme-switch input {
+    opacity: 0;
+    width: 0;
+    height: 0;
+}
+.theme-switch-slider {
+    position: absolute;
+    cursor: pointer;
+    inset: 0;
+    background-color: #d1d5db;
+    border-radius: 28px;
+    transition: 0.3s;
+}
+.theme-switch-slider::before {
+    content: "";
+    position: absolute;
+    height: 22px;
+    width: 22px;
+    left: 3px;
+    bottom: 3px;
+    background-color: white;
+    border-radius: 50%;
+    transition: 0.3s;
+    box-shadow: 0 2px 4px rgba(0,0,0,0.2);
+}
+.theme-switch input:checked + .theme-switch-slider {
+    background-color: #4f46e5;
+}
+.theme-switch input:checked + .theme-switch-slider::before {
+    transform: translateX(24px);
+}
+
+/* ── Floating dark-mode quick-toggle button ───────────────────────
+   Has its own real colors (not relying on invert), since it's
+   un-inverted above and needs to look correct standalone. ─────────*/
+#darkModeQuickToggle {
+    position: fixed;
+    bottom: 1.5rem;
+    right: 1.5rem;
+    width: 48px;
+    height: 48px;
+    border-radius: 50%;
+    background: white;
+    border: 1px solid #e5e7eb;
+    box-shadow: 0 4px 16px rgba(0,0,0,0.12);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    cursor: pointer;
+    z-index: 9998;
+    font-size: 1.2rem;
+    transition: transform 0.2s, background 0.3s;
+    color: #374151;
+}
+@media (max-width: 768px) {
+    #darkModeQuickToggle {
+        bottom: 76px; /* clears the mobile bottom nav bar */
+        right: 16px;
+    }
+}
+#darkModeQuickToggle:hover {
+    transform: scale(1.08);
+}
+html[data-theme="dark"] #darkModeQuickToggle {
+    background: #171a23;
+    border-color: #2a2f3f;
+    color: #fbbf24;
+}
+
+/* ── Smooth transition when switching themes ─────────────────────*/
+html {
+    transition: filter 0.3s ease;
+}

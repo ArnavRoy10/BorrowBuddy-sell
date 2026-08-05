@@ -1,0 +1,162 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>About Us - BorrowBuddy</title>
+    <link rel="icon" type="image/x-icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><text y='.9em' font-size='90'>🤝</text></svg>">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <link rel="stylesheet" href="styles.css">
+    <!-- BorrowBuddy UX modules -->
+    <link rel="stylesheet" href="skeletons.css">
+    <link rel="stylesheet" href="empty-states.css">
+    <link rel="stylesheet" href="onboarding.css">
+    <link rel="stylesheet" href="pwa.css">
+    <link rel="manifest" href="manifest.json">
+    <meta name="theme-color" content="#2563eb">
+    <link rel="apple-touch-icon" href="icons/icon-192.png">
+</head>
+<body>
+    <nav class="navbar navbar-landing">
+        <div class="nav-container">
+            <div class="nav-brand">
+                <i class="fas fa-exchange-alt"></i>
+                <span>BorrowBuddy</span>
+            </div>
+            <div class="nav-menu" id="navMenu">
+                <a href="index.html" class="nav-item">Home</a>
+                <a href="about.html" class="nav-item active">About</a>
+                <a href="contact.html" class="nav-item">Contact</a>
+                <a href="faq.html" class="nav-item">FAQ</a>
+                <a href="login.html" class="nav-item nav-item-button">
+                    <i class="fas fa-sign-in-alt"></i> Login
+                </a>
+                <a href="signup.html" class="nav-item nav-item-button-primary">
+                    <i class="fas fa-user-plus"></i> Sign Up
+                </a>
+            </div>
+            <button class="nav-toggle" id="navToggle">
+                <i class="fas fa-bars"></i>
+            </button>
+        </div>
+    </nav>
+
+    <section class="content-page" style="padding: 4rem 2rem; max-width: 1200px; margin: 0 auto;">
+        <h1 style="text-align: center; margin-bottom: 2rem; color: var(--primary-color);">About BorrowBuddy</h1>
+        
+        <div style="max-width: 800px; margin: 0 auto;">
+            <div style="margin-bottom: 3rem;">
+                <h2 style="color: var(--text-dark); margin-bottom: 1rem;">Our Mission</h2>
+                <p style="color: var(--text-gray); line-height: 1.8; font-size: 1.1rem;">
+                    BorrowBuddy was created with a simple yet powerful mission: to make sharing resources easy, safe, and accessible to everyone. We believe that many items sit unused while others need them, and by connecting people, we can reduce waste, save money, and build stronger communities.
+                </p>
+            </div>
+
+            <div style="margin-bottom: 3rem;">
+                <h2 style="color: var(--text-dark); margin-bottom: 1rem;">Why We Exist</h2>
+                <p style="color: var(--text-gray); line-height: 1.8; font-size: 1.1rem;">
+                    In today's world, we often buy items that we use only occasionally. A power drill might sit in a garage for years, used for just a few minutes. Textbooks gather dust after a semester. Sports equipment waits unused between seasons. BorrowBuddy connects those who have with those who need, creating a sustainable alternative to constant purchasing.
+                </p>
+            </div>
+
+            <div style="margin-bottom: 3rem;">
+                <h2 style="color: var(--text-dark); margin-bottom: 1rem;">Our Values</h2>
+                <div style="display: grid; gap: 1.5rem; margin-top: 1.5rem;">
+                    <div style="border-left: 4px solid var(--accent-blue); padding-left: 1.5rem;">
+                        <h3 style="color: var(--text-dark); margin-bottom: 0.5rem;">
+                            <i class="fas fa-shield-alt" style="color: var(--accent-blue);"></i> Trust & Safety
+                        </h3>
+                        <p style="color: var(--text-gray); line-height: 1.6;">
+                            We prioritize the safety and security of our users through verified accounts, secure transactions, and community ratings.
+                        </p>
+                    </div>
+
+                    <div style="border-left: 4px solid var(--accent-green); padding-left: 1.5rem;">
+                        <h3 style="color: var(--text-dark); margin-bottom: 0.5rem;">
+                            <i class="fas fa-leaf" style="color: var(--accent-green);"></i> Sustainability
+                        </h3>
+                        <p style="color: var(--text-gray); line-height: 1.6;">
+                            By promoting sharing over buying, we help reduce waste and minimize environmental impact.
+                        </p>
+                    </div>
+
+                    <div style="border-left: 4px solid var(--accent-orange); padding-left: 1.5rem;">
+                        <h3 style="color: var(--text-dark); margin-bottom: 0.5rem;">
+                            <i class="fas fa-users" style="color: var(--accent-orange);"></i> Community
+                        </h3>
+                        <p style="color: var(--text-gray); line-height: 1.6;">
+                            We believe in building connections between people and fostering a spirit of collaboration and mutual support.
+                        </p>
+                    </div>
+
+                    <div style="border-left: 4px solid var(--primary-color); padding-left: 1.5rem;">
+                        <h3 style="color: var(--text-dark); margin-bottom: 0.5rem;">
+                            <i class="fas fa-hand-holding-usd" style="color: var(--primary-color);"></i> Accessibility
+                        </h3>
+                        <p style="color: var(--text-gray); line-height: 1.6;">
+                            Everyone should have access to the things they need without breaking the bank. We make borrowing simple and affordable.
+                        </p>
+                    </div>
+                </div>
+            </div>
+
+            <div style="margin-bottom: 3rem;">
+                <h2 style="color: var(--text-dark); margin-bottom: 1rem;">How It Started</h2>
+                <p style="color: var(--text-gray); line-height: 1.8; font-size: 1.1rem;">
+                    BorrowBuddy began when a group of college students realized they were all buying the same expensive textbooks and tools that they'd only use once. They thought: "What if there was an easy way to share these resources?" That simple question led to the creation of this platform, designed to make sharing as easy as a few clicks.
+                </p>
+            </div>
+
+            <div style="background: linear-gradient(135deg, #667eea 0%, #764ba2 100%); padding: 3rem; border-radius: 16px; text-align: center; color: white; margin-top: 3rem;">
+                <h2 style="margin-bottom: 1rem;">Join Our Community</h2>
+                <p style="margin-bottom: 2rem; font-size: 1.1rem; opacity: 0.9;">
+                    Be part of the sharing economy and help build a more sustainable future
+                </p>
+                <a href="signup.html" class="btn btn-large btn-white" style="display: inline-block;">
+                    <i class="fas fa-rocket"></i> Get Started Free
+                </a>
+            </div>
+        </div>
+    </section>
+
+    <footer class="footer">
+        <div class="footer-content">
+            <div class="footer-section">
+                <h3><i class="fas fa-exchange-alt"></i> BorrowBuddy</h3>
+                <p>Share resources, build community, save money</p>
+            </div>
+            <div class="footer-section">
+                <h4>Platform</h4>
+                <a href="browse.html">Browse Items</a>
+                <a href="signup.html">Sign Up</a>
+                <a href="login.html">Login</a>
+            </div>
+            <div class="footer-section">
+                <h4>Company</h4>
+                <a href="about.html">About Us</a>
+                <a href="contact.html">Contact</a>
+                <a href="faq.html">FAQ</a>
+            </div>
+            <div class="footer-section">
+                <h4>Legal</h4>
+                <a href="terms.html">Terms of Service</a>
+                <a href="privacy.html">Privacy Policy</a>
+            </div>
+        </div>
+        <div class="footer-bottom">
+            <p>&copy; 2026 BorrowBuddy Platform. All rights reserved.</p>
+        </div>
+    </footer>
+
+    <script>
+        document.getElementById('navToggle').addEventListener('click', function() {
+            document.getElementById('navMenu').classList.toggle('active');
+        });
+    </script>
+    <script src="storage-sync.js"></script>
+    <script src="skeletons.js"></script>
+    <script src="empty-states.js"></script>
+    <script src="onboarding.js"></script>
+    <script src="pwa.js"></script>
+</body>
+</html>

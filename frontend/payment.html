@@ -1,0 +1,158 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Payment - BorrowBuddy</title>
+    
+    <!-- Stripe JS -->
+    <script src="config.js"></script>
+    <script src="https://js.stripe.com/v3/"></script>
+    
+    <!-- Font Awesome -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    
+    <!-- CSS -->
+    <link rel="stylesheet" href="styles.css">
+    <link rel="stylesheet" href="payment.css">
+    <!-- BorrowBuddy UX modules -->
+    <link rel="stylesheet" href="skeletons.css">
+    <link rel="stylesheet" href="empty-states.css">
+    <link rel="stylesheet" href="onboarding.css">
+    <link rel="stylesheet" href="pwa.css">
+    <link rel="manifest" href="manifest.json">
+    <meta name="theme-color" content="#2563eb">
+    <link rel="apple-touch-icon" href="icons/icon-192.png">
+</head>
+<body>
+    <!-- Navigation -->
+    <nav class="navbar">
+        <div class="nav-container">
+            <div class="nav-brand">
+                <i class="fas fa-exchange-alt"></i>
+                <span>BorrowBuddy</span>
+            </div>
+            <div class="nav-menu">
+                <a href="dashboard-enhanced.html" class="nav-item">
+                    <i class="fas fa-arrow-left"></i> Back to Dashboard
+                </a>
+            </div>
+        </div>
+    </nav>
+
+    <!-- Payment Container -->
+    <div class="payment-container">
+        <div class="payment-wrapper">
+            <!-- Payment Header -->
+            <div class="payment-header">
+                <h1><i class="fas fa-credit-card"></i> Secure Payment</h1>
+                <p>Complete your booking with a secure payment</p>
+            </div>
+
+            <!-- Order Summary -->
+            <div class="order-summary">
+                <h3>Order Summary</h3>
+                <div class="order-item">
+                    <span class="order-label">Item:</span>
+                    <span class="order-value" id="itemName">Loading...</span>
+                </div>
+                <div class="order-item">
+                    <span class="order-label">Type:</span>
+                    <span class="order-value" id="paymentType">Security Deposit</span>
+                </div>
+                <div class="order-item">
+                    <span class="order-label">Rental Period:</span>
+                    <span class="order-value" id="rentalPeriod">-</span>
+                </div>
+                <div class="order-item total">
+                    <span class="order-label">Amount to Pay:</span>
+                    <span class="order-value" id="totalAmount">$0.00</span>
+                </div>
+            </div>
+
+            <!-- Payment Form -->
+            <form id="payment-form">
+                <h3>Payment Details</h3>
+                
+                <!-- Card Element -->
+                <div class="form-group">
+                    <label for="card-element">
+                        <i class="fas fa-credit-card"></i> Card Information
+                    </label>
+                    <div id="card-element" class="card-input"></div>
+                    <div id="card-errors" class="error-message"></div>
+                </div>
+
+                <!-- Name on Card -->
+                <div class="form-group">
+                    <label for="card-holder-name">
+                        <i class="fas fa-user"></i> Name on Card
+                    </label>
+                    <input 
+                        type="text" 
+                        id="card-holder-name" 
+                        placeholder="John Doe"
+                        required
+                    >
+                </div>
+
+                <!-- Email -->
+                <div class="form-group">
+                    <label for="email">
+                        <i class="fas fa-envelope"></i> Email
+                    </label>
+                    <input 
+                        type="email" 
+                        id="email" 
+                        placeholder="john@example.com"
+                        required
+                    >
+                </div>
+
+                <!-- Submit Button -->
+                <button type="submit" id="submit-button" class="btn-payment">
+                    <span id="button-text">Pay Now</span>
+                    <span id="spinner" class="spinner hidden"></span>
+                </button>
+            </form>
+
+            <!-- Security Notice -->
+            <div class="security-notice">
+                <i class="fas fa-lock"></i>
+                <p>Your payment information is encrypted and secure. We never store your card details.</p>
+            </div>
+        </div>
+    </div>
+
+    <!-- Success Modal -->
+    <div id="successModal" class="modal hidden">
+        <div class="modal-content success">
+            <div class="modal-icon">
+                <i class="fas fa-check-circle"></i>
+            </div>
+            <h2>Payment Successful!</h2>
+            <p>Your payment has been processed successfully.</p>
+            <button onclick="goToDashboard()" class="btn-modal">Go to Dashboard</button>
+        </div>
+    </div>
+
+    <!-- Error Modal -->
+    <div id="errorModal" class="modal hidden">
+        <div class="modal-content error">
+            <div class="modal-icon">
+                <i class="fas fa-times-circle"></i>
+            </div>
+            <h2>Payment Failed</h2>
+            <p id="errorMessage">An error occurred processing your payment.</p>
+            <button onclick="hideError()" class="btn-modal">Try Again</button>
+        </div>
+    </div>
+
+    <!-- JavaScript -->
+    <script src="payment.js"></script>
+    <script src="skeletons.js"></script>
+    <script src="empty-states.js"></script>
+    <script src="onboarding.js"></script>
+    <script src="pwa.js"></script>
+</body>
+</html>

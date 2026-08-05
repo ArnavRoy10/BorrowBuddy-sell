@@ -1,0 +1,72 @@
+/* BorrowBuddy — install banner & connection toast */
+
+.pwa-install-banner {
+    position: fixed;
+    left: 50%;
+    bottom: 1rem;
+    transform: translate(-50%, 140%);
+    z-index: 8500;
+    width: min(560px, calc(100vw - 1.5rem));
+    display: flex;
+    align-items: center;
+    gap: 0.9rem;
+    padding: 0.9rem 1rem;
+    background: #fff;
+    border: 1px solid var(--border-color, #e2e8f0);
+    border-radius: 16px;
+    box-shadow: 0 18px 44px rgba(15, 23, 42, 0.18);
+    transition: transform 0.32s cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+.pwa-install-banner.visible { transform: translate(-50%, 0); }
+
+body.dark-mode .pwa-install-banner { background: #1e2534; border-color: #2f3a4c; color: #e8edf3; }
+
+.pwa-install-icon {
+    width: 42px; height: 42px;
+    flex-shrink: 0;
+    display: grid; place-items: center;
+    border-radius: 12px;
+    background: var(--gradient-primary, linear-gradient(135deg, #667eea, #764ba2));
+    color: #fff;
+}
+
+.pwa-install-copy { display: flex; flex-direction: column; flex: 1; min-width: 0; }
+.pwa-install-copy strong { font-size: 0.94rem; color: var(--text-dark, #1e293b); }
+.pwa-install-copy span   { font-size: 0.8rem; color: var(--text-gray, #64748b); }
+body.dark-mode .pwa-install-copy strong { color: #e8edf3; }
+
+.pwa-install-actions { display: flex; gap: 0.45rem; flex-shrink: 0; }
+
+.pwa-btn {
+    border: none;
+    border-radius: 9px;
+    padding: 0.55rem 0.95rem;
+    font-size: 0.84rem;
+    font-weight: 600;
+    cursor: pointer;
+}
+.pwa-btn.primary { background: var(--primary-blue, #2563eb); color: #fff; }
+.pwa-btn.ghost   { background: transparent; color: var(--text-gray, #64748b); }
+
+@media (max-width: 640px) {
+    .pwa-install-banner { bottom: 5.2rem; flex-wrap: wrap; }
+    .pwa-install-actions { width: 100%; justify-content: flex-end; }
+}
+
+.bb-net-toast {
+    position: fixed;
+    top: 1rem; left: 50%;
+    transform: translate(-50%, -160%);
+    z-index: 9500;
+    padding: 0.6rem 1.1rem;
+    border-radius: 999px;
+    font-size: 0.85rem;
+    font-weight: 600;
+    color: #fff;
+    background: #f97316;
+    box-shadow: 0 10px 26px rgba(15, 23, 42, 0.2);
+    transition: transform 0.3s ease;
+}
+.bb-net-toast[data-tone="ok"] { background: #10b981; }
+.bb-net-toast.visible { transform: translate(-50%, 0); }

@@ -1,0 +1,241 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Multi-Tab Settings - BorrowBuddy</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+        
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            min-height: 100vh;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            padding: 20px;
+        }
+        
+        .container {
+            background: white;
+            padding: 3rem;
+            border-radius: 20px;
+            box-shadow: 0 20px 60px rgba(0, 0, 0, 0.3);
+            max-width: 600px;
+            width: 100%;
+        }
+        
+        h1 {
+            color: #333;
+            margin-bottom: 1rem;
+            font-size: 2rem;
+        }
+        
+        .subtitle {
+            color: #666;
+            margin-bottom: 2rem;
+            font-size: 1rem;
+        }
+        
+        .setting-card {
+            background: #f8f9fa;
+            padding: 1.5rem;
+            border-radius: 12px;
+            margin-bottom: 1.5rem;
+            border: 2px solid #e9ecef;
+        }
+        
+        .setting-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 1rem;
+        }
+        
+        .setting-title {
+            font-size: 1.2rem;
+            font-weight: 600;
+            color: #333;
+        }
+        
+        .toggle-switch {
+            position: relative;
+            width: 60px;
+            height: 30px;
+            background: #ccc;
+            border-radius: 30px;
+            cursor: pointer;
+            transition: background 0.3s;
+        }
+        
+        .toggle-switch.active {
+            background: #10b981;
+        }
+        
+        .toggle-slider {
+            position: absolute;
+            top: 3px;
+            left: 3px;
+            width: 24px;
+            height: 24px;
+            background: white;
+            border-radius: 50%;
+            transition: transform 0.3s;
+        }
+        
+        .toggle-switch.active .toggle-slider {
+            transform: translateX(30px);
+        }
+        
+        .setting-description {
+            color: #666;
+            font-size: 0.95rem;
+            line-height: 1.6;
+        }
+        
+        .status {
+            display: inline-block;
+            padding: 0.5rem 1rem;
+            border-radius: 20px;
+            font-weight: 600;
+            margin-top: 1rem;
+        }
+        
+        .status.enabled {
+            background: #d1fae5;
+            color: #065f46;
+        }
+        
+        .status.disabled {
+            background: #fee2e2;
+            color: #991b1b;
+        }
+        
+        .info-box {
+            background: #dbeafe;
+            border-left: 4px solid #3b82f6;
+            padding: 1rem;
+            border-radius: 8px;
+            margin-top: 1.5rem;
+        }
+        
+        .info-box h3 {
+            color: #1e40af;
+            margin-bottom: 0.5rem;
+        }
+        
+        .info-box ul {
+            margin-left: 1.5rem;
+            color: #1e3a8a;
+        }
+        
+        .info-box li {
+            margin-bottom: 0.5rem;
+        }
+        
+        .btn {
+            display: inline-block;
+            padding: 0.75rem 1.5rem;
+            background: #667eea;
+            color: white;
+            border: none;
+            border-radius: 8px;
+            cursor: pointer;
+            font-size: 1rem;
+            text-decoration: none;
+            margin-top: 1.5rem;
+        }
+        
+        .btn:hover {
+            background: #5568d3;
+        }
+    </style>
+    <!-- BorrowBuddy UX modules -->
+    <link rel="stylesheet" href="skeletons.css">
+    <link rel="stylesheet" href="empty-states.css">
+    <link rel="stylesheet" href="onboarding.css">
+    <link rel="stylesheet" href="pwa.css">
+    <link rel="manifest" href="manifest.json">
+    <meta name="theme-color" content="#2563eb">
+    <link rel="apple-touch-icon" href="icons/icon-192.png">
+</head>
+<body>
+    <div class="container">
+        <h1>⚙️ Multi-Tab Settings</h1>
+        <p class="subtitle">Configure how the app behaves across multiple browser tabs</p>
+        
+        <div class="setting-card">
+            <div class="setting-header">
+                <div class="setting-title">Multi-Tab Synchronization</div>
+                <div class="toggle-switch" id="syncToggle" onclick="toggleSync()">
+                    <div class="toggle-slider"></div>
+                </div>
+            </div>
+            
+            <div class="setting-description">
+                When enabled, all changes in one tab will automatically sync to other tabs. 
+                When disabled, each tab can login as a different user independently.
+            </div>
+            
+            <div class="status" id="statusBadge"></div>
+        </div>
+        
+        <div class="info-box">
+            <h3>💡 How to use different users in multiple tabs:</h3>
+            <ul>
+                <li><strong>Option 1:</strong> Disable this setting (tabs work independently)</li>
+                <li><strong>Option 2:</strong> Use different browsers (Chrome + Firefox)</li>
+                <li><strong>Option 3:</strong> Use Incognito/Private mode + Normal mode</li>
+            </ul>
+        </div>
+        
+        <a href="index.html" class="btn">← Back to App</a>
+    </div>
+    
+    <script>
+        function loadSyncStatus() {
+            const syncEnabled = localStorage.getItem('multiTabSyncEnabled') !== 'false';
+            const toggle = document.getElementById('syncToggle');
+            const badge = document.getElementById('statusBadge');
+            
+            if (syncEnabled) {
+                toggle.classList.add('active');
+                badge.textContent = '✅ Enabled - Tabs sync automatically';
+                badge.className = 'status enabled';
+            } else {
+                toggle.classList.remove('active');
+                badge.textContent = '❌ Disabled - Each tab is independent';
+                badge.className = 'status disabled';
+            }
+        }
+        
+        function toggleSync() {
+            const currentStatus = localStorage.getItem('multiTabSyncEnabled') !== 'false';
+            const newStatus = !currentStatus;
+            
+            localStorage.setItem('multiTabSyncEnabled', newStatus.toString());
+            
+            loadSyncStatus();
+            
+            // Show notification
+            const message = newStatus 
+                ? '✅ Multi-tab sync ENABLED! Tabs will now sync automatically. Please reload all open tabs.'
+                : '❌ Multi-tab sync DISABLED! Each tab can now login as different users. Please reload all open tabs.';
+            
+            alert(message);
+        }
+        
+        // Load status on page load
+        loadSyncStatus();
+    </script>
+    <script src="skeletons.js"></script>
+    <script src="empty-states.js"></script>
+    <script src="onboarding.js"></script>
+    <script src="pwa.js"></script>
+</body>
+</html>

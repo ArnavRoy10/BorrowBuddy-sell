@@ -1,0 +1,474 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Messages - BorrowBuddy</title>
+    
+    <!-- Font Awesome -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    
+    <!-- CSS Files -->
+    <link rel="stylesheet" href="styles.css">
+    <link rel="stylesheet" href="dashboard.css">
+    <link rel="stylesheet" href="bottom-nav.css">
+    <link rel="stylesheet" href="dark-mode.css">
+    <link rel="stylesheet" href="ai-assistant.css">
+    
+    <style>
+        /* Messages Page Styles */
+        .messages-container {
+            max-width: 1400px;
+            margin: 0 auto;
+            padding: 1rem 1.5rem;
+            height: calc(100vh - 80px);
+            display: flex;
+            flex-direction: column;
+        }
+
+        .messages-layout {
+            display: grid;
+            grid-template-columns: 320px 1fr;
+            background: white;
+            border-radius: 16px;
+            overflow: hidden;
+            box-shadow: 0 4px 20px rgba(0,0,0,.08);
+            border: 1px solid #e5e7eb;
+            flex: 1;
+            min-height: 0;
+        }
+
+        /* Hide footer on messages page */
+        .footer { display: none !important; }
+
+        /* Conversations List */
+        .conversations-sidebar {
+            background: #fafafa;
+            border-right: 1px solid #e5e7eb;
+            display: flex;
+            flex-direction: column;
+            overflow: hidden;
+        }
+
+        .conversations-list {
+            flex: 1;
+            overflow-y: auto;
+            padding: 0;
+        }
+
+        .conversation-item {
+            display: flex;
+            gap: 1rem;
+            padding: 1rem;
+            border-radius: 12px;
+            cursor: pointer;
+            transition: all 0.2s;
+            margin-bottom: 0.5rem;
+        }
+
+        .conversation-item:hover {
+            background: rgba(37, 99, 235, 0.05);
+        }
+
+        .conversation-item.active {
+            background: var(--primary-blue);
+            color: white;
+        }
+
+        .conversation-avatar {
+            width: 50px;
+            height: 50px;
+            border-radius: 50%;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: white;
+            font-weight: 600;
+            font-size: 1.1rem;
+            flex-shrink: 0;
+        }
+
+        .conversation-item.active .conversation-avatar {
+            background: white;
+            color: var(--primary-blue);
+        }
+
+        .conversation-info {
+            flex: 1;
+            min-width: 0;
+        }
+
+        .conversation-name {
+            font-weight: 600;
+            margin-bottom: 0.25rem;
+            white-space: nowrap;
+            overflow: hidden;
+            text-overflow: ellipsis;
+        }
+
+        .conversation-preview {
+            font-size: 0.85rem;
+            opacity: 0.8;
+            white-space: nowrap;
+            overflow: hidden;
+            text-overflow: ellipsis;
+        }
+
+        .conversation-time {
+            font-size: 0.75rem;
+            opacity: 0.7;
+            white-space: nowrap;
+        }
+
+        .unread-badge {
+            background: var(--accent-orange);
+            color: white;
+            width: 22px;
+            height: 22px;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 0.75rem;
+            font-weight: 700;
+        }
+
+        /* Chat Area */
+        .chat-area {
+            display: flex;
+            flex-direction: column;
+        }
+
+        .chat-header {
+            padding: 1.5rem 2rem;
+            border-bottom: 2px solid var(--border-color);
+            display: flex;
+            align-items: center;
+            gap: 1rem;
+        }
+
+        .chat-user-avatar {
+            width: 50px;
+            height: 50px;
+            border-radius: 50%;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: white;
+            font-weight: 600;
+            font-size: 1.1rem;
+        }
+
+        .chat-user-info h3 {
+            font-size: 1.25rem;
+            color: var(--text-dark);
+            margin-bottom: 0.25rem;
+        }
+
+        .chat-user-status {
+            font-size: 0.85rem;
+            color: var(--text-gray);
+        }
+
+        .chat-messages {
+            flex: 1;
+            overflow-y: auto;
+            padding: 2rem;
+            display: flex;
+            flex-direction: column;
+            gap: 1.5rem;
+        }
+
+        .message {
+            display: flex;
+            gap: 1rem;
+            max-width: 70%;
+        }
+
+        .message.sent {
+            margin-left: auto;
+            flex-direction: row-reverse;
+        }
+
+        .message-avatar {
+            width: 40px;
+            height: 40px;
+            border-radius: 50%;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: white;
+            font-weight: 600;
+            flex-shrink: 0;
+        }
+
+        .message.sent .message-avatar {
+            background: linear-gradient(135deg, #10b981 0%, #059669 100%);
+        }
+
+        .message-content {
+            flex: 1;
+        }
+
+        .message-bubble {
+            background: var(--bg-light);
+            padding: 1rem 1.25rem;
+            border-radius: 16px;
+            margin-bottom: 0.5rem;
+        }
+
+        .message.sent .message-bubble {
+            background: var(--primary-blue);
+            color: white;
+        }
+
+        .message-time {
+            font-size: 0.75rem;
+            color: var(--text-gray);
+        }
+
+        .message.sent .message-time {
+            text-align: right;
+        }
+
+        /* Chat Input */
+        .chat-input {
+            padding: 1.5rem 2rem;
+            border-top: 2px solid var(--border-color);
+            display: flex;
+            gap: 1rem;
+            align-items: center;
+        }
+
+        .chat-input input {
+            flex: 1;
+            padding: 1rem 1.5rem;
+            border: 2px solid var(--border-color);
+            border-radius: 50px;
+            font-size: 1rem;
+            transition: all 0.3s;
+        }
+
+        .chat-input input:focus {
+            outline: none;
+            border-color: var(--primary-blue);
+            box-shadow: 0 0 0 4px rgba(37, 99, 235, 0.1);
+        }
+
+        .send-btn {
+            width: 50px;
+            height: 50px;
+            border-radius: 50%;
+            background: var(--primary-blue);
+            color: white;
+            border: none;
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 1.25rem;
+            transition: all 0.3s;
+        }
+
+        .send-btn:hover {
+            background: #1e40af;
+            transform: scale(1.1);
+        }
+
+        /* Empty State */
+        .empty-chat {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            height: 100%;
+            color: var(--text-gray);
+            text-align: center;
+            padding: 2rem;
+        }
+
+        .empty-chat i {
+            font-size: 4rem;
+            margin-bottom: 1.5rem;
+            opacity: 0.5;
+        }
+
+        .empty-chat h3 {
+            font-size: 1.5rem;
+            color: var(--text-dark);
+            margin-bottom: 0.5rem;
+        }
+
+        /* Mobile Responsive */
+        @media (max-width: 768px) {
+            .messages-layout {
+                grid-template-columns: 1fr;
+            }
+
+            .conversations-sidebar {
+                display: none;
+            }
+
+            .conversations-sidebar.mobile-visible {
+                display: flex;
+                position: fixed;
+                top: 0;
+                left: 0;
+                right: 0;
+                bottom: 0;
+                z-index: 1000;
+            }
+
+            .chat-area {
+                display: none;
+            }
+
+            .chat-area.mobile-visible {
+                display: flex;
+            }
+
+            .message {
+                max-width: 85%;
+            }
+        }
+    </style>
+    <!-- BorrowBuddy UX modules -->
+    <link rel="stylesheet" href="skeletons.css">
+    <link rel="stylesheet" href="empty-states.css?v=2">
+    <link rel="stylesheet" href="onboarding.css">
+    <link rel="stylesheet" href="pwa.css">
+    <link rel="manifest" href="manifest.json">
+    <meta name="theme-color" content="#2563eb">
+    <link rel="apple-touch-icon" href="icons/icon-192.png">
+</head>
+<body>
+    <!-- Navigation -->
+    <nav class="navbar">
+        <div class="nav-container">
+            <div class="nav-brand">
+                <i class="fas fa-exchange-alt"></i>
+                <span>BorrowBuddy</span>
+            </div>
+            <div class="nav-menu" id="navMenu">
+                <a href="index.html" class="nav-item">
+                    <i class="fas fa-home"></i> Home
+                </a>
+                <a href="browse.html" class="nav-item">
+                    <i class="fas fa-search"></i> Browse
+                </a>
+                <a href="dashboard-enhanced.html" class="nav-item">
+                    <i class="fas fa-th-large"></i> Dashboard
+                </a>
+                <a href="lend.html" class="nav-item">
+                    <i class="fas fa-plus-circle"></i> Add Item
+                </a>
+                <a href="cart.html" class="nav-item">
+                    <i class="fas fa-shopping-cart"></i> Cart
+                    <span class="badge" id="cartBadge">0</span>
+                </a>
+                <a href="disputes.html" class="nav-item"><i class="fas fa-shield-halved"></i> Disputes</a>                <a href="settings.html" class="nav-item"><i class="fas fa-cog"></i> Settings</a>
+                    <a href="#" onclick="logout()" class="nav-item">
+                    <i class="fas fa-sign-out-alt"></i> Logout
+                </a>
+            </div>
+            <button class="nav-toggle" id="navToggle">
+                <i class="fas fa-bars"></i>
+            </button>
+        </div>
+    </nav>
+
+    <!-- Main Content -->
+    <main class="messages-container">
+        <div class="messages-layout">
+            <!-- Conversations Sidebar -->
+            <aside class="conversations-sidebar" id="conversationsSidebar">
+                <div class="conversations-header" style="padding:1rem;border-bottom:1px solid #e5e7eb">
+                    <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:.875rem">
+                        <h2 style="margin:0;font-size:1.1rem;font-weight:700;color:#1f2937;display:flex;align-items:center;gap:.5rem">
+                            <i class="fas fa-comments" style="color:#2563eb"></i> Messages
+                            <span id="inboxUnreadTotal" style="background:#ef4444;color:white;font-size:.7rem;font-weight:700;padding:.1rem .45rem;border-radius:20px;display:none"></span>
+                        </h2>
+                        <a href="browse.html" style="font-size:.75rem;color:#2563eb;text-decoration:none;font-weight:600">+ New</a>
+                    </div>
+                    <div style="display:flex;align-items:center;gap:.5rem;background:#f9fafb;border:1px solid #e5e7eb;border-radius:10px;padding:.5rem .75rem">
+                        <i class="fas fa-search" style="color:#9ca3af;font-size:.8rem"></i>
+                        <input type="text" id="searchConversations" placeholder="Search conversations…"
+                            style="border:none;background:none;outline:none;font-size:.85rem;color:#374151;width:100%">
+                    </div>
+                </div>
+                <div class="conversations-list" id="conversationsList" style="overflow-y:auto;flex:1"></div>
+            </aside>
+
+            <!-- Chat Area -->
+            <section class="chat-area" id="chatArea" style="display:flex;flex-direction:column">
+                <div class="empty-chat" id="emptyChat" style="display:flex;flex-direction:column;align-items:center;justify-content:center;height:100%;color:#9ca3af;text-align:center;padding:2rem">
+                    <div style="width:80px;height:80px;border-radius:50%;background:linear-gradient(135deg,#eff6ff,#f0f4ff);display:flex;align-items:center;justify-content:center;margin-bottom:1.5rem;font-size:2rem">💬</div>
+                    <h3 style="color:#374151;margin:0 0 .5rem;font-size:1.1rem">Your Messages</h3>
+                    <p style="font-size:.875rem;max-width:260px;line-height:1.6">Select a conversation or browse items and message an owner</p>
+                    <a href="browse.html" class="btn btn-primary" style="margin-top:1.5rem">
+                        Browse Items
+                    </a>
+                </div>
+            </section>
+        </div>
+    </main>
+
+    <!-- Footer -->
+    <footer class="footer">
+        <div class="footer-content">
+            <div class="footer-section">
+                <h3><i class="fas fa-exchange-alt"></i> BorrowBuddy</h3>
+                <p>Share resources, build community</p>
+            </div>
+            <div class="footer-section">
+                <h4>Quick Links</h4>
+                <a href="about.html">About Us</a>
+                <a href="contact.html">Contact</a>
+                <a href="faq.html">FAQ</a>
+            </div>
+            <div class="footer-section">
+                <h4>Legal</h4>
+                <a href="terms.html">Terms of Service</a>
+                <a href="privacy.html">Privacy Policy</a>
+            </div>
+            <div class="footer-section">
+                <h4>Follow Us</h4>
+                <div class="social-links">
+                    <a href="#"><i class="fab fa-facebook"></i></a>
+                    <a href="#"><i class="fab fa-twitter"></i></a>
+                    <a href="#"><i class="fab fa-instagram"></i></a>
+                </div>
+            </div>
+        </div>
+        <div class="footer-bottom">
+            <p>&copy; 2026 BorrowBuddy Platform. All rights reserved.</p>
+        </div>
+    </footer>
+
+    <!-- JavaScript Files -->
+    <script src="config.js"></script>
+    <script src="auth.js"></script>
+    <script src="dashboard.js"></script>
+    <script src="messages.js"></script>
+    <script src="init-data.js"></script>
+    <script src="ai-assistant.js"></script>
+    
+    <script>
+        // Mobile Navigation Toggle
+        document.getElementById('navToggle')?.addEventListener('click', function() {
+            document.getElementById('navMenu')?.classList.toggle('active');
+        });
+    </script>
+    <script src="storage-sync.js"></script>
+    <script src="notifications.js"></script>
+    <script src="dark-mode.js"></script>
+    <script src="bottom-nav.js"></script>
+    <script src="skeletons.js"></script>
+    <script src="empty-states.js?v=2"></script>
+    <script src="onboarding.js"></script>
+    <script src="pwa.js"></script>
+</body>
+</html>

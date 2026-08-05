@@ -1,0 +1,77 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Terms of Service - BorrowBuddy</title>
+    <link rel="icon" type="image/x-icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><text y='.9em' font-size='90'>🤝</text></svg>">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <link rel="stylesheet" href="styles.css">
+    <!-- BorrowBuddy UX modules -->
+    <link rel="stylesheet" href="skeletons.css">
+    <link rel="stylesheet" href="empty-states.css">
+    <link rel="stylesheet" href="onboarding.css">
+    <link rel="stylesheet" href="pwa.css">
+    <link rel="manifest" href="manifest.json">
+    <meta name="theme-color" content="#2563eb">
+    <link rel="apple-touch-icon" href="icons/icon-192.png">
+</head>
+<body>
+    <nav class="navbar navbar-landing">
+        <div class="nav-container">
+            <div class="nav-brand"><i class="fas fa-exchange-alt"></i><span>BorrowBuddy</span></div>
+            <div class="nav-menu" id="navMenu">
+                <a href="index.html" class="nav-item">Home</a>
+                <a href="about.html" class="nav-item">About</a>
+                <a href="contact.html" class="nav-item">Contact</a>
+                <a href="faq.html" class="nav-item">FAQ</a>
+                <a href="login.html" class="nav-item nav-item-button"><i class="fas fa-sign-in-alt"></i> Login</a>
+            </div>
+            <button class="nav-toggle" id="navToggle"><i class="fas fa-bars"></i></button>
+        </div>
+    </nav>
+    <section class="content-page" style="padding: 4rem 2rem; max-width: 900px; margin: 0 auto;">
+        <h1 style="margin-bottom: 1rem;">Terms of Service</h1>
+        <p style="color: var(--text-gray); margin-bottom: 3rem;"><em>Last updated: January 2026</em></p>
+        <div style="line-height: 1.8; color: var(--text-gray);">
+            <h2 style="margin-top: 2rem; color: var(--text-dark);">1. Acceptance of Terms</h2>
+            <p>By accessing and using BorrowBuddy, you accept and agree to be bound by these Terms of Service. If you do not agree to these terms, please do not use our platform.</p>
+            
+            <h2 style="margin-top: 2rem; color: var(--text-dark);">2. User Accounts</h2>
+            <p>You are responsible for maintaining the confidentiality of your account and password. You agree to accept responsibility for all activities that occur under your account. You must notify us immediately of any unauthorized use of your account.</p>
+            
+            <h2 style="margin-top: 2rem; color: var(--text-dark);">3. User Conduct</h2>
+            <p>Users must not use the platform to post false, inaccurate, misleading, or defamatory content, engage in illegal activities, harass or harm other users, or upload malicious software. Users must respect the property of others and return borrowed items in the same condition they were received.</p>
+            
+            <h2 style="margin-top: 2rem; color: var(--text-dark);">4. Transactions</h2>
+            <p>BorrowBuddy facilitates connections between lenders and borrowers but is not a party to the transactions. Users are responsible for all aspects of their transactions including payment, item condition, pickup, and return arrangements. Security deposits are handled between users directly.</p>
+            
+            <h2 style="margin-top: 2rem; color: var(--text-dark);">5. Limitation of Liability</h2>
+            <p>BorrowBuddy is not liable for any damages arising from the use of our platform, including loss or damage to items, disputes between users, or any other issues. Users engage in transactions at their own risk.</p>
+            
+            <h2 style="margin-top: 2rem; color: var(--text-dark);">6. Termination</h2>
+            <p>We reserve the right to terminate or suspend accounts that violate these terms, engage in fraudulent activity, or for any other reason at our discretion.</p>
+            
+            <h2 style="margin-top: 2rem; color: var(--text-dark);">7. Changes to Terms</h2>
+            <p>We may modify these terms at any time. Continued use of the platform after changes constitutes acceptance of the new terms.</p>
+            
+            <h2 style="margin-top: 2rem; color: var(--text-dark);">8. Contact</h2>
+            <p>For questions about these terms, please contact us at <a href="mailto:support@yourapp.com">support@yourapp.com</a></p>
+        </div>
+    </section>
+    <footer class="footer">
+        <div class="footer-content">
+            <div class="footer-section"><h3><i class="fas fa-exchange-alt"></i> BorrowBuddy</h3></div>
+            <div class="footer-section"><h4>Platform</h4><a href="browse.html">Browse</a></div>
+            <div class="footer-section"><h4>Company</h4><a href="about.html">About</a></div>
+            <div class="footer-section"><h4>Legal</h4><a href="privacy.html">Privacy</a></div>
+        </div>
+        <div class="footer-bottom"><p>&copy; 2026 BorrowBuddy. All rights reserved.</p></div>
+    </footer>
+    <script>document.getElementById('navToggle').addEventListener('click', () => document.getElementById('navMenu').classList.toggle('active'));</script>
+    <script src="skeletons.js"></script>
+    <script src="empty-states.js"></script>
+    <script src="onboarding.js"></script>
+    <script src="pwa.js"></script>
+</body>
+</html>

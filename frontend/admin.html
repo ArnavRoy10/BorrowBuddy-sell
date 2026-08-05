@@ -1,0 +1,1045 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>BorrowBuddy Admin</title>
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+<style>
+*,*::before,*::after{box-sizing:border-box;margin:0;padding:0}
+:root{
+  --bg:#0f1117;--surface:#181c27;--surface2:#1e2336;--border:#272d42;
+  --accent:#6366f1;--accent2:#8b5cf6;--green:#10b981;--red:#ef4444;
+  --amber:#f59e0b;--blue:#3b82f6;
+  --text:#e8eaf0;--muted:#7c86a2;--faint:#3a4060;
+  --font:'Inter',system-ui,sans-serif;
+  --radius:10px;--radius-lg:16px;
+}
+html{font-family:var(--font);background:var(--bg);color:var(--text);min-height:100vh}
+.shell{display:flex;min-height:100vh}
+.sidebar{
+  width:240px;flex-shrink:0;background:var(--surface);
+  border-right:1px solid var(--border);
+  display:flex;flex-direction:column;position:fixed;top:0;left:0;bottom:0;z-index:100;
+  transition:transform .25s;
+}
+.main{margin-left:240px;flex:1;display:flex;flex-direction:column;min-height:100vh}
+.logo{padding:1.5rem 1.25rem 1rem;border-bottom:1px solid var(--border);display:flex;align-items:center;gap:.75rem}
+.logo-icon{width:36px;height:36px;border-radius:9px;background:linear-gradient(135deg,var(--accent),var(--accent2));display:flex;align-items:center;justify-content:center;font-size:1.1rem}
+.logo-text{font-weight:700;font-size:1rem;letter-spacing:-.3px}
+.logo-sub{font-size:.65rem;color:var(--muted);text-transform:uppercase;letter-spacing:.08em}
+.nav{flex:1;padding:.75rem 0;overflow-y:auto}
+.nav-section{padding:.5rem 1.25rem .25rem;font-size:.65rem;font-weight:700;color:var(--muted);text-transform:uppercase;letter-spacing:.1em}
+.nav-item{display:flex;align-items:center;gap:.75rem;padding:.6rem 1.25rem;font-size:.875rem;cursor:pointer;border-left:3px solid transparent;transition:all .15s;color:var(--muted)}
+.nav-item:hover{background:var(--surface2);color:var(--text);border-left-color:var(--faint)}
+.nav-item.active{background:var(--surface2);color:var(--accent);border-left-color:var(--accent)}
+.nav-item i{width:16px;text-align:center;font-size:.85rem}
+.sidebar-footer{padding:1rem 1.25rem;border-top:1px solid var(--border)}
+.admin-chip{display:flex;align-items:center;gap:.6rem;background:var(--surface2);border-radius:var(--radius);padding:.6rem .75rem}
+.admin-avatar{width:30px;height:30px;border-radius:50%;background:linear-gradient(135deg,var(--accent),var(--accent2));display:flex;align-items:center;justify-content:center;font-size:.75rem;font-weight:700;flex-shrink:0}
+.admin-name{font-size:.8rem;font-weight:600;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.admin-role{font-size:.65rem;color:var(--muted)}
+.btn-logout{margin-top:.5rem;width:100%;padding:.5rem;border:1px solid var(--border);background:transparent;color:var(--muted);border-radius:var(--radius);font-size:.8rem;cursor:pointer;transition:all .15s}
+.btn-logout:hover{border-color:var(--red);color:var(--red)}
+.topbar{padding:.875rem 1.75rem;border-bottom:1px solid var(--border);background:var(--surface);display:flex;align-items:center;justify-content:space-between;position:sticky;top:0;z-index:90}
+.page-title{font-size:1.1rem;font-weight:700}
+.page-sub{font-size:.78rem;color:var(--muted);margin-top:.1rem}
+.topbar-right{display:flex;align-items:center;gap:.75rem}
+.content{padding:1.75rem;flex:1}
+.section{display:none}
+.section.active{display:block}
+.stats-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(180px,1fr));gap:1rem;margin-bottom:1.75rem}
+.stat-card{background:var(--surface);border:1px solid var(--border);border-radius:var(--radius-lg);padding:1.25rem}
+.stat-label{font-size:.75rem;color:var(--muted);text-transform:uppercase;letter-spacing:.06em;margin-bottom:.4rem}
+.stat-value{font-size:2rem;font-weight:800;letter-spacing:-1px}
+.stat-icon{float:right;font-size:1.5rem;opacity:.25;margin-top:-.25rem}
+.card{background:var(--surface);border:1px solid var(--border);border-radius:var(--radius-lg);overflow:hidden;margin-bottom:1.5rem}
+.card-header{padding:1rem 1.25rem;border-bottom:1px solid var(--border);display:flex;align-items:center;justify-content:space-between}
+.card-title{font-size:.95rem;font-weight:700}
+.card-body{padding:1.25rem}
+.tbl-wrap{overflow-x:auto}
+table{width:100%;border-collapse:collapse;font-size:.83rem}
+thead th{padding:.6rem 1rem;text-align:left;font-size:.7rem;font-weight:700;color:var(--muted);text-transform:uppercase;letter-spacing:.07em;background:var(--surface2);border-bottom:1px solid var(--border)}
+tbody td{padding:.75rem 1rem;border-bottom:1px solid var(--border);vertical-align:middle}
+tbody tr:last-child td{border-bottom:none}
+tbody tr:hover{background:var(--surface2)}
+.badge{display:inline-flex;align-items:center;gap:.3rem;padding:.2rem .55rem;border-radius:20px;font-size:.7rem;font-weight:700}
+.badge-purple{background:rgba(99,102,241,.15);color:#a5b4fc}
+.badge-green {background:rgba(16,185,129,.15);color:#6ee7b7}
+.badge-red   {background:rgba(239,68,68,.15); color:#fca5a5}
+.badge-amber {background:rgba(245,158,11,.15);color:#fcd34d}
+.badge-blue  {background:rgba(59,130,246,.15);color:#93c5fd}
+.badge-muted {background:var(--surface2);color:var(--muted)}
+.power-tag{display:inline-flex;align-items:center;gap:.25rem;padding:.15rem .45rem;border-radius:6px;font-size:.65rem;font-weight:600;background:rgba(99,102,241,.12);color:#a5b4fc;margin:.1rem}
+.btn{display:inline-flex;align-items:center;gap:.4rem;padding:.5rem .9rem;border-radius:var(--radius);font-size:.82rem;font-weight:600;cursor:pointer;border:none;transition:all .15s}
+.btn-primary{background:var(--accent);color:#fff}
+.btn-primary:hover{background:#4f46e5}
+.btn-danger {background:rgba(239,68,68,.15);color:var(--red);border:1px solid rgba(239,68,68,.25)}
+.btn-danger:hover{background:var(--red);color:#fff}
+.btn-ghost {background:transparent;color:var(--muted);border:1px solid var(--border)}
+.btn-ghost:hover{background:var(--surface2);color:var(--text)}
+.btn-success{background:rgba(16,185,129,.15);color:var(--green);border:1px solid rgba(16,185,129,.25)}
+.btn-success:hover{background:var(--green);color:#fff}
+.btn-sm{padding:.3rem .65rem;font-size:.75rem}
+.btn-xs{padding:.2rem .5rem;font-size:.7rem}
+.search-bar{display:flex;align-items:center;gap:.5rem;background:var(--surface2);border:1px solid var(--border);border-radius:var(--radius);padding:.45rem .75rem;width:220px}
+.search-bar input{background:none;border:none;outline:none;color:var(--text);font-size:.82rem;width:100%}
+.search-bar i{color:var(--muted);font-size:.8rem}
+.modal-backdrop{display:none;position:fixed;inset:0;z-index:999;background:rgba(0,0,0,.65);backdrop-filter:blur(3px);align-items:center;justify-content:center;padding:1rem}
+.modal-backdrop.open{display:flex}
+.modal{background:var(--surface);border:1px solid var(--border);border-radius:var(--radius-lg);width:100%;max-width:540px;box-shadow:0 32px 80px rgba(0,0,0,.5);overflow:hidden;animation:slideUp .2s ease}
+@keyframes slideUp{from{transform:translateY(20px);opacity:0}to{transform:translateY(0);opacity:1}}
+.modal-header{padding:1.1rem 1.5rem;border-bottom:1px solid var(--border);display:flex;align-items:center;justify-content:space-between}
+.modal-title{font-size:1rem;font-weight:700}
+.modal-body{padding:1.5rem}
+.modal-footer{padding:1rem 1.5rem;border-top:1px solid var(--border);display:flex;justify-content:flex-end;gap:.75rem}
+.btn-close-modal{background:none;border:none;color:var(--muted);font-size:1.1rem;cursor:pointer;transition:color .15s}
+.btn-close-modal:hover{color:var(--text)}
+.form-group{margin-bottom:1.1rem}
+.form-label{display:block;font-size:.78rem;font-weight:600;color:var(--muted);margin-bottom:.4rem;text-transform:uppercase;letter-spacing:.06em}
+.form-control{width:100%;background:var(--surface2);border:1px solid var(--border);border-radius:var(--radius);padding:.6rem .85rem;color:var(--text);font-size:.875rem;transition:border-color .15s;outline:none}
+.form-control:focus{border-color:var(--accent)}
+.form-control option{background:var(--surface2)}
+.form-row{display:grid;grid-template-columns:1fr 1fr;gap:1rem}
+.form-hint{font-size:.7rem;color:var(--muted);margin-top:.3rem}
+.powers-grid{display:grid;grid-template-columns:1fr 1fr;gap:.5rem;background:var(--surface2);border:1px solid var(--border);border-radius:var(--radius);padding:.75rem;max-height:220px;overflow-y:auto}
+.power-check{display:flex;align-items:center;gap:.5rem;cursor:pointer;padding:.25rem 0}
+.power-check input[type=checkbox]{width:15px;height:15px;accent-color:var(--accent);cursor:pointer;flex-shrink:0}
+.power-check span{font-size:.75rem;color:var(--text)}
+#loginScreen{display:flex;align-items:center;justify-content:center;min-height:100vh;background:var(--bg)}
+.login-box{background:var(--surface);border:1px solid var(--border);border-radius:var(--radius-lg);padding:2.5rem;width:380px;box-shadow:0 32px 80px rgba(0,0,0,.4)}
+.login-logo{display:flex;align-items:center;gap:.75rem;margin-bottom:1.75rem}
+.login-logo .logo-icon{width:44px;height:44px;font-size:1.3rem}
+.empty{text-align:center;padding:3rem 2rem;color:var(--muted)}
+.empty i{font-size:2.5rem;margin-bottom:.75rem;opacity:.3;display:block}
+.empty p{font-size:.875rem}
+#toast{position:fixed;bottom:1.5rem;right:1.5rem;z-index:9999;background:var(--surface);border:1px solid var(--border);border-radius:var(--radius);padding:.75rem 1.25rem;font-size:.85rem;font-weight:600;box-shadow:0 8px 30px rgba(0,0,0,.4);display:none;align-items:center;gap:.6rem;animation:slideUp .2s ease}
+.role-super_admin{background:rgba(239,68,68,.15);color:#fca5a5}
+.role-admin      {background:rgba(99,102,241,.15);color:#a5b4fc}
+.role-moderator  {background:rgba(245,158,11,.15);color:#fcd34d}
+.role-viewer     {background:rgba(124,139,171,.15);color:var(--muted)}
+.toggle{position:relative;display:inline-block;width:36px;height:20px}
+.toggle input{opacity:0;width:0;height:0}
+.toggle-slider{position:absolute;inset:0;background:var(--faint);border-radius:20px;cursor:pointer;transition:.2s}
+.toggle-slider:before{content:'';position:absolute;width:14px;height:14px;border-radius:50%;background:#fff;left:3px;top:3px;transition:.2s}
+.toggle input:checked+.toggle-slider{background:var(--green)}
+.toggle input:checked+.toggle-slider:before{transform:translateX(16px)}
+.sidebar-overlay{display:none;position:fixed;inset:0;z-index:99;background:rgba(0,0,0,.5)}
+.menu-toggle{display:none;background:none;border:none;color:var(--text);font-size:1.2rem;cursor:pointer}
+@media(max-width:768px){
+  .sidebar{transform:translateX(-100%)}
+  .sidebar.open{transform:translateX(0)}
+  .sidebar-overlay.open{display:block}
+  .main{margin-left:0}
+  .menu-toggle{display:block}
+  .form-row{grid-template-columns:1fr}
+  .stats-grid{grid-template-columns:repeat(2,1fr)}
+}
+</style>
+    <!-- BorrowBuddy UX modules -->
+    <link rel="stylesheet" href="skeletons.css">
+    <link rel="stylesheet" href="empty-states.css">
+    <link rel="stylesheet" href="onboarding.css">
+    <link rel="stylesheet" href="pwa.css">
+    <link rel="manifest" href="manifest.json">
+    <meta name="theme-color" content="#2563eb">
+    <link rel="apple-touch-icon" href="icons/icon-192.png">
+</head>
+<body>
+
+<!-- ── Login Screen ────────────────────────────────────────────── -->
+<div id="loginScreen">
+  <div class="login-box">
+    <div class="login-logo">
+      <div class="logo-icon">🛡️</div>
+      <div><div class="logo-text">BorrowBuddy</div><div class="logo-sub">Admin Panel</div></div>
+    </div>
+    <div class="form-group">
+      <label class="form-label">Email</label>
+      <input class="form-control" type="email" id="loginEmail" placeholder="admin@borrowbuddy.com" autocomplete="email">
+    </div>
+    <div class="form-group">
+      <label class="form-label">Password</label>
+      <input class="form-control" type="password" id="loginPassword" placeholder="••••••••" autocomplete="current-password">
+    </div>
+    <div id="loginError" style="color:var(--red);font-size:.8rem;margin-bottom:.75rem;display:none"></div>
+    <button class="btn btn-primary" style="width:100%;justify-content:center;padding:.7rem" onclick="doLogin()">
+      <i class="fas fa-sign-in-alt"></i> Sign in to Admin
+    </button>
+  </div>
+</div>
+
+<!-- ── App Shell ───────────────────────────────────────────────── -->
+<div class="shell" id="appShell" style="display:none">
+  <div class="sidebar-overlay" id="sidebarOverlay" onclick="closeSidebar()"></div>
+
+  <aside class="sidebar" id="sidebar">
+    <div class="logo">
+      <div class="logo-icon">🛡️</div>
+      <div><div class="logo-text">BorrowBuddy</div><div class="logo-sub">Admin Panel</div></div>
+    </div>
+
+    <nav class="nav">
+      <div class="nav-section">Overview</div>
+      <div class="nav-item active" data-section="dashboard" onclick="navigate(this,'dashboard')">
+        <i class="fas fa-th-large"></i> Dashboard
+      </div>
+
+      <div class="nav-section">Manage</div>
+      <div class="nav-item" data-section="admins" onclick="navigate(this,'admins')">
+        <i class="fas fa-user-shield"></i> Admins
+      </div>
+      <div class="nav-item" data-section="users" onclick="navigate(this,'users')">
+        <i class="fas fa-users"></i> Users
+      </div>
+      <div class="nav-item" data-section="items" onclick="navigate(this,'items')">
+        <i class="fas fa-boxes"></i> Items
+      </div>
+      <div class="nav-item" data-section="transactions" onclick="navigate(this,'transactions')">
+        <i class="fas fa-receipt"></i> Transactions
+      </div>
+    </nav>
+
+    <div class="sidebar-footer">
+      <div class="admin-chip">
+        <div class="admin-avatar" id="sidebarAvatar">A</div>
+        <div>
+          <div class="admin-name" id="sidebarName">Admin</div>
+          <div class="admin-role" id="sidebarRole">viewer</div>
+        </div>
+      </div>
+      <button class="btn-logout" onclick="doLogout()"><i class="fas fa-sign-out-alt"></i> Sign out</button>
+    </div>
+  </aside>
+
+  <div class="main">
+    <div class="topbar">
+      <div style="display:flex;align-items:center;gap:.75rem">
+        <button class="menu-toggle" onclick="openSidebar()"><i class="fas fa-bars"></i></button>
+        <div>
+          <div class="page-title" id="pageTitle">Dashboard</div>
+          <div class="page-sub" id="pageSub">Overview of your platform</div>
+        </div>
+      </div>
+      <div class="topbar-right">
+        <span id="topbarBadge" class="badge badge-purple" style="display:none"></span>
+      </div>
+    </div>
+
+    <div class="content">
+
+      <!-- ── DASHBOARD ─────────────────────────────────────────── -->
+      <div class="section active" id="section-dashboard">
+        <div class="stats-grid">
+          <div class="stat-card">
+            <div class="stat-icon"><i class="fas fa-users"></i></div>
+            <div class="stat-label">Total Users</div>
+            <div class="stat-value" id="statUsers">—</div>
+          </div>
+          <div class="stat-card">
+            <div class="stat-icon"><i class="fas fa-boxes"></i></div>
+            <div class="stat-label">Total Items</div>
+            <div class="stat-value" id="statItems">—</div>
+          </div>
+          <div class="stat-card">
+            <div class="stat-icon"><i class="fas fa-handshake"></i></div>
+            <div class="stat-label">Requests</div>
+            <div class="stat-value" id="statRequests">—</div>
+          </div>
+          <div class="stat-card">
+            <div class="stat-icon"><i class="fas fa-credit-card"></i></div>
+            <div class="stat-label">Payments</div>
+            <div class="stat-value" id="statPayments">—</div>
+          </div>
+        </div>
+
+        <div class="card">
+          <div class="card-header"><div class="card-title">Quick Links</div></div>
+          <div class="card-body" style="display:grid;grid-template-columns:repeat(auto-fit,minmax(160px,1fr));gap:.75rem">
+            <button class="btn btn-ghost" style="justify-content:center;padding:.75rem" onclick="navigate(document.querySelector('[data-section=admins]'),'admins')">
+              <i class="fas fa-user-shield"></i> Manage Admins
+            </button>
+            <button class="btn btn-ghost" style="justify-content:center;padding:.75rem" onclick="navigate(document.querySelector('[data-section=users]'),'users')">
+              <i class="fas fa-users"></i> Manage Users
+            </button>
+            <button class="btn btn-ghost" style="justify-content:center;padding:.75rem" onclick="navigate(document.querySelector('[data-section=items]'),'items')">
+              <i class="fas fa-boxes"></i> Manage Items
+            </button>
+            <button class="btn btn-ghost" style="justify-content:center;padding:.75rem" onclick="navigate(document.querySelector('[data-section=transactions]'),'transactions')">
+              <i class="fas fa-receipt"></i> View Transactions
+            </button>
+          </div>
+        </div>
+      </div>
+
+      <!-- ── ADMINS ─────────────────────────────────────────────── -->
+      <div class="section" id="section-admins">
+        <div class="card">
+          <div class="card-header">
+            <div class="card-title"><i class="fas fa-user-shield" style="color:var(--accent)"></i> Admin Accounts</div>
+            <button class="btn btn-primary btn-sm" onclick="openAddAdminModal()">
+              <i class="fas fa-plus"></i> Add Admin
+            </button>
+          </div>
+          <div class="tbl-wrap">
+            <table>
+              <thead>
+                <tr><th>Name / Email</th><th>Role</th><th>Powers</th><th>Status</th><th>Last Login</th><th>Actions</th></tr>
+              </thead>
+              <tbody id="adminsTbody"><tr><td colspan="6" class="empty"><i class="fas fa-spinner fa-spin"></i> Loading…</td></tr></tbody>
+            </table>
+          </div>
+        </div>
+      </div>
+
+      <!-- ── USERS ──────────────────────────────────────────────── -->
+      <div class="section" id="section-users">
+        <div class="card">
+          <div class="card-header">
+            <div class="card-title"><i class="fas fa-users" style="color:var(--blue)"></i> Platform Users</div>
+            <div class="search-bar">
+              <i class="fas fa-search"></i>
+              <input type="text" id="userSearch" placeholder="Search users…" oninput="searchUsers(this.value)">
+            </div>
+          </div>
+          <div class="tbl-wrap">
+            <table>
+              <thead><tr><th>User</th><th>Email</th><th>Provider</th><th>Joined</th><th>Actions</th></tr></thead>
+              <tbody id="usersTbody"><tr><td colspan="5" class="empty"><i class="fas fa-spinner fa-spin"></i> Loading…</td></tr></tbody>
+            </table>
+          </div>
+          <div id="usersPagination" style="padding:.75rem 1rem;border-top:1px solid var(--border);display:flex;gap:.5rem;justify-content:flex-end"></div>
+        </div>
+      </div>
+
+      <!-- ── ITEMS ──────────────────────────────────────────────── -->
+      <div class="section" id="section-items">
+        <div class="card">
+          <div class="card-header">
+            <div class="card-title"><i class="fas fa-boxes" style="color:var(--green)"></i> Listed Items</div>
+            <div class="search-bar">
+              <i class="fas fa-search"></i>
+              <input type="text" id="itemSearch" placeholder="Search items…" oninput="searchItems(this.value)">
+            </div>
+          </div>
+          <div class="tbl-wrap">
+            <table>
+              <thead><tr><th>Item</th><th>Owner</th><th>Category</th><th>Price</th><th>Status</th><th>Actions</th></tr></thead>
+              <tbody id="itemsTbody"><tr><td colspan="6" class="empty"><i class="fas fa-spinner fa-spin"></i> Loading…</td></tr></tbody>
+            </table>
+          </div>
+          <div id="itemsPagination" style="padding:.75rem 1rem;border-top:1px solid var(--border);display:flex;gap:.5rem;justify-content:flex-end"></div>
+        </div>
+      </div>
+
+      <!-- ── TRANSACTIONS ───────────────────────────────────────── -->
+      <div class="section" id="section-transactions">
+        <div class="stats-grid">
+          <div class="stat-card">
+            <div class="stat-icon"><i class="fas fa-coins"></i></div>
+            <div class="stat-label">Total Volume</div>
+            <div class="stat-value" id="txnTotalVolume">—</div>
+          </div>
+          <div class="stat-card">
+            <div class="stat-icon"><i class="fas fa-shield-alt"></i></div>
+            <div class="stat-label">Deposits Held</div>
+            <div class="stat-value" id="txnTotalDeposits">—</div>
+          </div>
+          <div class="stat-card">
+            <div class="stat-icon"><i class="fas fa-receipt"></i></div>
+            <div class="stat-label">Total Transactions</div>
+            <div class="stat-value" id="txnTotalCount">—</div>
+          </div>
+        </div>
+
+        <div class="card">
+          <div class="card-header">
+            <div class="card-title"><i class="fas fa-receipt" style="color:var(--green)"></i> Payment Transactions</div>
+            <div class="search-bar">
+              <i class="fas fa-search"></i>
+              <input type="text" id="txnSearch" placeholder="Search transactions…" oninput="searchTransactions(this.value)">
+            </div>
+          </div>
+          <div class="tbl-wrap">
+            <table>
+              <thead><tr><th>Item</th><th>Borrower</th><th>Owner</th><th>Amount</th><th>Deposit</th><th>Method</th><th>Date</th></tr></thead>
+              <tbody id="transactionsTbody"><tr><td colspan="7" class="empty"><i class="fas fa-spinner fa-spin"></i> Loading…</td></tr></tbody>
+            </table>
+          </div>
+          <div id="transactionsPagination" style="padding:.75rem 1rem;border-top:1px solid var(--border);display:flex;gap:.5rem;justify-content:flex-end"></div>
+        </div>
+      </div>
+
+    </div>
+  </div>
+</div>
+
+<!-- ── Add / Edit Admin Modal ─────────────────────────────────── -->
+<div class="modal-backdrop" id="adminModal">
+  <div class="modal">
+    <div class="modal-header">
+      <div class="modal-title" id="adminModalTitle">Add Admin</div>
+      <button class="btn-close-modal" onclick="closeModal('adminModal')">✕</button>
+    </div>
+    <div class="modal-body">
+      <input type="hidden" id="editAdminId">
+      <div class="form-row">
+        <div class="form-group">
+          <label class="form-label">Full Name *</label>
+          <input class="form-control" type="text" id="adminName" placeholder="Arnav Roy">
+        </div>
+        <div class="form-group">
+          <label class="form-label">Email *</label>
+          <input class="form-control" type="email" id="adminEmail" placeholder="admin@example.com">
+        </div>
+      </div>
+      <div class="form-row">
+        <div class="form-group">
+          <label class="form-label">Password *</label>
+          <input class="form-control" type="password" id="adminPassword" placeholder="Min 6 characters">
+          <div class="form-hint" id="passwordHint">Leave blank to keep current password (edit mode)</div>
+        </div>
+        <div class="form-group">
+          <label class="form-label">Role *</label>
+          <select class="form-control" id="adminRole" onchange="onRoleChange(this.value)">
+            <option value="viewer">Viewer — Read-only access</option>
+            <option value="moderator">Moderator — Content management</option>
+            <option value="admin">Admin — Full management</option>
+            <option value="super_admin">Super Admin — All powers</option>
+          </select>
+        </div>
+      </div>
+      <div class="form-group" id="powersGroup">
+        <label class="form-label">Permissions <span style="color:var(--muted);font-weight:400;text-transform:none">(select what this admin can do)</span></label>
+        <div class="powers-grid" id="powersGrid"></div>
+      </div>
+      <div class="form-group" id="activeGroup" style="display:none">
+        <label class="form-label">Account Status</label>
+        <label class="power-check">
+          <input type="checkbox" id="adminActive" checked>
+          <span>Active (uncheck to suspend this admin)</span>
+        </label>
+      </div>
+    </div>
+    <div class="modal-footer">
+      <button class="btn btn-ghost" onclick="closeModal('adminModal')">Cancel</button>
+      <button class="btn btn-primary" id="adminSaveBtn" onclick="saveAdmin()">
+        <i class="fas fa-save"></i> Save Admin
+      </button>
+    </div>
+  </div>
+</div>
+
+<!-- ── User Detail Modal ──────────────────────────────────────── -->
+<div class="modal-backdrop" id="userDetailModal">
+  <div class="modal" style="max-width:640px">
+    <div class="modal-header">
+      <div class="modal-title"><i class="fas fa-user-circle"></i> User Details</div>
+      <button class="btn-close-modal" onclick="closeModal('userDetailModal')">✕</button>
+    </div>
+    <div class="modal-body" id="userDetailBody" style="max-height:60vh;overflow-y:auto"></div>
+    <div class="modal-footer">
+      <button class="btn btn-ghost" onclick="closeModal('userDetailModal')">Close</button>
+    </div>
+  </div>
+</div>
+
+<!-- ── Confirm Delete Modal ───────────────────────────────────── -->
+<div class="modal-backdrop" id="confirmModal">
+  <div class="modal" style="max-width:380px">
+    <div class="modal-header">
+      <div class="modal-title" style="color:var(--red)"><i class="fas fa-exclamation-triangle"></i> Confirm Delete</div>
+      <button class="btn-close-modal" onclick="closeModal('confirmModal')">✕</button>
+    </div>
+    <div class="modal-body"><p id="confirmText" style="font-size:.875rem;color:var(--muted);line-height:1.6"></p></div>
+    <div class="modal-footer">
+      <button class="btn btn-ghost" onclick="closeModal('confirmModal')">Cancel</button>
+      <button class="btn btn-danger" id="confirmBtn">Delete</button>
+    </div>
+  </div>
+</div>
+
+<div id="toast"></div>
+
+<script src="config.js"></script>
+<script>
+const API  = self.BORROWBUDDY_CONFIG.API_BASE_URL + '/api/admin';
+let adminToken = null;
+let currentAdmin = null;
+let usersPage = 1, itemsPage = 1, txnPage = 1;
+let userSearchTimer, itemSearchTimer, txnSearchTimer;
+let usersSearchQuery = '', itemsSearchQuery = '', txnSearchQuery = '';
+
+const ALL_POWERS = [
+  { key:'view_users',       label:'View Users'       },
+  { key:'edit_users',       label:'Edit Users'       },
+  { key:'delete_users',     label:'Delete Users'     },
+  { key:'view_items',       label:'View Items'       },
+  { key:'edit_items',       label:'Edit Items'       },
+  { key:'delete_items',     label:'Delete Items'     },
+  { key:'view_requests',    label:'View Requests'    },
+  { key:'manage_requests',  label:'Manage Requests'  },
+  { key:'view_payments',    label:'View Payments'    },
+  { key:'manage_payments',  label:'Manage Payments'  },
+  { key:'view_reports',     label:'View Reports'     },
+  { key:'manage_admins',    label:'Manage Admins'    },
+];
+
+const ROLE_DEFAULT_POWERS = {
+  viewer:      ['view_users','view_items','view_requests','view_payments','view_reports'],
+  moderator:   ['view_users','edit_users','view_items','edit_items','delete_items','view_requests','manage_requests','view_reports'],
+  admin:       ALL_POWERS.map(p=>p.key).filter(k=>k!=='manage_admins'),
+  super_admin: ALL_POWERS.map(p=>p.key)
+};
+
+// ── Auth ─────────────────────────────────────────────────────────
+async function doLogin() {
+  const email    = document.getElementById('loginEmail').value.trim();
+  const password = document.getElementById('loginPassword').value;
+  const errEl    = document.getElementById('loginError');
+  errEl.style.display = 'none';
+
+  if (!email || !password) { showErr(errEl,'Fill in all fields'); return; }
+
+  try {
+    const res  = await fetch(`${API}/login`, {
+      method:'POST', headers:{'Content-Type':'application/json'},
+      body: JSON.stringify({ email, password })
+    });
+    const data = await res.json();
+    if (!data.success) { showErr(errEl, data.message || 'Login failed'); return; }
+
+    adminToken   = data.token;
+    currentAdmin = data.admin;
+    localStorage.setItem('adminToken', adminToken);
+    localStorage.setItem('adminData',  JSON.stringify(currentAdmin));
+
+    bootApp();
+  } catch(e) {
+    showErr(errEl, 'Cannot reach backend. Is the server running?');
+  }
+}
+
+function showErr(el, msg) { el.textContent = msg; el.style.display = 'block'; }
+
+function doLogout() {
+  adminToken = null; currentAdmin = null;
+  localStorage.removeItem('adminToken');
+  localStorage.removeItem('adminData');
+  document.getElementById('appShell').style.display    = 'none';
+  document.getElementById('loginScreen').style.display = 'flex';
+}
+
+document.getElementById('loginPassword').addEventListener('keydown', e => {
+  if (e.key === 'Enter') doLogin();
+});
+
+(function tryAutoLogin() {
+  const token = localStorage.getItem('adminToken');
+  const data  = localStorage.getItem('adminData');
+  if (token && data) {
+    adminToken   = token;
+    currentAdmin = JSON.parse(data);
+    bootApp();
+  }
+})();
+
+function bootApp() {
+  document.getElementById('loginScreen').style.display = 'none';
+  document.getElementById('appShell').style.display    = 'flex';
+
+  document.getElementById('sidebarAvatar').textContent = (currentAdmin.name||'A')[0].toUpperCase();
+  document.getElementById('sidebarName').textContent   = currentAdmin.name || 'Admin';
+  document.getElementById('sidebarRole').textContent   = currentAdmin.role || 'viewer';
+
+  loadStats();
+  loadAdmins();
+}
+
+// ── Navigation ────────────────────────────────────────────────────
+const PAGE_META = {
+  dashboard:    { title:'Dashboard',        sub:'Overview of your platform' },
+  admins:       { title:'Admin Accounts',   sub:'Manage who has access to this panel' },
+  users:        { title:'Platform Users',   sub:'View and manage all registered users' },
+  items:        { title:'Listed Items',     sub:'View and moderate item listings' },
+  transactions: { title:'Transactions',     sub:'Platform-wide payment activity' },
+};
+
+function navigate(el, section) {
+  document.querySelectorAll('.nav-item').forEach(n=>n.classList.remove('active'));
+  el.classList.add('active');
+  document.querySelectorAll('.section').forEach(s=>s.classList.remove('active'));
+  document.getElementById(`section-${section}`).classList.add('active');
+  const m = PAGE_META[section];
+  document.getElementById('pageTitle').textContent = m.title;
+  document.getElementById('pageSub').textContent   = m.sub;
+  closeSidebar();
+
+  if (section==='users')        loadUsers();
+  if (section==='items')        loadItems();
+  if (section==='admins')       loadAdmins();
+  if (section==='dashboard')    loadStats();
+  if (section==='transactions') loadTransactions();
+}
+
+// ── API helper ────────────────────────────────────────────────────
+async function apiFetch(path, opts={}) {
+  const res = await fetch(`${API}${path}`, {
+    ...opts,
+    headers: {
+      'Content-Type':'application/json',
+      'Authorization':`Bearer ${adminToken}`,
+      ...(opts.headers||{})
+    },
+    body: opts.body ? (typeof opts.body==='string'?opts.body:JSON.stringify(opts.body)) : undefined
+  });
+  const data = await res.json();
+  if (res.status===401) { doLogout(); throw new Error('Session expired'); }
+  return { ok:res.ok, data };
+}
+
+// ── Stats ─────────────────────────────────────────────────────────
+async function loadStats() {
+  try {
+    const { ok, data } = await apiFetch('/stats');
+    if (!ok) return;
+    const s = data.stats;
+    document.getElementById('statUsers').textContent    = s.totalUsers    ?? '—';
+    document.getElementById('statItems').textContent    = s.totalItems    ?? '—';
+    document.getElementById('statRequests').textContent = s.totalRequests ?? '—';
+    document.getElementById('statPayments').textContent = s.totalPayments ?? '—';
+  } catch(e) { console.warn('Stats error', e); }
+}
+
+// ── Admins ────────────────────────────────────────────────────────
+async function loadAdmins() {
+  try {
+    const { ok, data } = await apiFetch('/admins');
+    const tbody = document.getElementById('adminsTbody');
+    if (!ok) {
+      tbody.innerHTML = `<tr><td colspan="6"><div class="empty"><i class="fas fa-lock"></i><p>${data.message||'No permission'}</p></div></td></tr>`;
+      return;
+    }
+    if (!data.admins.length) {
+      tbody.innerHTML = `<tr><td colspan="6"><div class="empty"><i class="fas fa-user-shield"></i><p>No admins yet</p></div></td></tr>`;
+      return;
+    }
+    tbody.innerHTML = data.admins.map(a => `
+      <tr>
+        <td>
+          <div style="font-weight:600">${esc(a.name)}</div>
+          <div style="font-size:.75rem;color:var(--muted)">${esc(a.email)}</div>
+        </td>
+        <td><span class="badge ${roleClass(a.role)}">${a.role.replace('_',' ')}</span></td>
+        <td style="max-width:200px">
+          ${a.role==='super_admin'
+            ? '<span class="power-tag"><i class="fas fa-infinity"></i> All powers</span>'
+            : (a.powers||[]).map(p=>`<span class="power-tag">${p.replace(/_/g,' ')}</span>`).join('')||'<span style="color:var(--muted);font-size:.75rem">None</span>'}
+        </td>
+        <td>
+          <label class="toggle">
+            <input type="checkbox" ${a.isActive?'checked':''} onchange="toggleAdminStatus('${a._id||a.id}',this.checked)">
+            <span class="toggle-slider"></span>
+          </label>
+        </td>
+        <td style="color:var(--muted);font-size:.78rem">${a.lastLogin?fmtDate(a.lastLogin):'Never'}</td>
+        <td>
+          <div style="display:flex;gap:.4rem">
+            <button class="btn btn-ghost btn-xs" onclick="openEditAdminModal(${JSON.stringify(a).replace(/"/g,'&quot;')})">
+              <i class="fas fa-pen"></i>
+            </button>
+            <button class="btn btn-danger btn-xs" onclick="confirmDelete('admin','${a._id||a.id}','${esc(a.name)}')">
+              <i class="fas fa-trash"></i>
+            </button>
+          </div>
+        </td>
+      </tr>
+    `).join('');
+  } catch(e) { console.error(e); }
+}
+
+function roleClass(role) {
+  return { super_admin:'role-super_admin', admin:'role-admin', moderator:'role-moderator', viewer:'role-viewer' }[role]||'badge-muted';
+}
+
+async function toggleAdminStatus(id, isActive) {
+  const { ok, data } = await apiFetch(`/admins/${id}`, { method:'PUT', body:{ isActive } });
+  if (!ok) { toast(data.message||'Failed', 'error'); loadAdmins(); }
+  else toast(`Admin ${isActive?'activated':'suspended'}`,'success');
+}
+
+function buildPowersGrid(selected=[]) {
+  const grid = document.getElementById('powersGrid');
+  grid.innerHTML = ALL_POWERS.map(p=>`
+    <label class="power-check">
+      <input type="checkbox" name="power" value="${p.key}" ${selected.includes(p.key)?'checked':''}>
+      <span>${p.label}</span>
+    </label>
+  `).join('');
+}
+
+function onRoleChange(role) {
+  if (role === 'super_admin') {
+    document.getElementById('powersGroup').style.display = 'none';
+  } else {
+    document.getElementById('powersGroup').style.display = '';
+    const defaults = ROLE_DEFAULT_POWERS[role]||[];
+    document.querySelectorAll('#powersGrid input[type=checkbox]').forEach(cb=>{
+      cb.checked = defaults.includes(cb.value);
+    });
+  }
+}
+
+function openAddAdminModal() {
+  document.getElementById('adminModalTitle').textContent = 'Add Admin';
+  document.getElementById('editAdminId').value  = '';
+  document.getElementById('adminName').value    = '';
+  document.getElementById('adminEmail').value   = '';
+  document.getElementById('adminPassword').value= '';
+  document.getElementById('adminRole').value    = 'viewer';
+  document.getElementById('passwordHint').style.display = 'none';
+  document.getElementById('activeGroup').style.display  = 'none';
+  document.getElementById('powersGroup').style.display  = '';
+  buildPowersGrid(ROLE_DEFAULT_POWERS.viewer);
+  openModal('adminModal');
+}
+
+function openEditAdminModal(a) {
+  document.getElementById('adminModalTitle').textContent = 'Edit Admin';
+  document.getElementById('editAdminId').value  = a._id||a.id;
+  document.getElementById('adminName').value    = a.name||'';
+  document.getElementById('adminEmail').value   = a.email||'';
+  document.getElementById('adminPassword').value= '';
+  document.getElementById('adminRole').value    = a.role||'viewer';
+  document.getElementById('adminActive').checked= a.isActive!==false;
+  document.getElementById('passwordHint').style.display = '';
+  document.getElementById('activeGroup').style.display  = '';
+  if (a.role==='super_admin') {
+    document.getElementById('powersGroup').style.display = 'none';
+  } else {
+    document.getElementById('powersGroup').style.display = '';
+    buildPowersGrid(a.powers||[]);
+  }
+  openModal('adminModal');
+}
+
+async function saveAdmin() {
+  const id       = document.getElementById('editAdminId').value;
+  const name     = document.getElementById('adminName').value.trim();
+  const email    = document.getElementById('adminEmail').value.trim();
+  const password = document.getElementById('adminPassword').value;
+  const role     = document.getElementById('adminRole').value;
+  const isActive = document.getElementById('adminActive').checked;
+
+  const powers = role==='super_admin'
+    ? ALL_POWERS.map(p=>p.key)
+    : [...document.querySelectorAll('#powersGrid input[type=checkbox]:checked')].map(cb=>cb.value);
+
+  if (!name||!email) { toast('Name and email are required','error'); return; }
+  if (!id && !password) { toast('Password is required for new admin','error'); return; }
+
+  const btn = document.getElementById('adminSaveBtn');
+  btn.disabled=true; btn.innerHTML='<i class="fas fa-spinner fa-spin"></i> Saving…';
+
+  const body = { name, email, role, powers, isActive, ...(password?{password}:{}) };
+  const path  = id ? `/admins/${id}` : '/admins';
+  const method= id ? 'PUT' : 'POST';
+
+  const { ok, data } = await apiFetch(path, { method, body });
+  btn.disabled=false; btn.innerHTML='<i class="fas fa-save"></i> Save Admin';
+
+  if (!ok) { toast(data.message||'Failed','error'); return; }
+  toast(id?'Admin updated':'Admin created','success');
+  closeModal('adminModal');
+  loadAdmins();
+}
+
+// ── Users ─────────────────────────────────────────────────────────
+function searchUsers(q) {
+  clearTimeout(userSearchTimer);
+  userSearchTimer = setTimeout(()=>{ usersSearchQuery=q; usersPage=1; loadUsers(); },350);
+}
+
+async function loadUsers(page=usersPage) {
+  usersPage = page;
+  try {
+    const q = usersSearchQuery ? `&search=${encodeURIComponent(usersSearchQuery)}` : '';
+    const { ok, data } = await apiFetch(`/users?page=${page}&limit=20${q}`);
+    const tbody = document.getElementById('usersTbody');
+    if (!ok) { tbody.innerHTML=`<tr><td colspan="5"><div class="empty"><i class="fas fa-lock"></i><p>${data.message}</p></div></td></tr>`; return; }
+    if (!data.users.length) { tbody.innerHTML=`<tr><td colspan="5"><div class="empty"><i class="fas fa-users"></i><p>No users found</p></div></td></tr>`; return; }
+
+    tbody.innerHTML = data.users.map(u=>`
+      <tr>
+        <td>
+          <div style="display:flex;align-items:center;gap:.6rem">
+            <div style="width:30px;height:30px;border-radius:50%;background:linear-gradient(135deg,var(--accent),var(--accent2));display:flex;align-items:center;justify-content:center;font-size:.75rem;font-weight:700;flex-shrink:0">
+              ${(u.username||'U')[0].toUpperCase()}
+            </div>
+            <div>
+              <div style="font-weight:600;font-size:.83rem">${esc(u.username)}</div>
+              <div style="font-size:.72rem;color:var(--muted)">${u.firstName||''} ${u.lastName||''}</div>
+            </div>
+          </div>
+        </td>
+        <td style="font-size:.8rem">${esc(u.email)}</td>
+        <td><span class="badge ${u.provider==='google'?'badge-blue':'badge-muted'}">${u.provider||'local'}</span></td>
+        <td style="color:var(--muted);font-size:.78rem">${fmtDate(u.createdAt)}</td>
+        <td>
+          <div style="display:flex;gap:.35rem">
+            <button class="btn btn-ghost btn-xs" onclick="viewUserDetail('${u._id||u.id}')">
+              <i class="fas fa-eye"></i> View
+            </button>
+            <button class="btn btn-danger btn-xs" onclick="confirmDelete('user','${u._id||u.id}','${esc(u.username)}')">
+              <i class="fas fa-trash"></i>
+            </button>
+          </div>
+        </td>
+      </tr>
+    `).join('');
+
+    renderPagination('usersPagination', data.total, 20, page, p=>loadUsers(p));
+  } catch(e) { console.error(e); }
+}
+
+// ── User Detail Modal ─────────────────────────────────────────────
+async function viewUserDetail(userId) {
+  openModal('userDetailModal');
+  document.getElementById('userDetailBody').innerHTML = `
+    <div style="text-align:center;padding:2rem"><i class="fas fa-spinner fa-spin" style="font-size:2rem;color:var(--accent)"></i></div>`;
+
+  const { ok, data } = await apiFetch(`/users/${userId}`);
+  if (!ok) {
+    document.getElementById('userDetailBody').innerHTML = `<div class="empty"><i class="fas fa-lock"></i><p>${data.message||'Failed to load user'}</p></div>`;
+    return;
+  }
+
+  const u = data.user;
+  const fullName = [u.firstName, u.lastName].filter(Boolean).join(' ') || u.username;
+
+  document.getElementById('userDetailBody').innerHTML = `
+    <div style="display:flex;align-items:center;gap:1rem;margin-bottom:1.5rem">
+      <div style="width:56px;height:56px;border-radius:50%;background:linear-gradient(135deg,var(--accent),var(--accent2));display:flex;align-items:center;justify-content:center;font-size:1.3rem;font-weight:700;flex-shrink:0">
+        ${(fullName||'U')[0].toUpperCase()}
+      </div>
+      <div>
+        <div style="font-size:1.1rem;font-weight:700">${esc(fullName)}</div>
+        <div style="font-size:.8rem;color:var(--muted)">@${esc(u.username)} · ${esc(u.email)}</div>
+      </div>
+    </div>
+
+    <div style="display:grid;grid-template-columns:repeat(3,1fr);gap:.75rem;margin-bottom:1.5rem">
+      <div style="background:var(--surface2);border-radius:10px;padding:.875rem;text-align:center">
+        <div style="font-size:1.3rem;font-weight:800;color:var(--accent)">${data.itemsListed||0}</div>
+        <div style="font-size:.7rem;color:var(--muted)">Items Listed</div>
+      </div>
+      <div style="background:var(--surface2);border-radius:10px;padding:.875rem;text-align:center">
+        <div style="font-size:1.3rem;font-weight:800;color:var(--blue)">${esc(u.provider||'local')}</div>
+        <div style="font-size:.7rem;color:var(--muted)">Login Method</div>
+      </div>
+      <div style="background:var(--surface2);border-radius:10px;padding:.875rem;text-align:center">
+        <div style="font-size:1.3rem;font-weight:800;color:${u.isVerified?'var(--green)':'var(--amber)'}">${u.isVerified?'Yes':'No'}</div>
+        <div style="font-size:.7rem;color:var(--muted)">Verified</div>
+      </div>
+    </div>
+
+    <div style="margin-bottom:1rem">
+      <div style="font-size:.78rem;font-weight:700;color:var(--muted);text-transform:uppercase;margin-bottom:.5rem">Profile Info</div>
+      <div style="display:grid;grid-template-columns:1fr 1fr;gap:.6rem;font-size:.85rem">
+        <div><span style="color:var(--muted)">Phone:</span> ${esc(u.phone) || '—'}</div>
+        <div><span style="color:var(--muted)">Location:</span> ${esc(u.location) || '—'}</div>
+        <div style="grid-column:1/-1"><span style="color:var(--muted)">Bio:</span> ${esc(u.bio) || '—'}</div>
+        <div><span style="color:var(--muted)">Joined:</span> ${fmtDate(u.createdAt)}</div>
+        <div><span style="color:var(--muted)">User ID:</span> <code style="font-size:.72rem">${u._id}</code></div>
+      </div>
+    </div>
+
+    ${data.items && data.items.length ? `
+    <div style="margin-bottom:1rem">
+      <div style="font-size:.78rem;font-weight:700;color:var(--muted);text-transform:uppercase;margin-bottom:.5rem">Listed Items (${data.items.length})</div>
+      <div style="display:flex;flex-direction:column;gap:.4rem">
+        ${data.items.slice(0,5).map(i => `
+          <div style="display:flex;justify-content:space-between;background:var(--surface2);border-radius:8px;padding:.5rem .75rem;font-size:.82rem">
+            <span>${esc(i.name)}</span><span style="color:var(--muted)">${esc(i.category)}</span>
+          </div>`).join('')}
+      </div>
+    </div>` : ''}
+
+    ${data.recentRequests && data.recentRequests.length ? `
+    <div>
+      <div style="font-size:.78rem;font-weight:700;color:var(--muted);text-transform:uppercase;margin-bottom:.5rem">Recent Activity</div>
+      <div style="display:flex;flex-direction:column;gap:.4rem">
+        ${data.recentRequests.slice(0,5).map(r => `
+          <div style="background:var(--surface2);border-radius:8px;padding:.5rem .75rem;font-size:.8rem">
+            <span class="badge ${r.status==='approved'?'badge-green':r.status==='rejected'?'badge-red':'badge-amber'}">${r.status}</span>
+            &nbsp;${esc(r.itemName)} — ${fmtDate(r.createdAt)}
+          </div>`).join('')}
+      </div>
+    </div>` : '<div class="empty" style="padding:1.5rem"><p>No recent activity found</p></div>'}
+  `;
+}
+
+// ── Items ─────────────────────────────────────────────────────────
+function searchItems(q) {
+  clearTimeout(itemSearchTimer);
+  itemSearchTimer = setTimeout(()=>{ itemsSearchQuery=q; itemsPage=1; loadItems(); },350);
+}
+
+async function loadItems(page=itemsPage) {
+  itemsPage=page;
+  try {
+    const q = itemsSearchQuery ? `&search=${encodeURIComponent(itemsSearchQuery)}` : '';
+    const { ok, data } = await apiFetch(`/items?page=${page}&limit=20${q}`);
+    const tbody = document.getElementById('itemsTbody');
+    if (!ok) { tbody.innerHTML=`<tr><td colspan="6"><div class="empty"><i class="fas fa-lock"></i><p>${data.message}</p></div></td></tr>`; return; }
+    if (!data.items.length) { tbody.innerHTML=`<tr><td colspan="6"><div class="empty"><i class="fas fa-boxes"></i><p>No items found</p></div></td></tr>`; return; }
+
+    tbody.innerHTML = data.items.map(item=>`
+      <tr>
+        <td>
+          <div style="display:flex;align-items:center;gap:.6rem">
+            <img src="${(item.images&&item.images[0])||item.image||'https://via.placeholder.com/36'}"
+                 style="width:36px;height:36px;object-fit:cover;border-radius:6px;flex-shrink:0"
+                 onerror="this.src='https://via.placeholder.com/36'">
+            <div style="font-weight:600;font-size:.83rem;max-width:160px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap">${esc(item.name)}</div>
+          </div>
+        </td>
+        <td style="font-size:.8rem">${esc(item.owner)}</td>
+        <td><span class="badge badge-muted">${esc(item.category||'—')}</span></td>
+        <td style="font-size:.8rem">${esc(item.price)||'Free'}</td>
+        <td>
+          <span class="badge ${item.available!==false?'badge-green':'badge-red'}">
+            ${item.available!==false?'Available':'Unavailable'}
+          </span>
+        </td>
+        <td>
+          <button class="btn btn-danger btn-xs" onclick="confirmDelete('item','${item.id}','${esc(item.name)}')">
+            <i class="fas fa-trash"></i> Delete
+          </button>
+        </td>
+      </tr>
+    `).join('');
+
+    renderPagination('itemsPagination', data.total, 20, page, p=>loadItems(p));
+  } catch(e) { console.error(e); }
+}
+
+// ── Transactions ──────────────────────────────────────────────────
+function searchTransactions(q) {
+  clearTimeout(txnSearchTimer);
+  txnSearchTimer = setTimeout(()=>{ txnSearchQuery=q; txnPage=1; loadTransactions(); },350);
+}
+
+async function loadTransactions(page=txnPage) {
+  txnPage = page;
+  const q = txnSearchQuery ? `&search=${encodeURIComponent(txnSearchQuery)}` : '';
+  const { ok, data } = await apiFetch(`/transactions?page=${page}&limit=20${q}`);
+  const tbody = document.getElementById('transactionsTbody');
+
+  if (!ok) {
+    tbody.innerHTML = `<tr><td colspan="7"><div class="empty"><i class="fas fa-lock"></i><p>${data.message||'No permission or no Payment collection configured'}</p></div></td></tr>`;
+    document.getElementById('txnTotalVolume').textContent = '—';
+    document.getElementById('txnTotalDeposits').textContent = '—';
+    document.getElementById('txnTotalCount').textContent = '—';
+    return;
+  }
+
+  document.getElementById('txnTotalVolume').textContent   = `₹${(data.stats?.totalVolume||0).toFixed(2)}`;
+  document.getElementById('txnTotalDeposits').textContent = `₹${(data.stats?.totalDeposits||0).toFixed(2)}`;
+  document.getElementById('txnTotalCount').textContent    = data.stats?.count || 0;
+
+  if (!data.transactions.length) {
+    tbody.innerHTML = `<tr><td colspan="7"><div class="empty"><i class="fas fa-receipt"></i><p>No transactions yet</p></div></td></tr>`;
+    return;
+  }
+
+  tbody.innerHTML = data.transactions.map(t => `
+    <tr>
+      <td>${esc(t.itemName)||'—'}</td>
+      <td>${esc(t.borrowerUsername||t.username)||'—'}</td>
+      <td>${esc(t.ownerUsername)||'—'}</td>
+      <td style="font-weight:700;color:var(--green)">₹${(t.amount||0).toFixed(2)}</td>
+      <td>${t.securityDeposit ? '₹'+t.securityDeposit.toFixed(2) : '—'}</td>
+      <td><span class="badge badge-purple">${esc(t.method)||'Razorpay'}</span></td>
+      <td style="color:var(--muted);font-size:.78rem">${fmtDate(t.createdAt)}</td>
+    </tr>
+  `).join('');
+
+  renderPagination('transactionsPagination', data.total, 20, page, p => loadTransactions(p));
+}
+
+// ── Pagination ────────────────────────────────────────────────────
+function renderPagination(containerId, total, limit, page, cb) {
+  const totalPages = Math.ceil(total/limit);
+  const el = document.getElementById(containerId);
+  if (totalPages<=1) { el.innerHTML=''; return; }
+  el.innerHTML = '';
+
+  const mkBtn = (label, p, disabled=false) => {
+    const b = document.createElement('button');
+    b.className = `btn btn-ghost btn-xs${p===page?' btn-primary':''}`;
+    b.textContent = label;
+    b.disabled = disabled;
+    if (!disabled) b.onclick = ()=>cb(p);
+    el.appendChild(b);
+  };
+
+  mkBtn('‹', page-1, page===1);
+  const start = Math.max(1,page-2), end = Math.min(totalPages,page+2);
+  for(let i=start;i<=end;i++) mkBtn(i,i);
+  mkBtn('›', page+1, page===totalPages);
+}
+
+// ── Confirm Delete ────────────────────────────────────────────────
+function confirmDelete(type, id, name) {
+  document.getElementById('confirmText').innerHTML =
+    `Are you sure you want to delete <strong>${esc(name)}</strong>? This action cannot be undone.`;
+  document.getElementById('confirmBtn').onclick = ()=>doDelete(type,id);
+  openModal('confirmModal');
+}
+
+async function doDelete(type, id) {
+  closeModal('confirmModal');
+  const path = { admin:`/admins/${id}`, user:`/users/${id}`, item:`/items/${id}` }[type];
+  const { ok, data } = await apiFetch(path,{method:'DELETE'});
+  if (!ok) { toast(data.message||'Delete failed','error'); return; }
+  toast(`${type} deleted`,'success');
+  if(type==='admin') loadAdmins();
+  if(type==='user')  loadUsers();
+  if(type==='item')  loadItems();
+}
+
+// ── Modal helpers ─────────────────────────────────────────────────
+function openModal(id) { document.getElementById(id).classList.add('open'); }
+function closeModal(id){ document.getElementById(id).classList.remove('open'); }
+document.querySelectorAll('.modal-backdrop').forEach(m=>{
+  m.addEventListener('click', e=>{ if(e.target===m) m.classList.remove('open'); });
+});
+
+// ── Sidebar mobile ────────────────────────────────────────────────
+function openSidebar()  { document.getElementById('sidebar').classList.add('open'); document.getElementById('sidebarOverlay').classList.add('open'); }
+function closeSidebar() { document.getElementById('sidebar').classList.remove('open'); document.getElementById('sidebarOverlay').classList.remove('open'); }
+
+// ── Toast ─────────────────────────────────────────────────────────
+let toastTimer;
+function toast(msg, type='info') {
+  const el = document.getElementById('toast');
+  const colors = {success:'var(--green)',error:'var(--red)',info:'var(--accent)'};
+  const icons  = {success:'fa-check-circle',error:'fa-exclamation-circle',info:'fa-info-circle'};
+  el.style.borderColor = colors[type]||colors.info;
+  el.innerHTML = `<i class="fas ${icons[type]||icons.info}" style="color:${colors[type]||colors.info}"></i> ${msg}`;
+  el.style.display = 'flex';
+  clearTimeout(toastTimer);
+  toastTimer = setTimeout(()=>el.style.display='none', 3000);
+}
+
+// ── Utilities ─────────────────────────────────────────────────────
+function esc(s) { return String(s||'').replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c])); }
+function fmtDate(d) { return d ? new Date(d).toLocaleDateString('en-IN',{day:'numeric',month:'short',year:'numeric'}) : '—'; }
+</script>
+    <script src="skeletons.js"></script>
+    <script src="empty-states.js"></script>
+    <script src="onboarding.js"></script>
+    <script src="pwa.js"></script>
+</body>
+</html>

@@ -1,0 +1,138 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>My Requests - BorrowBuddy</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <link rel="stylesheet" href="requests-management.css">
+    <!-- BorrowBuddy UX modules -->
+    <link rel="stylesheet" href="skeletons.css">
+    <link rel="stylesheet" href="empty-states.css">
+    <link rel="stylesheet" href="onboarding.css">
+    <link rel="stylesheet" href="pwa.css">
+    <link rel="manifest" href="manifest.json">
+    <meta name="theme-color" content="#2563eb">
+    <link rel="apple-touch-icon" href="icons/icon-192.png">
+</head>
+<body>
+    <header class="header">
+        <div class="container">
+            <div class="logo">
+                <i class="fas fa-exchange-alt"></i>
+                <span>BorrowBuddy</span>
+            </div>
+            <div class="header-actions">
+                <a href="dashboard-enhanced.html" class="back-link">
+                    <i class="fas fa-arrow-left"></i> Back to Dashboard
+                </a>
+            </div>
+        </div>
+    </header>
+
+    <div class="container main-container">
+        <h1><i class="fas fa-paper-plane"></i> My Borrow Requests</h1>
+        
+        <div class="tabs">
+            <button class="tab-btn active" onclick="switchTab('outgoing')">
+                <i class="fas fa-arrow-up"></i> Outgoing Requests
+                <span class="badge" id="outgoingCount">0</span>
+            </button>
+            <button class="tab-btn" onclick="switchTab('incoming')">
+                <i class="fas fa-arrow-down"></i> Incoming Requests
+                <span class="badge" id="incomingCount">0</span>
+            </button>
+        </div>
+
+        <!-- Outgoing Requests -->
+        <div id="outgoingTab" class="tab-content active">
+            <div class="section-header">
+                <h2>Requests I've Sent</h2>
+                <p>Items you've requested to borrow from others</p>
+            </div>
+            <div id="outgoingRequests" class="requests-list">
+                <!-- Loaded dynamically -->
+            </div>
+        </div>
+
+        <!-- Incoming Requests -->
+        <div id="incomingTab" class="tab-content">
+            <div class="section-header">
+                <h2>Requests I've Received</h2>
+                <p>People who want to borrow your items</p>
+            </div>
+            <div id="incomingRequests" class="requests-list">
+                <!-- Loaded dynamically -->
+            </div>
+        </div>
+    </div>
+
+    <!-- Cancel Confirmation Modal -->
+    <div id="cancelModal" class="modal hidden">
+        <div class="modal-overlay" onclick="hideCancelModal()"></div>
+        <div class="modal-content">
+            <div class="modal-header">
+                <h3>Cancel Request?</h3>
+                <button class="modal-close" onclick="hideCancelModal()">
+                    <i class="fas fa-times"></i>
+                </button>
+            </div>
+            <div class="modal-body">
+                <p>Are you sure you want to cancel this request?</p>
+                <p class="warning-text">
+                    <i class="fas fa-exclamation-triangle"></i>
+                    This action cannot be undone. The item will become available again.
+                </p>
+                <div class="modal-actions">
+                    <button class="btn-secondary" onclick="hideCancelModal()">
+                        No, Keep It
+                    </button>
+                    <button class="btn-danger" onclick="confirmCancel()">
+                        <i class="fas fa-times-circle"></i> Yes, Cancel Request
+                    </button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Mark as Returned Modal -->
+    <div id="returnModal" class="modal hidden">
+        <div class="modal-overlay" onclick="hideReturnModal()"></div>
+        <div class="modal-content">
+            <div class="modal-header">
+                <h3>Mark as Returned?</h3>
+                <button class="modal-close" onclick="hideReturnModal()">
+                    <i class="fas fa-times"></i>
+                </button>
+            </div>
+            <div class="modal-body">
+                <p>Confirm that this item has been returned in good condition?</p>
+                <div class="return-checklist">
+                    <label>
+                        <input type="checkbox" id="conditionCheck">
+                        Item returned in good condition
+                    </label>
+                    <label>
+                        <input type="checkbox" id="timeCheck">
+                        Returned on time
+                    </label>
+                </div>
+                <div class="modal-actions">
+                    <button class="btn-secondary" onclick="hideReturnModal()">
+                        Cancel
+                    </button>
+                    <button class="btn-primary" onclick="confirmReturn()">
+                        <i class="fas fa-check-circle"></i> Confirm Return
+                    </button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script src="requests-management.js"></script>
+    <script src="skeletons.js"></script>
+    <script src="empty-states.js"></script>
+    <script src="onboarding.js"></script>
+    <script src="pwa.js"></script>
+</body>
+</html>

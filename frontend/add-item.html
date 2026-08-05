@@ -1,0 +1,215 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Add Item - BorrowBuddy</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <link rel="stylesheet" href="add-item.css">
+    <link rel="stylesheet" href="bottom-nav.css">
+    <!-- BorrowBuddy UX modules -->
+    <link rel="stylesheet" href="skeletons.css">
+    <link rel="stylesheet" href="empty-states.css">
+    <link rel="stylesheet" href="onboarding.css">
+    <link rel="stylesheet" href="pwa.css">
+    <link rel="manifest" href="manifest.json">
+    <meta name="theme-color" content="#2563eb">
+    <link rel="apple-touch-icon" href="icons/icon-192.png">
+</head>
+<body>
+    <!-- Header -->
+    <header class="header">
+        <div class="container">
+            <div class="logo">
+                <i class="fas fa-exchange-alt"></i>
+                <span>BorrowBuddy</span>
+            </div>
+            <div class="header-actions">
+                <a href="dashboard-enhanced.html" class="back-link">
+                    <i class="fas fa-arrow-left"></i> Back to Dashboard
+                </a>
+            </div>
+        </div>
+    </header>
+
+    <!-- Main Content -->
+    <div class="container main-container">
+        <div class="add-item-wrapper">
+            <div class="form-header">
+                <h1><i class="fas fa-plus-circle"></i> Add Item</h1>
+                <p>List an item for others to borrow</p>
+            </div>
+
+            <form id="addItemForm" class="add-item-form">
+                <!-- Item Details Section -->
+                <div class="form-section">
+                    <h3><i class="fas fa-box"></i> Item Details</h3>
+                    
+                    <div class="form-row">
+                        <div class="form-group">
+                            <label for="itemName">Item Name <span class="required">*</span></label>
+                            <input type="text" id="itemName" name="itemName" placeholder="e.g., Canon EOS R6 Camera" required>
+                        </div>
+                    </div>
+
+                    <div class="form-row">
+                        <div class="form-group">
+                            <label for="category">Category <span class="required">*</span></label>
+                            <select id="category" name="category" required>
+                                <option value="">Select a category</option>
+                                <option value="electronics">Electronics</option>
+                                <option value="books">Books</option>
+                                <option value="tools">Tools</option>
+                                <option value="sports">Sports Equipment</option>
+                                <option value="stationery">Stationery</option>
+                                <option value="others">Others</option>
+                            </select>
+                        </div>
+
+                        <div class="form-group">
+                            <label for="condition">Condition <span class="required">*</span></label>
+                            <select id="condition" name="condition" required>
+                                <option value="">Select condition</option>
+                                <option value="new">New</option>
+                                <option value="good">Good</option>
+                                <option value="used">Used</option>
+                            </select>
+                        </div>
+                    </div>
+
+                    <div class="form-row">
+                        <div class="form-group full-width">
+                            <label for="description">Description <span class="required">*</span></label>
+                            <textarea id="description" name="description" rows="4" placeholder="Describe your item, its features, condition, and any usage instructions..." required></textarea>
+                        </div>
+                    </div>
+
+                    <div class="form-row">
+                        <div class="form-group">
+                            <label for="imageUrl">Image URL</label>
+                            <input type="url" id="imageUrl" name="imageUrl" placeholder="https://example.com/image.jpg">
+                            <small>Enter a direct link to an image of your item</small>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Pricing Section -->
+                <div class="form-section">
+                    <h3><i class="fas fa-dollar-sign"></i> Pricing</h3>
+                    
+                    <div class="form-row">
+                        <div class="form-group">
+                            <label for="price">Price Type <span class="required">*</span></label>
+                            <select id="priceType" name="priceType" required onchange="togglePriceInput()">
+                                <option value="free">Free</option>
+                                <option value="paid">Paid</option>
+                            </select>
+                        </div>
+
+                        <div class="form-group" id="pricePerDayGroup" style="display: none;">
+                            <label for="pricePerDay">Price per Day ($)</label>
+                            <input type="number" id="pricePerDay" name="pricePerDay" min="0" step="0.01" placeholder="10.00">
+                        </div>
+                    </div>
+
+                    <div class="form-row">
+                        <div class="form-group">
+                            <label for="securityDeposit">Security Deposit ($) <span class="required">*</span></label>
+                            <input type="number" id="securityDeposit" name="securityDeposit" min="0" step="0.01" placeholder="50.00" required>
+                            <small>Refundable deposit to ensure safe return</small>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Contact Information Section -->
+                <div class="form-section">
+                    <h3><i class="fas fa-address-card"></i> Contact Information</h3>
+                    
+                    <div class="form-row">
+                        <div class="form-group">
+                            <label for="phoneNumber">Phone Number <span class="required">*</span></label>
+                            <input type="tel" id="phoneNumber" name="phoneNumber" placeholder="+1 (555) 123-4567" required>
+                            <small>Borrowers will use this to contact you</small>
+                        </div>
+                    </div>
+
+                    <div class="form-row">
+                        <div class="form-group">
+                            <label for="location">Location <span class="required">*</span></label>
+                            <input type="text" id="location" name="location" placeholder="e.g., San Francisco, CA" required>
+                            <small>City and state where item can be picked up</small>
+                        </div>
+                    </div>
+
+                    <div class="form-row">
+                        <div class="form-group full-width">
+                            <label for="pickupInstructions">Pickup Instructions (Optional)</label>
+                            <textarea id="pickupInstructions" name="pickupInstructions" rows="2" placeholder="Any specific instructions for pickup location or timing..."></textarea>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Availability Section -->
+                <div class="form-section">
+                    <h3><i class="fas fa-calendar-alt"></i> Availability</h3>
+                    
+                    <div class="form-row">
+                        <div class="form-group">
+                            <label>
+                                <input type="checkbox" id="availableNow" name="availableNow" checked>
+                                Available for borrowing now
+                            </label>
+                        </div>
+                    </div>
+
+                    <div class="form-row">
+                        <div class="form-group">
+                            <label for="maxBorrowDays">Maximum Borrow Period (days)</label>
+                            <input type="number" id="maxBorrowDays" name="maxBorrowDays" min="1" max="90" placeholder="7" value="7">
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Submit Buttons -->
+                <div class="form-actions">
+                    <button type="button" class="btn-secondary" onclick="window.location.href='dashboard-enhanced.html'">
+                        <i class="fas fa-times"></i> Cancel
+                    </button>
+                    <button type="submit" class="btn-primary">
+                        <i class="fas fa-check"></i> List Item
+                    </button>
+                </div>
+            </form>
+        </div>
+    </div>
+
+    <!-- Success Modal -->
+    <div id="successModal" class="modal hidden">
+        <div class="modal-overlay"></div>
+        <div class="modal-content">
+            <div class="success-icon">
+                <i class="fas fa-check-circle"></i>
+            </div>
+            <h2>Item Listed Successfully!</h2>
+            <p>Your item is now available for borrowing</p>
+            <div class="modal-actions">
+                <button class="btn-primary" onclick="window.location.href='my-items.html'">
+                    View My Items
+                </button>
+                <button class="btn-secondary" onclick="window.location.href='add-item.html'">
+                    Add Another Item
+                </button>
+            </div>
+        </div>
+    </div>
+
+    <script src="config.js"></script>
+
+    <script src="add-item.js"></script>
+    <script src="bottom-nav.js"></script>
+    <script src="skeletons.js"></script>
+    <script src="empty-states.js"></script>
+    <script src="onboarding.js"></script>
+    <script src="pwa.js"></script>
+</body>
+</html>

@@ -1,0 +1,176 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Transaction History - BorrowBuddy</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <link rel="stylesheet" href="styles.css">
+    <link rel="stylesheet" href="dashboard.css">
+    <link rel="stylesheet" href="bottom-nav.css">
+    <link rel="stylesheet" href="dark-mode.css">
+    <style>
+        .txn-container {
+            max-width: 900px;
+            margin: 2rem auto;
+            padding: 0 1.5rem;
+        }
+        .txn-header h1 {
+            font-size: 1.6rem;
+            display: flex;
+            align-items: center;
+            gap: .6rem;
+            margin-bottom: .3rem;
+        }
+        .txn-header p { color: #6b7280; margin-bottom: 1.5rem; }
+
+        .stats-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(160px, 1fr));
+            gap: 1rem;
+            margin-bottom: 1.75rem;
+        }
+        .stat-card {
+            background: white;
+            border: 1px solid #e5e7eb;
+            border-radius: 14px;
+            padding: 1.1rem;
+        }
+        .stat-card .label { font-size: .72rem; color: #6b7280; text-transform: uppercase; letter-spacing: .05em; margin-bottom: .3rem; }
+        .stat-card .value { font-size: 1.4rem; font-weight: 800; }
+
+        .txn-controls {
+            display: flex;
+            flex-wrap: wrap;
+            gap: .75rem;
+            align-items: center;
+            justify-content: space-between;
+            margin-bottom: 1.25rem;
+        }
+        .txn-filters { display: flex; gap: .5rem; flex-wrap: wrap; }
+        .txn-filter-btn {
+            padding: .45rem .9rem;
+            border-radius: 20px;
+            border: 1.5px solid #e5e7eb;
+            background: white;
+            color: #6b7280;
+            font-size: .82rem;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all .15s;
+        }
+        .txn-filter-btn.active {
+            background: #2563eb;
+            border-color: #2563eb;
+            color: white;
+        }
+        .txn-search-sort {
+            display: flex;
+            gap: .5rem;
+            align-items: center;
+        }
+        #txnSearch, #txnSort {
+            padding: .5rem .75rem;
+            border: 1.5px solid #e5e7eb;
+            border-radius: 10px;
+            font-size: .82rem;
+            outline: none;
+        }
+        #txnSearch { min-width: 180px; }
+    </style>
+    <!-- BorrowBuddy UX modules -->
+    <link rel="stylesheet" href="skeletons.css">
+    <link rel="stylesheet" href="empty-states.css">
+    <link rel="stylesheet" href="onboarding.css">
+    <link rel="stylesheet" href="pwa.css">
+    <link rel="manifest" href="manifest.json">
+    <meta name="theme-color" content="#2563eb">
+    <link rel="apple-touch-icon" href="icons/icon-192.png">
+</head>
+<body>
+    <nav class="navbar">
+        <div class="nav-container">
+            <div class="nav-brand"><i class="fas fa-exchange-alt"></i> <span>BorrowBuddy</span></div>
+            <div class="nav-menu" id="navMenu">
+                <a href="index.html" class="nav-item"><i class="fas fa-home"></i> Home</a>
+                <a href="browse.html" class="nav-item"><i class="fas fa-search"></i> Browse</a>
+                <a href="dashboard-enhanced.html" class="nav-item"><i class="fas fa-th-large"></i> Dashboard</a>
+                <a href="transactions.html" class="nav-item active"><i class="fas fa-receipt"></i> Transactions</a>
+                <a href="cart.html" class="nav-item"><i class="fas fa-shopping-cart"></i> Cart <span class="badge" id="cartBadge">0</span></a>
+                <a href="disputes.html" class="nav-item"><i class="fas fa-shield-halved"></i> Disputes</a>                <a href="settings.html" class="nav-item"><i class="fas fa-cog"></i> Settings</a>
+                    <a href="#" onclick="logout()" class="nav-item"><i class="fas fa-sign-out-alt"></i> Logout</a>
+            </div>
+            <button class="nav-toggle" id="navToggle"><i class="fas fa-bars"></i></button>
+        </div>
+    </nav>
+
+    <main class="txn-container">
+        <div class="txn-header">
+            <h1><i class="fas fa-receipt" style="color:#2563eb"></i> Transaction History</h1>
+            <p>All your borrow payments, lending earnings, and deposit records in one place</p>
+        </div>
+
+        <div class="stats-grid">
+            <div class="stat-card">
+                <div class="label">Total Spent</div>
+                <div class="value" style="color:#ef4444" id="statTotalSpent">₹0.00</div>
+            </div>
+            <div class="stat-card">
+                <div class="label">Total Earned</div>
+                <div class="value" style="color:#10b981" id="statTotalEarned">₹0.00</div>
+            </div>
+            <div class="stat-card">
+                <div class="label">Deposits Held</div>
+                <div class="value" style="color:#f59e0b" id="statDepositsHeld">₹0.00</div>
+            </div>
+            <div class="stat-card">
+                <div class="label">Deposits Refunded</div>
+                <div class="value" style="color:#10b981" id="statDepositsBack">₹0.00</div>
+            </div>
+            <div class="stat-card">
+                <div class="label">Total Transactions</div>
+                <div class="value" style="color:#2563eb" id="statTxnCount">0</div>
+            </div>
+        </div>
+
+        <div class="txn-controls">
+            <div class="txn-filters">
+                <button class="txn-filter-btn active" data-filter="all">All</button>
+                <button class="txn-filter-btn" data-filter="borrowed">Borrowed</button>
+                <button class="txn-filter-btn" data-filter="lent">Lent</button>
+                <button class="txn-filter-btn" data-filter="pending">Deposits Pending</button>
+                <button class="txn-filter-btn" data-filter="refunded">Refunded</button>
+            </div>
+            <div class="txn-search-sort">
+                <input type="text" id="txnSearch" placeholder="Search item or person...">
+                <select id="txnSort">
+                    <option value="newest">Newest First</option>
+                    <option value="oldest">Oldest First</option>
+                    <option value="highest">Highest Amount</option>
+                    <option value="lowest">Lowest Amount</option>
+                </select>
+            </div>
+        </div>
+
+        <div id="transactionsList"></div>
+    </main>
+
+    <script src="config.js"></script>
+
+    <script src="auth.js"></script>
+    <script src="dashboard.js"></script>
+    <script src="transactions.js"></script>
+    <script src="notifications.js"></script>
+    <script>
+        document.getElementById('navToggle')?.addEventListener('click', () => {
+            document.getElementById('navMenu')?.classList.toggle('active');
+        });
+    </script>
+    <script src="dark-mode.js"></script>
+    <script src="bottom-nav.js"></script>
+    <script src="skeletons.js"></script>
+    <script src="empty-states.js"></script>
+    <script src="onboarding.js"></script>
+    <script src="pwa.js"></script>
+</body>
+</html>

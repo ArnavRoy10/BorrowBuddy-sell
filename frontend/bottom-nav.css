@@ -1,0 +1,240 @@
+/* ═══════════════════════════════════════════════════════════════
+   BorrowBuddy — Mobile Bottom Navigation Bar
+   Shows only on screens ≤768px. Auto-injected by bottom-nav.js.
+   ═══════════════════════════════════════════════════════════════ */
+
+#bottomNav {
+    display: none; /* shown only via media query below */
+    position: fixed;
+    bottom: 0;
+    left: 0;
+    right: 0;
+    z-index: 9997;
+    background: white;
+    border-top: 1px solid #e5e7eb;
+    box-shadow: 0 -2px 16px rgba(0, 0, 0, 0.06);
+    padding-bottom: env(safe-area-inset-bottom, 0); /* iPhone notch/home-bar safe area */
+}
+
+#bottomNav .bottom-nav-inner {
+    display: flex;
+    align-items: stretch;
+    justify-content: space-around;
+    height: 60px;
+}
+
+#bottomNav .bn-item {
+    flex: 1;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    gap: 2px;
+    text-decoration: none;
+    color: #9ca3af;
+    font-size: 0.65rem;
+    font-weight: 600;
+    position: relative;
+    transition: color 0.15s;
+    -webkit-tap-highlight-color: transparent;
+}
+
+#bottomNav .bn-item.active {
+    color: #2563eb;
+}
+
+#bottomNav .bn-icon-wrap {
+    position: relative;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    height: 22px;
+    margin-bottom: 1px;
+}
+
+#bottomNav .bn-item i {
+    font-size: 1.15rem;
+    transition: transform 0.15s;
+}
+
+#bottomNav .bn-item.active i {
+    transform: translateY(-1px);
+}
+
+/* Active indicator dot */
+#bottomNav .bn-item.active .bn-icon-wrap::after {
+    content: '';
+    position: absolute;
+    bottom: -6px;
+    left: 50%;
+    transform: translateX(-50%);
+    width: 4px;
+    height: 4px;
+    border-radius: 50%;
+    background: #2563eb;
+}
+
+/* Badge (cart count, unread messages, etc.) */
+#bottomNav .bn-badge {
+    position: absolute;
+    top: -4px;
+    right: -8px;
+    background: #ef4444;
+    color: white;
+    font-size: 0.6rem;
+    font-weight: 700;
+    min-width: 16px;
+    height: 16px;
+    border-radius: 8px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    padding: 0 3px;
+    border: 1.5px solid white;
+}
+
+/* Center "Add Item" button — raised/highlighted like a FAB */
+#bottomNav .bn-item.bn-fab .bn-icon-wrap {
+    width: 42px;
+    height: 42px;
+    border-radius: 50%;
+    background: linear-gradient(135deg, #2563eb, #7c3aed);
+    margin-top: -18px;
+    box-shadow: 0 4px 14px rgba(37, 99, 235, 0.4);
+}
+#bottomNav .bn-item.bn-fab .bn-icon-wrap i {
+    color: white;
+    font-size: 1.2rem;
+}
+#bottomNav .bn-item.bn-fab.active .bn-icon-wrap::after {
+    display: none;
+}
+#bottomNav .bn-item.bn-fab {
+    color: #2563eb;
+}
+
+/* Dark mode support (works with dark-mode.js/css if present) */
+html[data-theme="dark"] #bottomNav {
+    background: #171a23;
+    border-top-color: #2a2f3f;
+}
+html[data-theme="dark"] #bottomNav .bn-item {
+    color: #6b7280;
+}
+html[data-theme="dark"] #bottomNav .bn-item.active {
+    color: #60a5fa;
+}
+html[data-theme="dark"] #bottomNav .bn-item.active .bn-icon-wrap::after {
+    background: #60a5fa;
+}
+
+/* ── Show bottom nav + adjust page spacing on mobile ─────────────── */
+@media (max-width: 768px) {
+    #bottomNav {
+        display: block;
+    }
+
+    /* Prevent content from being hidden behind the bar */
+    body {
+        padding-bottom: 60px;
+    }
+
+    /* Hide the old hamburger nav-menu overlay trigger visually,
+       but keep it working for secondary links via the "More" tab */
+    .navbar .nav-menu {
+        display: none !important;
+    }
+    .navbar .nav-toggle {
+        display: none !important;
+    }
+}
+
+/* Slightly smaller icons on very small phones */
+@media (max-width: 360px) {
+    #bottomNav .bn-item {
+        font-size: 0.6rem;
+    }
+    #bottomNav .bn-item i {
+        font-size: 1.05rem;
+    }
+}
+
+/* "More" sheet — slides up from bottom nav's More tab */
+#bnMoreSheet {
+    display: none;
+    position: fixed;
+    inset: 0;
+    z-index: 9999;
+    background: rgba(0, 0, 0, 0.4);
+}
+#bnMoreSheet.open {
+    display: block;
+}
+#bnMoreSheet .bn-sheet-panel {
+    position: absolute;
+    bottom: 0;
+    left: 0;
+    right: 0;
+    background: white;
+    border-radius: 20px 20px 0 0;
+    padding: 1.25rem 1rem calc(1.25rem + env(safe-area-inset-bottom, 0));
+    box-shadow: 0 -8px 30px rgba(0, 0, 0, 0.15);
+    animation: bnSheetUp 0.25s ease;
+    max-height: 70vh;
+    overflow-y: auto;
+}
+@keyframes bnSheetUp {
+    from { transform: translateY(100%); }
+    to { transform: translateY(0); }
+}
+#bnMoreSheet .bn-sheet-handle {
+    width: 36px;
+    height: 4px;
+    background: #e5e7eb;
+    border-radius: 4px;
+    margin: 0 auto 1rem;
+}
+#bnMoreSheet .bn-sheet-grid {
+    display: grid;
+    grid-template-columns: repeat(4, 1fr);
+    gap: 1rem;
+}
+#bnMoreSheet .bn-sheet-item {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 0.5rem;
+    text-decoration: none;
+    color: #374151;
+    font-size: 0.72rem;
+    font-weight: 600;
+    text-align: center;
+}
+#bnMoreSheet .bn-sheet-icon {
+    width: 48px;
+    height: 48px;
+    border-radius: 14px;
+    background: #f3f4f6;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 1.2rem;
+    color: #2563eb;
+    position: relative;
+}
+#bnMoreSheet .bn-sheet-item[data-danger] .bn-sheet-icon {
+    color: #ef4444;
+}
+
+html[data-theme="dark"] #bnMoreSheet .bn-sheet-panel {
+    background: #171a23;
+}
+html[data-theme="dark"] #bnMoreSheet .bn-sheet-handle {
+    background: #2a2f3f;
+}
+html[data-theme="dark"] #bnMoreSheet .bn-sheet-item {
+    color: #e5e7eb;
+}
+html[data-theme="dark"] #bnMoreSheet .bn-sheet-icon {
+    background: #1e2230;
+}

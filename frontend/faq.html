@@ -1,0 +1,99 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>FAQ - BorrowBuddy</title>
+    <link rel="icon" type="image/x-icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><text y='.9em' font-size='90'>🤝</text></svg>">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <link rel="stylesheet" href="styles.css">
+    <style>
+        .faq-item { background: white; padding: 1.5rem; border-radius: 12px; margin-bottom: 1rem; box-shadow: 0 2px 8px rgba(0,0,0,0.1); cursor: pointer; }
+        .faq-question { display: flex; justify-content: space-between; align-items: center; font-weight: 600; color: var(--text-dark); }
+        .faq-answer { display: none; margin-top: 1rem; color: var(--text-gray); line-height: 1.6; }
+        .faq-item.active .faq-answer { display: block; }
+        .faq-item.active .faq-icon { transform: rotate(180deg); }
+        .faq-icon { transition: transform 0.3s; }
+    </style>
+    <!-- BorrowBuddy UX modules -->
+    <link rel="stylesheet" href="skeletons.css">
+    <link rel="stylesheet" href="empty-states.css">
+    <link rel="stylesheet" href="onboarding.css">
+    <link rel="stylesheet" href="pwa.css">
+    <link rel="manifest" href="manifest.json">
+    <meta name="theme-color" content="#2563eb">
+    <link rel="apple-touch-icon" href="icons/icon-192.png">
+</head>
+<body>
+    <nav class="navbar navbar-landing">
+        <div class="nav-container">
+            <div class="nav-brand"><i class="fas fa-exchange-alt"></i><span>BorrowBuddy</span></div>
+            <div class="nav-menu" id="navMenu">
+                <a href="index.html" class="nav-item">Home</a>
+                <a href="about.html" class="nav-item">About</a>
+                <a href="contact.html" class="nav-item">Contact</a>
+                <a href="faq.html" class="nav-item active">FAQ</a>
+                <a href="login.html" class="nav-item nav-item-button"><i class="fas fa-sign-in-alt"></i> Login</a>
+                <a href="signup.html" class="nav-item nav-item-button-primary"><i class="fas fa-user-plus"></i> Sign Up</a>
+            </div>
+            <button class="nav-toggle" id="navToggle"><i class="fas fa-bars"></i></button>
+        </div>
+    </nav>
+    <section class="content-page" style="padding: 4rem 2rem; max-width: 900px; margin: 0 auto;">
+        <h1 style="text-align: center; margin-bottom: 3rem; color: var(--primary-color);">Frequently Asked Questions</h1>
+        <div class="faq-list">
+            <div class="faq-item">
+                <div class="faq-question"><span>How does BorrowBuddy work?</span><i class="fas fa-chevron-down faq-icon"></i></div>
+                <div class="faq-answer">BorrowBuddy connects people who have items to lend with those who need to borrow them. Simply browse available items, send a borrow request, and arrange pickup with the owner. It's that simple!</div>
+            </div>
+            <div class="faq-item">
+                <div class="faq-question"><span>Is it safe to lend my items?</span><i class="fas fa-chevron-down faq-icon"></i></div>
+                <div class="faq-answer">Yes! We have several safety features including user verification, security deposits, ratings and reviews, and in-app messaging. You always have control over who borrows your items.</div>
+            </div>
+            <div class="faq-item">
+                <div class="faq-question"><span>How much does it cost?</span><i class="fas fa-chevron-down faq-icon"></i></div>
+                <div class="faq-answer">Creating an account and browsing items is completely free! Lenders set their own rental prices, and you only pay when you actually borrow an item.</div>
+            </div>
+            <div class="faq-item">
+                <div class="faq-question"><span>What if an item gets damaged?</span><i class="fas fa-chevron-down faq-icon"></i></div>
+                <div class="faq-answer">Security deposits protect lenders from damage or loss. If an item is damaged, the security deposit can be used to cover repairs or replacement. We recommend taking photos before and after each borrowing period.</div>
+            </div>
+            <div class="faq-item">
+                <div class="faq-question"><span>How do I set prices for my items?</span><i class="fas fa-chevron-down faq-icon"></i></div>
+                <div class="faq-answer">You can set your own daily rental price and security deposit. Consider the item's value, replacement cost, and typical rental rates in your area.</div>
+            </div>
+            <div class="faq-item">
+                <div class="faq-question"><span>Can I borrow for multiple days?</span><i class="fas fa-chevron-down faq-icon"></i></div>
+                <div class="faq-answer">Yes! You can specify the borrowing period when sending a request. The total cost is calculated based on the daily rate multiplied by the number of days.</div>
+            </div>
+            <div class="faq-item">
+                <div class="faq-question"><span>How do I contact other users?</span><i class="fas fa-chevron-down faq-icon"></i></div>
+                <div class="faq-answer">Once a request is approved, you can communicate with the other user through our in-app messaging system to arrange pickup, return, and discuss any details.</div>
+            </div>
+            <div class="faq-item">
+                <div class="faq-question"><span>What types of items can I list?</span><i class="fas fa-chevron-down faq-icon"></i></div>
+                <div class="faq-answer">You can list almost anything! Common categories include electronics, books, tools, sports equipment, camping gear, party supplies, and more. Prohibited items include weapons, illegal substances, and hazardous materials.</div>
+            </div>
+        </div>
+    </section>
+    <footer class="footer">
+        <div class="footer-content">
+            <div class="footer-section"><h3><i class="fas fa-exchange-alt"></i> BorrowBuddy</h3></div>
+            <div class="footer-section"><h4>Platform</h4><a href="browse.html">Browse</a><a href="signup.html">Sign Up</a></div>
+            <div class="footer-section"><h4>Company</h4><a href="about.html">About</a><a href="contact.html">Contact</a></div>
+            <div class="footer-section"><h4>Legal</h4><a href="terms.html">Terms</a><a href="privacy.html">Privacy</a></div>
+        </div>
+        <div class="footer-bottom"><p>&copy; 2026 BorrowBuddy. All rights reserved.</p></div>
+    </footer>
+    <script>
+        document.getElementById('navToggle').addEventListener('click', () => document.getElementById('navMenu').classList.toggle('active'));
+        document.querySelectorAll('.faq-item').forEach(item => {
+            item.addEventListener('click', () => item.classList.toggle('active'));
+        });
+    </script>
+    <script src="skeletons.js"></script>
+    <script src="empty-states.js"></script>
+    <script src="onboarding.js"></script>
+    <script src="pwa.js"></script>
+</body>
+</html>

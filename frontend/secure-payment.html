@@ -1,0 +1,270 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Secure Payment - BorrowBuddy</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <link rel="stylesheet" href="secure-payment.css">
+    <!-- BorrowBuddy UX modules -->
+    <link rel="stylesheet" href="skeletons.css">
+    <link rel="stylesheet" href="empty-states.css">
+    <link rel="stylesheet" href="onboarding.css">
+    <link rel="stylesheet" href="pwa.css">
+    <link rel="manifest" href="manifest.json">
+    <meta name="theme-color" content="#2563eb">
+    <link rel="apple-touch-icon" href="icons/icon-192.png">
+</head>
+<body>
+    <header class="header">
+        <div class="container">
+            <div class="logo">
+                <i class="fas fa-exchange-alt"></i>
+                <span>BorrowBuddy</span>
+            </div>
+            <div class="header-actions">
+                <a href="requests-management.html" class="back-link">
+                    <i class="fas fa-arrow-left"></i> Back to Requests
+                </a>
+            </div>
+        </div>
+    </header>
+
+    <div class="container main-container">
+        <div class="payment-wrapper">
+            <!-- Security Notice -->
+            <div class="security-banner">
+                <i class="fas fa-shield-alt"></i>
+                <div>
+                    <strong>🔒 Secure Payment Gateway</strong>
+                    <p>Pay online to unlock contact details. Borrow amount paid in cash to owner.</p>
+                </div>
+            </div>
+
+            <div class="payment-layout">
+                <!-- Left: Payment Breakdown -->
+                <div class="payment-section">
+                    <h2><i class="fas fa-receipt"></i> Payment Breakdown</h2>
+
+                    <div class="item-preview" id="itemPreview">
+                        <!-- Item details loaded here -->
+                    </div>
+
+                    <div class="payment-details">
+                        <!-- Borrow Price (Cash) -->
+                        <div class="payment-row cash-payment">
+                            <div class="payment-label">
+                                <i class="fas fa-money-bill-wave"></i>
+                                <span>Borrow Price</span>
+                                <span class="payment-method">(Pay in Cash to Owner)</span>
+                            </div>
+                            <div class="payment-value cash" id="borrowPrice">₹0</div>
+                        </div>
+
+                        <hr class="divider">
+
+                        <!-- Online Payments -->
+                        <div class="online-payment-section">
+                            <h3>💳 Pay Online Now (Required)</h3>
+                            
+                            <!-- Platform Service Fee -->
+                            <div class="payment-row">
+                                <div class="payment-label">
+                                    <i class="fas fa-tag"></i>
+                                    <span>Platform Service Fee</span>
+                                    <span class="non-refundable">Non-Refundable</span>
+                                </div>
+                                <div class="payment-value" id="serviceFee">₹25</div>
+                            </div>
+
+                            <!-- Security Deposit -->
+                            <div class="payment-row">
+                                <div class="payment-label">
+                                    <i class="fas fa-shield-alt"></i>
+                                    <span>Security Deposit</span>
+                                    <span class="refundable">Refundable</span>
+                                </div>
+                                <div class="payment-value" id="securityDeposit">₹500</div>
+                            </div>
+
+                            <!-- Total Online Payment -->
+                            <div class="payment-row total-online">
+                                <div class="payment-label">
+                                    <strong>Total Online Payment</strong>
+                                </div>
+                                <div class="payment-value total" id="totalOnline">₹525</div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- What Happens After Payment -->
+                    <div class="unlock-info">
+                        <h3>🔓 Unlocks After Payment:</h3>
+                        <ul>
+                            <li><i class="fas fa-check-circle"></i> Owner's phone number</li>
+                            <li><i class="fas fa-check-circle"></i> Exact pickup address</li>
+                            <li><i class="fas fa-check-circle"></i> Full chat access</li>
+                            <li><i class="fas fa-check-circle"></i> Pickup instructions</li>
+                        </ul>
+                    </div>
+
+                    <!-- Important Rules -->
+                    <div class="rules-box">
+                        <h3><i class="fas fa-exclamation-triangle"></i> Important Rules</h3>
+                        <ul>
+                            <li>✅ Service fee is <strong>non-refundable</strong></li>
+                            <li>✅ Deposit refunded after item return (if no damage)</li>
+                            <li>✅ Contact details unlock only after online payment</li>
+                            <li>✅ Pay borrow price (₹<span id="borrowPriceCash">0</span>) in cash to owner</li>
+                            <li>❌ Direct payment outside platform violates terms</li>
+                            <li>❌ Bypass attempts reduce trust score by 50 points</li>
+                        </ul>
+                    </div>
+                </div>
+
+                <!-- Right: Payment Method -->
+                <div class="checkout-section">
+                    <h2><i class="fas fa-credit-card"></i> Payment Method</h2>
+
+                    <div class="payment-methods">
+                        <div class="payment-method-card active" data-method="upi">
+                            <i class="fas fa-mobile-alt"></i>
+                            <div>
+                                <strong>UPI Payment</strong>
+                                <p>PhonePe, Google Pay, Paytm</p>
+                            </div>
+                        </div>
+
+                        <div class="payment-method-card" data-method="card">
+                            <i class="fas fa-credit-card"></i>
+                            <div>
+                                <strong>Debit/Credit Card</strong>
+                                <p>Visa, Mastercard, RuPay</p>
+                            </div>
+                        </div>
+
+                        <div class="payment-method-card" data-method="netbanking">
+                            <i class="fas fa-university"></i>
+                            <div>
+                                <strong>Net Banking</strong>
+                                <p>All major banks</p>
+                            </div>
+                        </div>
+
+                        <div class="payment-method-card" data-method="wallet">
+                            <i class="fas fa-wallet"></i>
+                            <div>
+                                <strong>Wallets</strong>
+                                <p>Paytm, Amazon Pay</p>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Payment Summary -->
+                    <div class="payment-summary">
+                        <h3>Payment Summary</h3>
+                        <div class="summary-row">
+                            <span>Service Fee:</span>
+                            <span id="summaryServiceFee">₹25</span>
+                        </div>
+                        <div class="summary-row">
+                            <span>Security Deposit:</span>
+                            <span id="summaryDeposit">₹500</span>
+                        </div>
+                        <div class="summary-row total-row">
+                            <strong>Pay Now:</strong>
+                            <strong id="summaryTotal">₹525</strong>
+                        </div>
+                    </div>
+
+                    <!-- Terms Checkbox -->
+                    <div class="terms-agreement">
+                        <label>
+                            <input type="checkbox" id="termsCheck">
+                            <span>I agree to the <a href="#" onclick="showTerms()">Terms & Conditions</a> and understand that:</span>
+                        </label>
+                        <ul>
+                            <li>Service fee (₹<span id="feeAmount">25</span>) is non-refundable</li>
+                            <li>I will pay ₹<span id="cashAmount">0</span> in cash to owner</li>
+                            <li>Contact details unlock after payment</li>
+                        </ul>
+                    </div>
+
+                    <!-- Pay Button -->
+                    <button class="btn-pay" id="payButton" disabled>
+                        <i class="fas fa-lock"></i>
+                        <span>Proceed to Secure Payment - ₹<span id="payAmount">525</span></span>
+                    </button>
+
+                    <div class="security-badges">
+                        <i class="fas fa-shield-alt"></i> 100% Secure Payment
+                        <i class="fas fa-lock"></i> SSL Encrypted
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Success Modal -->
+    <div id="successModal" class="modal hidden">
+        <div class="modal-overlay"></div>
+        <div class="modal-content success-content">
+            <div class="success-animation">
+                <i class="fas fa-check-circle"></i>
+            </div>
+            <h2>Payment Successful!</h2>
+            <p class="transaction-id">Transaction ID: <strong id="txnId">TXN123456789</strong></p>
+            
+            <div class="unlocked-details" id="unlockedDetails">
+                <h3>🔓 Contact Details Unlocked</h3>
+                <div class="detail-item">
+                    <i class="fas fa-phone"></i>
+                    <div>
+                        <strong>Phone:</strong>
+                        <span id="unlockedPhone">+91 98765 43210</span>
+                    </div>
+                </div>
+                <div class="detail-item">
+                    <i class="fas fa-map-marker-alt"></i>
+                    <div>
+                        <strong>Address:</strong>
+                        <span id="unlockedAddress">Full address here</span>
+                    </div>
+                </div>
+                <div class="detail-item">
+                    <i class="fas fa-info-circle"></i>
+                    <div>
+                        <strong>Instructions:</strong>
+                        <span id="unlockedInstructions">Pickup instructions here</span>
+                    </div>
+                </div>
+            </div>
+
+            <div class="next-steps">
+                <h3>📋 Next Steps:</h3>
+                <ol>
+                    <li>Contact owner to arrange pickup</li>
+                    <li>Visit the address shown above</li>
+                    <li>Pay ₹<span id="cashPayAmount">0</span> in cash to owner</li>
+                    <li>Collect the item and enjoy!</li>
+                </ol>
+            </div>
+
+            <div class="modal-actions">
+                <button class="btn-primary" onclick="openChat()">
+                    <i class="fas fa-comment"></i> Message Owner
+                </button>
+                <button class="btn-secondary" onclick="goToDashboard()">
+                    Go to Dashboard
+                </button>
+            </div>
+        </div>
+    </div>
+
+    <script src="secure-payment.js"></script>
+    <script src="skeletons.js"></script>
+    <script src="empty-states.js"></script>
+    <script src="onboarding.js"></script>
+    <script src="pwa.js"></script>
+</body>
+</html>

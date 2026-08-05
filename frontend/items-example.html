@@ -1,0 +1,408 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Items - BorrowBuddy</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+            background: #f5f5f5;
+            padding: 2rem;
+        }
+
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+        }
+
+        h1 {
+            margin-bottom: 2rem;
+            color: #111;
+        }
+
+        .items-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
+            gap: 2rem;
+        }
+
+        .item-card {
+            background: white;
+            border: 1px solid #ddd;
+            border-radius: 8px;
+            overflow: hidden;
+            transition: transform 0.2s, box-shadow 0.2s;
+        }
+
+        .item-card:hover {
+            transform: translateY(-4px);
+            box-shadow: 0 4px 12px rgba(0,0,0,0.1);
+        }
+
+        .item-image {
+            width: 100%;
+            height: 200px;
+            object-fit: cover;
+        }
+
+        .item-content {
+            padding: 1.5rem;
+        }
+
+        .item-title {
+            font-size: 1.25rem;
+            font-weight: 600;
+            margin-bottom: 0.5rem;
+            color: #111;
+        }
+
+        .item-description {
+            color: #666;
+            font-size: 0.875rem;
+            margin-bottom: 1rem;
+        }
+
+        .item-price {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 1rem;
+            padding: 0.75rem;
+            background: #f9f9f9;
+            border-radius: 4px;
+        }
+
+        .price-label {
+            font-size: 0.875rem;
+            color: #666;
+        }
+
+        .price-amount {
+            font-size: 1.25rem;
+            font-weight: 700;
+            color: #B12704;
+        }
+
+        .item-details {
+            display: flex;
+            flex-direction: column;
+            gap: 0.5rem;
+            margin-bottom: 1rem;
+            font-size: 0.875rem;
+            color: #666;
+        }
+
+        .detail-row {
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+        }
+
+        .detail-row i {
+            color: #FF9900;
+            width: 16px;
+        }
+
+        .btn-borrow {
+            width: 100%;
+            padding: 0.875rem;
+            background: #FFD814;
+            border: 1px solid #FCD200;
+            border-radius: 8px;
+            font-size: 1rem;
+            font-weight: 600;
+            cursor: pointer;
+            transition: background 0.2s;
+            color: #111;
+        }
+
+        .btn-borrow:hover {
+            background: #F7CA00;
+        }
+
+        .btn-borrow:active {
+            background: #F0B800;
+        }
+
+        .badge {
+            display: inline-block;
+            padding: 0.25rem 0.5rem;
+            background: #067D62;
+            color: white;
+            border-radius: 4px;
+            font-size: 0.75rem;
+            margin-bottom: 0.5rem;
+        }
+    </style>
+    <!-- BorrowBuddy UX modules -->
+    <link rel="stylesheet" href="skeletons.css">
+    <link rel="stylesheet" href="empty-states.css">
+    <link rel="stylesheet" href="onboarding.css">
+    <link rel="stylesheet" href="pwa.css">
+    <link rel="manifest" href="manifest.json">
+    <meta name="theme-color" content="#2563eb">
+    <link rel="apple-touch-icon" href="icons/icon-192.png">
+</head>
+<body>
+    <div class="container">
+        <h1><i class="fas fa-exchange-alt"></i> Available Items to Borrow</h1>
+        
+        <div class="items-grid">
+            <!-- Item 1: Camera -->
+            <div class="item-card">
+                <img src="https://images.unsplash.com/photo-1526170375885-4d8ecf77b99f?w=400&h=300&fit=crop" 
+                     alt="Professional Camera" 
+                     class="item-image">
+                <div class="item-content">
+                    <span class="badge">Available</span>
+                    <h3 class="item-title">Professional Camera</h3>
+                    <p class="item-description">Canon EOS R6 with 24-70mm lens. Perfect for events and photography.</p>
+                    
+                    <div class="item-details">
+                        <div class="detail-row">
+                            <i class="fas fa-calendar"></i>
+                            <span>7 days rental</span>
+                        </div>
+                        <div class="detail-row">
+                            <i class="fas fa-shield-alt"></i>
+                            <span>Deposit refundable</span>
+                        </div>
+                        <div class="detail-row">
+                            <i class="fas fa-star"></i>
+                            <span>4.8 rating (120 reviews)</span>
+                        </div>
+                    </div>
+
+                    <div class="item-price">
+                        <span class="price-label">Deposit:</span>
+                        <span class="price-amount">$50</span>
+                    </div>
+
+                    <button class="btn-borrow" 
+                            onclick="borrowItem('cam123', 'Professional Camera', 'https://images.unsplash.com/photo-1526170375885-4d8ecf77b99f?w=400&h=300&fit=crop', 50, 'Canon EOS R6 with 24-70mm lens')">
+                        <i class="fas fa-shopping-cart"></i> Borrow Now
+                    </button>
+                </div>
+            </div>
+
+            <!-- Item 2: Laptop -->
+            <div class="item-card">
+                <img src="https://images.unsplash.com/photo-1517336714731-489689fd1ca8?w=400&h=300&fit=crop" 
+                     alt="MacBook Pro" 
+                     class="item-image">
+                <div class="item-content">
+                    <span class="badge">Available</span>
+                    <h3 class="item-title">MacBook Pro M2</h3>
+                    <p class="item-description">16-inch, M2 Max chip, 32GB RAM. Ideal for video editing and design.</p>
+                    
+                    <div class="item-details">
+                        <div class="detail-row">
+                            <i class="fas fa-calendar"></i>
+                            <span>7 days rental</span>
+                        </div>
+                        <div class="detail-row">
+                            <i class="fas fa-shield-alt"></i>
+                            <span>Deposit refundable</span>
+                        </div>
+                        <div class="detail-row">
+                            <i class="fas fa-star"></i>
+                            <span>5.0 rating (85 reviews)</span>
+                        </div>
+                    </div>
+
+                    <div class="item-price">
+                        <span class="price-label">Deposit:</span>
+                        <span class="price-amount">$100</span>
+                    </div>
+
+                    <button class="btn-borrow" 
+                            onclick="borrowItem('lap456', 'MacBook Pro M2', 'https://images.unsplash.com/photo-1517336714731-489689fd1ca8?w=400&h=300&fit=crop', 100, '16-inch, M2 Max, 32GB RAM')">
+                        <i class="fas fa-shopping-cart"></i> Borrow Now
+                    </button>
+                </div>
+            </div>
+
+            <!-- Item 3: Drone -->
+            <div class="item-card">
+                <img src="https://images.unsplash.com/photo-1473968512647-3e447244af8f?w=400&h=300&fit=crop" 
+                     alt="DJI Drone" 
+                     class="item-image">
+                <div class="item-content">
+                    <span class="badge">Available</span>
+                    <h3 class="item-title">DJI Mavic 3</h3>
+                    <p class="item-description">4K camera drone with obstacle avoidance. Great for aerial shots.</p>
+                    
+                    <div class="item-details">
+                        <div class="detail-row">
+                            <i class="fas fa-calendar"></i>
+                            <span>7 days rental</span>
+                        </div>
+                        <div class="detail-row">
+                            <i class="fas fa-shield-alt"></i>
+                            <span>Deposit refundable</span>
+                        </div>
+                        <div class="detail-row">
+                            <i class="fas fa-star"></i>
+                            <span>4.9 rating (95 reviews)</span>
+                        </div>
+                    </div>
+
+                    <div class="item-price">
+                        <span class="price-label">Deposit:</span>
+                        <span class="price-amount">$75</span>
+                    </div>
+
+                    <button class="btn-borrow" 
+                            onclick="borrowItem('drone789', 'DJI Mavic 3', 'https://images.unsplash.com/photo-1473968512647-3e447244af8f?w=400&h=300&fit=crop', 75, '4K camera drone with obstacle avoidance')">
+                        <i class="fas fa-shopping-cart"></i> Borrow Now
+                    </button>
+                </div>
+            </div>
+
+            <!-- Item 4: DSLR Camera -->
+            <div class="item-card">
+                <img src="https://images.unsplash.com/photo-1606976963248-1f27a96b09d6?w=400&h=300&fit=crop" 
+                     alt="DSLR Camera" 
+                     class="item-image">
+                <div class="item-content">
+                    <span class="badge">Available</span>
+                    <h3 class="item-title">Nikon D850 DSLR</h3>
+                    <p class="item-description">45.7MP full-frame camera. Professional quality photography.</p>
+                    
+                    <div class="item-details">
+                        <div class="detail-row">
+                            <i class="fas fa-calendar"></i>
+                            <span>7 days rental</span>
+                        </div>
+                        <div class="detail-row">
+                            <i class="fas fa-shield-alt"></i>
+                            <span>Deposit refundable</span>
+                        </div>
+                        <div class="detail-row">
+                            <i class="fas fa-star"></i>
+                            <span>4.7 rating (68 reviews)</span>
+                        </div>
+                    </div>
+
+                    <div class="item-price">
+                        <span class="price-label">Deposit:</span>
+                        <span class="price-amount">$60</span>
+                    </div>
+
+                    <button class="btn-borrow" 
+                            onclick="borrowItem('dslr101', 'Nikon D850', 'https://images.unsplash.com/photo-1606976963248-1f27a96b09d6?w=400&h=300&fit=crop', 60, '45.7MP full-frame DSLR camera')">
+                        <i class="fas fa-shopping-cart"></i> Borrow Now
+                    </button>
+                </div>
+            </div>
+
+            <!-- Item 5: Gaming Console -->
+            <div class="item-card">
+                <img src="https://images.unsplash.com/photo-1606144042614-b2417e99c4e3?w=400&h=300&fit=crop" 
+                     alt="PlayStation 5" 
+                     class="item-image">
+                <div class="item-content">
+                    <span class="badge">Available</span>
+                    <h3 class="item-title">PlayStation 5</h3>
+                    <p class="item-description">Latest gaming console with 2 controllers. Includes popular games.</p>
+                    
+                    <div class="item-details">
+                        <div class="detail-row">
+                            <i class="fas fa-calendar"></i>
+                            <span>7 days rental</span>
+                        </div>
+                        <div class="detail-row">
+                            <i class="fas fa-shield-alt"></i>
+                            <span>Deposit refundable</span>
+                        </div>
+                        <div class="detail-row">
+                            <i class="fas fa-star"></i>
+                            <span>4.9 rating (150 reviews)</span>
+                        </div>
+                    </div>
+
+                    <div class="item-price">
+                        <span class="price-label">Deposit:</span>
+                        <span class="price-amount">$80</span>
+                    </div>
+
+                    <button class="btn-borrow" 
+                            onclick="borrowItem('ps5202', 'PlayStation 5', 'https://images.unsplash.com/photo-1606144042614-b2417e99c4e3?w=400&h=300&fit=crop', 80, 'PS5 console with 2 controllers')">
+                        <i class="fas fa-shopping-cart"></i> Borrow Now
+                    </button>
+                </div>
+            </div>
+
+            <!-- Item 6: Projector -->
+            <div class="item-card">
+                <img src="https://images.unsplash.com/photo-1560109947-543149ecb0f9?w=400&h=300&fit=crop" 
+                     alt="Projector" 
+                     class="item-image">
+                <div class="item-content">
+                    <span class="badge">Available</span>
+                    <h3 class="item-title">4K Home Projector</h3>
+                    <p class="item-description">3000 lumens brightness. Perfect for home theater setup.</p>
+                    
+                    <div class="item-details">
+                        <div class="detail-row">
+                            <i class="fas fa-calendar"></i>
+                            <span>7 days rental</span>
+                        </div>
+                        <div class="detail-row">
+                            <i class="fas fa-shield-alt"></i>
+                            <span>Deposit refundable</span>
+                        </div>
+                        <div class="detail-row">
+                            <i class="fas fa-star"></i>
+                            <span>4.6 rating (42 reviews)</span>
+                        </div>
+                    </div>
+
+                    <div class="item-price">
+                        <span class="price-label">Deposit:</span>
+                        <span class="price-amount">$45</span>
+                    </div>
+
+                    <button class="btn-borrow" 
+                            onclick="borrowItem('proj303', '4K Projector', 'https://images.unsplash.com/photo-1560109947-543149ecb0f9?w=400&h=300&fit=crop', 45, '4K home projector, 3000 lumens')">
+                        <i class="fas fa-shopping-cart"></i> Borrow Now
+                    </button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        /**
+         * THIS IS THE ONLY FUNCTION YOU NEED!
+         * Copy this to your existing item pages
+         */
+        function borrowItem(itemId, itemName, itemImage, deposit, description) {
+            // Build the checkout URL with all item details
+            const checkoutURL = 'checkout.html?' +
+                `itemId=${encodeURIComponent(itemId)}` +
+                `&itemName=${encodeURIComponent(itemName)}` +
+                `&itemImage=${encodeURIComponent(itemImage)}` +
+                `&deposit=${deposit}` +
+                `&serviceFee=5` +
+                `&days=7` +
+                `&description=${encodeURIComponent(description)}`;
+            
+            // Redirect to checkout page
+            window.location.href = checkoutURL;
+        }
+    </script>
+    <script src="skeletons.js"></script>
+    <script src="empty-states.js"></script>
+    <script src="onboarding.js"></script>
+    <script src="pwa.js"></script>
+</body>
+</html>

@@ -1,0 +1,797 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Dashboard - BorrowBuddy</title>
+    
+    <!-- Font Awesome -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    
+    <!-- Chart.js -->
+    <script src="config.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.0/dist/chart.umd.min.js"></script>
+    
+    <!-- CSS Files -->
+    <link rel="stylesheet" href="styles.css">
+    <link rel="stylesheet" href="dashboard.css">
+    <link rel="stylesheet" href="bottom-nav.css">
+    <link rel="stylesheet" href="dark-mode.css">
+    <link rel="stylesheet" href="ai-assistant.css">
+    
+    <style>
+        /* Override/Add Professional Dashboard Styles */
+        .dashboard-wrapper {
+            background-color: #f9fafb;
+            min-height: 100vh;
+            padding-top: 80px;
+        }
+
+        .dashboard-hero {
+            background: linear-gradient(135deg, #2563eb, #7c3aed);
+            border-radius: 16px;
+            padding: 2rem;
+            color: white;
+            margin-bottom: 2rem;
+        }
+
+        .dashboard-hero h1 {
+            font-size: 1.875rem;
+            margin-bottom: 0.5rem;
+        }
+
+        .dashboard-hero p {
+            color: rgba(255, 255, 255, 0.8);
+        }
+
+        /* Stats Grid in Hero */
+        .hero-stats-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+            gap: 1rem;
+            margin-top: 2rem;
+        }
+
+        .hero-stat-card {
+            background: rgba(255, 255, 255, 0.1);
+            backdrop-filter: blur(10px);
+            border: 1px solid rgba(255, 255, 255, 0.2);
+            border-radius: 12px;
+            padding: 1rem;
+        }
+
+        .hero-stat-header {
+            display: flex;
+            align-items: center;
+            gap: 0.75rem;
+            margin-bottom: 0.5rem;
+        }
+
+        .hero-stat-icon {
+            width: 40px;
+            height: 40px;
+            background: rgba(255, 255, 255, 0.2);
+            border-radius: 8px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+
+        .hero-stat-value {
+            font-size: 1.5rem;
+            font-weight: 600;
+        }
+
+        .hero-stat-label {
+            font-size: 0.875rem;
+            color: rgba(255, 255, 255, 0.7);
+        }
+
+        .hero-stat-change {
+            font-size: 0.75rem;
+            color: rgba(255, 255, 255, 0.6);
+            margin-top: 0.25rem;
+        }
+
+        /* Charts in Hero */
+        .hero-charts-grid {
+            display: grid;
+            grid-template-columns: 1fr;
+            gap: 1.5rem;
+            margin-top: 2rem;
+        }
+
+        .hero-chart-card {
+            background: rgba(255, 255, 255, 0.1);
+            backdrop-filter: blur(10px);
+            border: 1px solid rgba(255, 255, 255, 0.2);
+            border-radius: 12px;
+            padding: 1.5rem;
+        }
+
+        .hero-chart-card h3 {
+            font-size: 1.125rem;
+            margin-bottom: 1rem;
+            color: white;
+        }
+
+        .chart-scroll-wrapper {
+            overflow-x: auto;
+            -webkit-overflow-scrolling: touch;
+            padding-bottom: 0.5rem;
+            width: 100%;
+        }
+
+        .chart-scroll-wrapper::-webkit-scrollbar {
+            height: 4px;
+        }
+
+        .chart-scroll-wrapper::-webkit-scrollbar-track {
+            background: rgba(255,255,255,0.1);
+            border-radius: 4px;
+        }
+
+        .chart-scroll-wrapper::-webkit-scrollbar-thumb {
+            background: rgba(255,255,255,0.4);
+            border-radius: 4px;
+        }
+
+        #categoryChart {
+            display: block;
+        }
+
+        /* User Stats Cards */
+        .user-stats-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+            gap: 1.5rem;
+            margin-bottom: 2rem;
+        }
+
+        .user-stat-card {
+            background: white;
+            border-radius: 12px;
+            padding: 1.5rem;
+            border: 1px solid #e5e7eb;
+            transition: box-shadow 0.2s;
+        }
+
+        .user-stat-card:hover {
+            box-shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.1);
+        }
+
+        .user-stat-header {
+            display: flex;
+            align-items: flex-start;
+            justify-content: space-between;
+            margin-bottom: 1rem;
+        }
+
+        .user-stat-icon {
+            width: 48px;
+            height: 48px;
+            border-radius: 8px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+
+        .user-stat-icon.green {
+            background-color: #d1fae5;
+            color: #059669;
+        }
+
+        .user-stat-icon.blue {
+            background-color: #dbeafe;
+            color: #2563eb;
+        }
+
+        .user-stat-icon.purple {
+            background-color: #e9d5ff;
+            color: #9333ea;
+        }
+
+        .user-stat-icon.orange {
+            background-color: #fed7aa;
+            color: #ea580c;
+        }
+
+        .user-stat-change {
+            font-size: 0.875rem;
+            padding: 0.25rem 0.5rem;
+            border-radius: 4px;
+        }
+
+        .user-stat-change.positive {
+            background-color: #d1fae5;
+            color: #065f46;
+        }
+
+        .user-stat-change.negative {
+            background-color: #fee2e2;
+            color: #991b1b;
+        }
+
+        .user-stat-label {
+            color: #6b7280;
+            font-size: 0.875rem;
+            margin-bottom: 0.25rem;
+        }
+
+        .user-stat-value {
+            font-size: 1.875rem;
+            font-weight: 600;
+            color: #111827;
+        }
+    </style>
+    <!-- BorrowBuddy UX modules -->
+    <link rel="stylesheet" href="skeletons.css">
+    <link rel="stylesheet" href="empty-states.css">
+    <link rel="stylesheet" href="onboarding.css">
+    <link rel="stylesheet" href="pwa.css">
+    <link rel="manifest" href="manifest.json">
+    <meta name="theme-color" content="#2563eb">
+    <link rel="apple-touch-icon" href="icons/icon-192.png">
+</head>
+<body>
+    <div class="dashboard-wrapper">
+        <!-- Navigation -->
+        <nav class="navbar">
+            <div class="nav-container">
+                <div class="nav-brand">
+                    <i class="fas fa-exchange-alt"></i>
+                    <span>BorrowBuddy</span>
+                </div>
+                <div class="nav-menu" id="navMenu">
+                    <a href="index.html" class="nav-item">
+                        <i class="fas fa-home"></i> Home
+                    </a>
+                    <a href="browse.html" class="nav-item">
+                        <i class="fas fa-search"></i> Browse
+                    </a>
+                    <a href="dashboard-enhanced.html" class="nav-item active">
+                        <i class="fas fa-th-large"></i> Dashboard
+                    </a>
+                    <a href="lend.html" class="nav-item">
+                        <i class="fas fa-plus-circle"></i> Add Item
+                    </a>
+                    <a href="cart.html" class="nav-item">
+                        <i class="fas fa-shopping-cart"></i> Cart
+                        <span class="badge" id="cartBadge">0</span>
+                    </a>
+                    <a href="disputes.html" class="nav-item">
+                        <i class="fas fa-shield-halved"></i> Disputes
+                    </a>
+                    <a href="settings.html" class="nav-item">
+                        <i class="fas fa-cog"></i> Settings
+                    </a>
+                    <a href="#" onclick="logout()" class="nav-item">
+                        <i class="fas fa-sign-out-alt"></i> Logout
+                    </a>
+                </div>
+                <button class="nav-toggle" id="navToggle">
+                    <i class="fas fa-bars"></i>
+                </button>
+            </div>
+        </nav>
+
+        <!-- Dashboard Content -->
+        <div class="dashboard-container" style="max-width: 1280px; margin: 0 auto; padding: 2rem 1.5rem;">
+            <!-- Hero Panel -->
+            <div class="dashboard-hero">
+                <div class="hero-header">
+                    <h1>Welcome back, <span id="userName">User</span>!</h1>
+                    <p>Here's what's happening with your account today.</p>
+                </div>
+                
+                <!-- Stats Grid in Hero -->
+                <div class="hero-stats-grid">
+                    <div class="hero-stat-card">
+                        <div class="hero-stat-header">
+                            <div class="hero-stat-icon">
+                                <i class="fas fa-chart-line" style="color: white;"></i>
+                            </div>
+                            <div>
+                                <div class="hero-stat-value" id="heroTotalItems">0</div>
+                            </div>
+                        </div>
+                        <div class="hero-stat-label">Total Items Listed</div>
+                        <div class="hero-stat-change">↑ Your active listings</div>
+                    </div>
+                    
+                    
+                    <div class="hero-stat-card">
+                        <div class="hero-stat-header">
+                            <div class="hero-stat-icon">
+                                <i class="fas fa-award" style="color: white;"></i>
+                            </div>
+                            <div>
+                                <div class="hero-stat-value" id="heroAchievements">0</div>
+                            </div>
+                        </div>
+                        <div class="hero-stat-label">Successful Borrows</div>
+                        <div class="hero-stat-change">Items borrowed</div>
+                    </div>
+                    
+                    <div class="hero-stat-card">
+                        <div class="hero-stat-header">
+                            <div class="hero-stat-icon">
+                                <i class="fas fa-bolt" style="color: white;"></i>
+                            </div>
+                            <div>
+                                <div class="hero-stat-value" id="heroActiveTasks">0</div>
+                            </div>
+                        </div>
+                        <div class="hero-stat-label">Active Transactions</div>
+                        <div class="hero-stat-change">Items in use</div>
+                    </div>
+                </div>
+                
+                <!-- Charts in Hero -->
+                <div class="hero-charts-grid">
+                    <div class="hero-chart-card">
+                        <h3>Items by Category</h3>
+                        <div class="chart-scroll-wrapper">
+                            <canvas id="categoryChart"></canvas>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            
+            <!-- User Statistics Cards -->
+            <div class="user-stats-grid">
+                <div class="user-stat-card">
+                    <div class="user-stat-header">
+                        <div class="user-stat-icon green">
+                            <i class="fas fa-box"></i>
+                        </div>
+                        <span class="user-stat-change positive">Active</span>
+                    </div>
+                    <div class="user-stat-label">Items Borrowed</div>
+                    <div class="user-stat-value" id="totalBorrowed">0</div>
+                </div>
+                
+                <div class="user-stat-card">
+                    <div class="user-stat-header">
+                        <div class="user-stat-icon blue">
+                            <i class="fas fa-hand-holding"></i>
+                        </div>
+                        <span class="user-stat-change positive">Earning</span>
+                    </div>
+                    <div class="user-stat-label">Items Lent Out</div>
+                    <div class="user-stat-value" id="totalLent">0</div>
+                </div>
+                
+                <div class="user-stat-card">
+                    <div class="user-stat-header">
+                        <div class="user-stat-icon purple">
+                            <i class="fas fa-clock"></i>
+                        </div>
+                        <span class="user-stat-change positive">Pending</span>
+                    </div>
+                    <div class="user-stat-label">Open Requests</div>
+                    <div class="user-stat-value" id="pendingRequests">0</div>
+                </div>
+                
+                <div class="user-stat-card">
+                    <div class="user-stat-header">
+                        <div class="user-stat-icon orange">
+                            <i class="fas fa-star"></i>
+                        </div>
+                        <span class="user-stat-change positive">Excellent</span>
+                    </div>
+                    <div class="user-stat-label">Your Rating</div>
+                    <div class="user-stat-value" id="userRating">5.0</div>
+                </div>
+            </div>
+
+            <!-- Referral Widget -->
+            <div id="referralWidgetContainer" style="margin-bottom: 2rem;"></div>
+
+            <!-- Quick Access Section -->
+            <section class="quick-access" style="margin-bottom: 2rem;">
+                <h2 style="font-size: 1.5rem; font-weight: 600; color: #111827; margin-bottom: 1.5rem; display: flex; align-items: center; gap: 0.5rem;">
+                    <i class="fas fa-bolt" style="color: #2563eb;"></i> Quick Access
+                </h2>
+                <div class="quick-access-grid">
+                    <a href="requests.html" class="quick-access-card">
+                        <div class="qa-icon">
+                            <i class="fas fa-inbox"></i>
+                        </div>
+                        <h3>Borrow Requests</h3>
+                        <p>Manage incoming and outgoing requests</p>
+                        <span class="qa-badge" id="requestsBadge">0</span>
+                    </a>
+
+                    <a href="my-borrowed.html" class="quick-access-card">
+                        <div class="qa-icon">
+                            <i class="fas fa-book-reader"></i>
+                        </div>
+                        <h3>My Borrowed Items</h3>
+                        <p>Track items you're currently borrowing</p>
+                    </a>
+
+                    <a href="my-lent.html" class="quick-access-card">
+                        <div class="qa-icon">
+                            <i class="fas fa-hand-holding-heart"></i>
+                        </div>
+                        <h3>My Lent Items</h3>
+                        <p>See items you've lent to others</p>
+                    </a>
+
+                    <a href="my-items.html" class="quick-access-card">
+                        <div class="qa-icon">
+                            <i class="fas fa-boxes"></i>
+                        </div>
+                        <h3>Your Items on Web</h3>
+                        <p>Manage your listed items</p>
+                    </a>
+
+                    <a href="messages.html" class="quick-access-card">
+                        <div class="qa-icon">
+                            <i class="fas fa-comments"></i>
+                        </div>
+                        <h3>In-App Chat</h3>
+                        <p>Communicate with other users</p>
+                        <span class="qa-badge" id="messagesBadge">0</span>
+                    </a>
+
+                    <a href="profile.html" class="quick-access-card">
+                        <div class="qa-icon">
+                            <i class="fas fa-user-circle"></i>
+                        </div>
+                        <h3>Profile</h3>
+                        <p>Update your account settings</p>
+                    </a>
+                </div>
+            </section>
+            
+            <!-- Recent Activity Table -->
+            <div class="table-container" style="background-color: white; border-radius: 12px; border: 1px solid #e5e7eb;">
+                <div class="table-header" style="padding: 1.5rem; border-bottom: 1px solid #e5e7eb;">
+                    <h2 class="table-title" style="font-size: 1.25rem; font-weight: 600; color: #111827;">Recent Activity</h2>
+                    <p class="table-subtitle" style="font-size: 0.875rem; color: #6b7280; margin-top: 0.25rem;">Track and manage your transactions</p>
+                </div>
+                
+                <div class="table-wrapper" style="overflow-x: auto;">
+                    <table class="entries-table" id="activityTable">
+                        <thead style="background-color: #f9fafb; border-bottom: 1px solid #e5e7eb;">
+                            <tr>
+                                <th style="padding: 0.75rem 1.5rem; text-align: left; font-size: 0.75rem; color: #6b7280; text-transform: uppercase; font-weight: 600;">ITEM</th>
+                                <th style="padding: 0.75rem 1.5rem; text-align: left; font-size: 0.75rem; color: #6b7280; text-transform: uppercase; font-weight: 600;">USER</th>
+                                <th style="padding: 0.75rem 1.5rem; text-align: left; font-size: 0.75rem; color: #6b7280; text-transform: uppercase; font-weight: 600;">STATUS</th>
+                                <th style="padding: 0.75rem 1.5rem; text-align: left; font-size: 0.75rem; color: #6b7280; text-transform: uppercase; font-weight: 600;">TYPE</th>
+                                <th style="padding: 0.75rem 1.5rem; text-align: left; font-size: 0.75rem; color: #6b7280; text-transform: uppercase; font-weight: 600;">DATE</th>
+                                <th style="padding: 0.75rem 1.5rem; text-align: left; font-size: 0.75rem; color: #6b7280; text-transform: uppercase; font-weight: 600;">PROGRESS</th>
+                                <th style="padding: 0.75rem 1.5rem; text-align: left; font-size: 0.75rem; color: #6b7280; text-transform: uppercase; font-weight: 600;">AMOUNT</th>
+                            </tr>
+                        </thead>
+                        <tbody id="activityTableBody">
+                            <!-- Will be populated by JavaScript -->
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Footer -->
+    <footer class="footer">
+        <div class="footer-content">
+            <div class="footer-section">
+                <h3><i class="fas fa-exchange-alt"></i> BorrowBuddy</h3>
+                <p>Share resources, build community</p>
+            </div>
+            <div class="footer-section">
+                <h4>Quick Links</h4>
+                <a href="about.html">About Us</a>
+                <a href="contact.html">Contact</a>
+                <a href="faq.html">FAQ</a>
+            </div>
+            <div class="footer-section">
+                <h4>Legal</h4>
+                <a href="terms.html">Terms of Service</a>
+                <a href="privacy.html">Privacy Policy</a>
+            </div>
+            <div class="footer-section">
+                <h4>Follow Us</h4>
+                <div class="social-links">
+                    <a href="#"><i class="fab fa-facebook"></i></a>
+                    <a href="#"><i class="fab fa-twitter"></i></a>
+                    <a href="#"><i class="fab fa-instagram"></i></a>
+                </div>
+            </div>
+        </div>
+        <div class="footer-bottom">
+            <p>&copy; 2026 BorrowBuddy. All rights reserved.</p>
+        </div>
+    </footer>
+
+    <!-- JavaScript Files -->
+    <script src="auth.js"></script>
+    <script src="dashboard.js"></script>
+    <script src="init-data.js"></script>
+    <script src="ai-assistant.js"></script>
+    
+    <script>
+        // Mobile nav toggle
+        document.getElementById('navToggle')?.addEventListener('click', function() {
+            document.getElementById('navMenu')?.classList.toggle('active');
+        });
+
+        const MYITEMS_API_URL = self.BORROWBUDDY_CONFIG.API_BASE_URL + '/api';
+
+        // Load Dashboard Data
+        document.addEventListener('DOMContentLoaded', () => {
+            loadUserStats();   // async — also calls initCharts after fetching items
+            loadActivityTable();
+            updateCartBadge();
+        });
+
+        async function loadUserStats() {
+            const username = localStorage.getItem('username') || 'User';
+            const profile  = JSON.parse(localStorage.getItem(`profile_${username}`) || '{}');
+
+            // Build full name — try profile first, then individual keys, then username
+            const firstName = profile.firstName || localStorage.getItem('firstName') || '';
+            const lastName  = profile.lastName  || localStorage.getItem('lastName')  || '';
+            const fullName  = [firstName, lastName].filter(Boolean).join(' ')
+                           || profile.fullName
+                           || username;
+
+            document.getElementById('userName').textContent = fullName;
+
+            // Fetch listed items from backend (source of truth) then sync to localStorage
+            let userItems = [];
+            try {
+                const res  = await fetch(`${MYITEMS_API_URL}/items/my-items?username=${encodeURIComponent(username)}`);
+                const data = await res.json();
+                if (res.ok && data.items) {
+                    userItems = data.items;
+                    localStorage.setItem(`items_${username}`, JSON.stringify(userItems));
+                }
+            } catch (e) {
+                userItems = JSON.parse(localStorage.getItem(`items_${username}`) || '[]');
+            }
+
+            const borrowed = JSON.parse(localStorage.getItem(`borrowed_${username}`) || '[]');
+            const lent     = JSON.parse(localStorage.getItem(`lent_${username}`) || '[]');
+            const requests = JSON.parse(localStorage.getItem(`requests_${username}`) || '[]');
+
+            document.getElementById('heroTotalItems').textContent    = userItems.length;
+            document.getElementById('heroAchievements').textContent  = borrowed.length;
+            document.getElementById('heroActiveTasks').textContent   =
+                borrowed.filter(b => b.status === 'active').length +
+                lent.filter(l => l.status === 'active').length;
+
+            document.getElementById('totalBorrowed').textContent     = borrowed.length;
+            document.getElementById('totalLent').textContent         = lent.length;
+            document.getElementById('pendingRequests').textContent   = requests.filter(r => r.status === 'pending').length;
+
+            let totalStars = 0, totalReviews = 0;
+            userItems.forEach(item => {
+                const reviews = JSON.parse(localStorage.getItem('reviews_' + (item.id || item._id)) || '[]');
+                reviews.forEach(r => { totalStars += (r.rating || 0); totalReviews++; });
+            });
+            document.getElementById('userRating').textContent = totalReviews > 0
+                ? (totalStars / totalReviews).toFixed(1) : '—';
+
+            initCharts(userItems);
+        }
+
+        function initCharts(userItems) {
+            const categoryCtx = document.getElementById('categoryChart');
+            if (!categoryCtx) return;
+
+            if (window._categoryChartInstance) {
+                window._categoryChartInstance.destroy();
+            }
+
+            const items = userItems || JSON.parse(localStorage.getItem(`items_${localStorage.getItem('username')}`) || '[]');
+
+            const ALL_CATEGORIES = [
+                { key: 'electronics', label: 'Electronics' },
+                { key: 'books',       label: 'Books'       },
+                { key: 'tools',       label: 'Tools'       },
+                { key: 'sports',      label: 'Sports'      },
+                { key: 'stationery',  label: 'Stationery'  },
+                { key: 'vehicles',    label: 'Vehicles'    },
+                { key: 'appliances',  label: 'Appliances'  },
+                { key: 'furniture',   label: 'Furniture'   },
+                { key: 'fashion',     label: 'Fashion'     },
+                { key: 'properties',  label: 'Properties'  },
+                { key: 'others',      label: 'Others'      }
+            ];
+
+            const counts = ALL_CATEGORIES.map(c =>
+                items.filter(i => i.category === c.key).length
+            );
+
+            // Each bar needs ~80px to fit label straight — total scrollable width
+            const barWidth = 80;
+            const canvasW  = ALL_CATEGORIES.length * barWidth;
+            const canvasH  = 220;
+            categoryCtx.width        = canvasW;
+            categoryCtx.height       = canvasH;
+            categoryCtx.style.width  = canvasW + 'px';
+            categoryCtx.style.height = canvasH + 'px';
+
+            window._categoryChartInstance = new Chart(categoryCtx, {
+                type: 'bar',
+                data: {
+                    labels: ALL_CATEGORIES.map(c => c.label),
+                    datasets: [{
+                        label: 'Items',
+                        data: counts,
+                        backgroundColor: counts.map(n =>
+                            n > 0 ? 'rgba(255,255,255,0.9)' : 'rgba(255,255,255,0.22)'
+                        ),
+                        borderRadius: 8,
+                        borderSkipped: false,
+                        barPercentage: 0.75,
+                        categoryPercentage: 0.85
+                    }]
+                },
+                options: {
+                    responsive: false,
+                    maintainAspectRatio: false,
+                    plugins: {
+                        legend: { display: false },
+                        tooltip: {
+                            callbacks: {
+                                label: ctx => ` ${ctx.parsed.y} item${ctx.parsed.y !== 1 ? 's' : ''}`
+                            }
+                        }
+                    },
+                    scales: {
+                        x: {
+                            grid: { display: false, drawBorder: false },
+                            ticks: {
+                                color: 'rgba(255,255,255,0.9)',
+                                font: { size: 11, weight: '500' },
+                                maxRotation: 0,
+                                minRotation: 0,
+                                autoSkip: false
+                            }
+                        },
+                        y: {
+                            beginAtZero: true,
+                            grid: { color: 'rgba(255,255,255,0.12)', drawBorder: false },
+                            ticks: { color: 'rgba(255,255,255,0.85)', stepSize: 1, precision: 0 }
+                        }
+                    }
+                }
+            });
+        }
+
+        function loadActivityTable() {
+            const username = localStorage.getItem('username');
+            const borrowed = JSON.parse(localStorage.getItem(`borrowed_${username}`) || '[]');
+            const lent = JSON.parse(localStorage.getItem(`lent_${username}`) || '[]');
+            
+            const activities = [];
+            
+            borrowed.forEach(item => {
+                activities.push({
+                    itemName: item.itemName,
+                    user: item.owner,
+                    status: item.status || 'active',
+                    type: 'borrowed',
+                    date: item.borrowFrom,
+                    progress: calculateProgress(item.borrowFrom, item.borrowTo),
+                    amount: item.totalPaid || 0
+                });
+            });
+
+            lent.forEach(item => {
+                activities.push({
+                    itemName: item.itemName,
+                    user: item.borrower,
+                    status: item.status || 'active',
+                    type: 'lent',
+                    date: item.borrowFrom,
+                    progress: calculateProgress(item.borrowFrom, item.borrowTo),
+                    amount: item.totalEarned || 0
+                });
+            });
+
+            const tbody = document.getElementById('activityTableBody');
+            
+            if (activities.length === 0) {
+                tbody.innerHTML = `
+                    <tr>
+                        <td colspan="7" style="text-align: center; padding: 3rem; color: #6b7280;">
+                            <i class="fas fa-inbox" style="font-size: 3rem; opacity: 0.3; display: block; margin-bottom: 1rem;"></i>
+                            No recent activity
+                        </td>
+                    </tr>
+                `;
+                return;
+            }
+
+            tbody.innerHTML = activities.slice(0, 6).map(activity => `
+                <tr style="border-bottom: 1px solid #e5e7eb; transition: background-color 0.2s;" onmouseover="this.style.backgroundColor='#f9fafb'" onmouseout="this.style.backgroundColor=''">
+                    <td style="padding: 1rem 1.5rem; font-size: 0.875rem; font-weight: 500; color: #111827;">${activity.itemName}</td>
+                    <td style="padding: 1rem 1.5rem; font-size: 0.875rem;">
+                        <div style="display: flex; align-items: center; gap: 0.5rem;">
+                            <div style="width: 32px; height: 32px; background: linear-gradient(135deg, #a855f7, #ec4899); border-radius: 50%; display: flex; align-items: center; justify-content: center; color: white; font-size: 0.75rem;">
+                                ${getInitials(activity.user)}
+                            </div>
+                            <span style="color: #6b7280;">${activity.user}</span>
+                        </div>
+                    </td>
+                    <td style="padding: 1rem 1.5rem; font-size: 0.875rem;">
+                        <span class="status-badge ${activity.status}" style="display: inline-flex; align-items: center; gap: 0.25rem; padding: 0.25rem 0.625rem; border-radius: 9999px; font-size: 0.75rem;">
+                            ${getStatusIcon(activity.status)}
+                            ${activity.status}
+                        </span>
+                    </td>
+                    <td style="padding: 1rem 1.5rem; font-size: 0.875rem;">
+                        <span class="priority-badge ${activity.type}" style="display: inline-flex; padding: 0.25rem 0.625rem; border-radius: 9999px; font-size: 0.75rem;">
+                            ${activity.type}
+                        </span>
+                    </td>
+                    <td style="padding: 1rem 1.5rem; font-size: 0.875rem; color: #6b7280;">${formatDate(activity.date)}</td>
+                    <td style="padding: 1rem 1.5rem; font-size: 0.875rem;">
+                        <div style="display: flex; align-items: center; gap: 0.5rem;">
+                            <div style="flex: 1; background-color: #e5e7eb; border-radius: 9999px; height: 8px; width: 96px;">
+                                <div style="background-color: #2563eb; height: 8px; border-radius: 9999px; width: ${activity.progress}%;"></div>
+                            </div>
+                            <span style="font-size: 0.75rem; color: #6b7280;">${activity.progress}%</span>
+                        </div>
+                    </td>
+                    <td style="padding: 1rem 1.5rem; font-size: 0.875rem; font-weight: 600; color: ${activity.type === 'lent' ? '#059669' : '#2563eb'};">
+                        ${activity.type === 'lent' ? '+' : '-'}${String(activity.amount).startsWith('₹') ? activity.amount : '₹' + activity.amount}
+                    </td>
+                </tr>
+            `).join('');
+        }
+
+        function getInitials(name) {
+            if (!name) return 'U';
+            return name.split(' ').map(n => n[0]).join('').toUpperCase().substring(0, 2);
+        }
+
+        function getStatusIcon(status) {
+            const icons = {
+                completed: '<i class="fas fa-check-circle" style="color: #059669;"></i>',
+                active: '<i class="fas fa-clock" style="color: #2563eb;"></i>',
+                pending: '<i class="fas fa-exclamation-circle" style="color: #ea580c;"></i>'
+            };
+            return icons[status] || '';
+        }
+
+        function formatDate(dateString) {
+            const date = new Date(dateString);
+            return date.toLocaleDateString('en-US', { month: 'short', day: 'numeric', year: 'numeric' });
+        }
+
+        function calculateProgress(fromDate, toDate) {
+            const start = new Date(fromDate);
+            const end = new Date(toDate);
+            const now = new Date();
+            const total = end - start;
+            const elapsed = now - start;
+            return Math.min(100, Math.max(0, Math.round((elapsed / total) * 100)));
+        }
+
+        function updateCartBadge() {
+            const cart = JSON.parse(localStorage.getItem('cart') || '[]');
+            const badge = document.getElementById('cartBadge');
+            if (badge) {
+                badge.textContent = cart.length;
+                badge.style.display = cart.length > 0 ? 'inline-block' : 'none';
+            }
+        }
+    </script>
+    <script src="storage-sync.js"></script>
+    <script src="notifications.js"></script>
+    <script src="referral-system.js"></script>
+    <script src="dark-mode.js"></script>
+    <script src="bottom-nav.js"></script>
+    <script src="skeletons.js"></script>
+    <script src="empty-states.js"></script>
+    <script src="onboarding.js"></script>
+    <script src="pwa.js"></script>
+</body>
+</html>

@@ -1,0 +1,258 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>My Items - BorrowBuddy</title>
+    
+    <!-- Font Awesome -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    
+    <!-- CSS Files -->
+    <link rel="stylesheet" href="styles.css">
+    <link rel="stylesheet" href="dashboard.css">
+    <link rel="stylesheet" href="bottom-nav.css">
+    <link rel="stylesheet" href="dark-mode.css">
+    <link rel="stylesheet" href="browse.css">
+    <link rel="stylesheet" href="ai-assistant.css">
+    
+    <style>
+        /* Additional styles for My Items page */
+        .item-stats {
+            display: grid;
+            grid-template-columns: repeat(3, 1fr);
+            gap: 0.5rem;
+            margin-top: 1rem;
+            padding-top: 1rem;
+            border-top: 1px solid var(--border-color);
+        }
+
+        .stat-item {
+            text-align: center;
+        }
+
+        .stat-item i {
+            color: var(--primary-blue);
+            margin-bottom: 0.25rem;
+        }
+
+        .stat-value {
+            display: block;
+            font-weight: 700;
+            color: var(--text-dark);
+            font-size: 1.1rem;
+        }
+
+        .stat-label {
+            display: block;
+            font-size: 0.75rem;
+            color: var(--text-gray);
+        }
+
+        .item-actions {
+            display: flex;
+            gap: 0.5rem;
+            margin-top: 1rem;
+        }
+
+        .item-actions button {
+            flex: 1;
+            padding: 0.625rem;
+            border-radius: 8px;
+            border: none;
+            font-weight: 600;
+            font-size: 0.85rem;
+            cursor: pointer;
+            transition: all 0.3s;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 0.5rem;
+        }
+
+        .btn-edit {
+            background: var(--primary-blue);
+            color: white;
+        }
+
+        .btn-edit:hover {
+            background: #1e40af;
+        }
+
+        .btn-delete {
+            background: #ef4444;
+            color: white;
+        }
+
+        .btn-delete:hover {
+            background: #dc2626;
+        }
+
+        .btn-toggle {
+            background: var(--bg-light);
+            color: var(--text-dark);
+            border: 2px solid var(--border-color);
+        }
+
+        .btn-toggle:hover {
+            background: var(--border-color);
+        }
+
+        .btn-toggle.active {
+            background: var(--secondary-green);
+            color: white;
+            border-color: var(--secondary-green);
+        }
+
+        .item-status-badge {
+            position: absolute;
+            top: 1rem;
+            left: 1rem;
+            padding: 0.375rem 0.75rem;
+            border-radius: 50px;
+            font-size: 0.8rem;
+            font-weight: 600;
+            background: rgba(255, 255, 255, 0.95);
+        }
+
+        .status-active {
+            color: #10b981;
+        }
+
+        .status-paused {
+            color: #f59e0b;
+        }
+    </style>
+    <!-- BorrowBuddy UX modules -->
+    <link rel="stylesheet" href="skeletons.css">
+    <link rel="stylesheet" href="empty-states.css">
+    <link rel="stylesheet" href="onboarding.css">
+    <link rel="stylesheet" href="pwa.css">
+    <link rel="manifest" href="manifest.json">
+    <meta name="theme-color" content="#2563eb">
+    <link rel="apple-touch-icon" href="icons/icon-192.png">
+</head>
+<body>
+    <!-- Navigation -->
+    <nav class="navbar">
+        <div class="nav-container">
+            <div class="nav-brand">
+                <i class="fas fa-exchange-alt"></i>
+                <span>Borrow & Lend</span>
+            </div>
+            <div class="nav-menu" id="navMenu">
+                <a href="index.html" class="nav-item">
+                    <i class="fas fa-home"></i> Home
+                </a>
+                <a href="browse.html" class="nav-item">
+                    <i class="fas fa-search"></i> Browse
+                </a>
+                <a href="dashboard-enhanced.html" class="nav-item">
+                    <i class="fas fa-th-large"></i> Dashboard
+                </a>
+                <a href="lend.html" class="nav-item">
+                    <i class="fas fa-plus-circle"></i> Add Item
+                </a>
+                <a href="cart.html" class="nav-item">
+                    <i class="fas fa-shopping-cart"></i> Cart
+                    <span class="badge" id="cartBadge">0</span>
+                </a>
+                <a href="disputes.html" class="nav-item"><i class="fas fa-shield-halved"></i> Disputes</a>                <a href="settings.html" class="nav-item"><i class="fas fa-cog"></i> Settings</a>
+                    <a href="#" onclick="logout()" class="nav-item">
+                    <i class="fas fa-sign-out-alt"></i> Logout
+                </a>
+            </div>
+            <button class="nav-toggle" id="navToggle">
+                <i class="fas fa-bars"></i>
+            </button>
+        </div>
+    </nav>
+
+    <!-- Main Content -->
+    <main class="browse-container">
+        <!-- Page Header -->
+        <div class="browse-header">
+            <h1><i class="fas fa-boxes"></i> Your Items on Web</h1>
+            <p>Manage items you've listed for lending</p>
+        </div>
+
+        <!-- Action Bar -->
+        <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 2rem; flex-wrap: wrap; gap: 1rem;">
+            <div class="category-tabs" style="margin: 0;">
+                <button class="category-btn active" data-filter="all">
+                    <i class="fas fa-th"></i> All Items
+                </button>
+                <button class="category-btn" data-filter="active">
+                    <i class="fas fa-check-circle"></i> Active
+                </button>
+                <button class="category-btn" data-filter="paused">
+                    <i class="fas fa-pause-circle"></i> Paused
+                </button>
+            </div>
+            <a href="lend.html" class="btn btn-primary">
+                <i class="fas fa-plus"></i> Add Item
+            </a>
+        </div>
+
+        <!-- Items Grid -->
+        <div id="myItemsGrid">
+            <!-- Items will be loaded here -->
+        </div>
+    </main>
+
+    <!-- Footer -->
+    <footer class="footer">
+        <div class="footer-content">
+            <div class="footer-section">
+                <h3><i class="fas fa-exchange-alt"></i> Borrow & Lend</h3>
+                <p>Share resources, build community</p>
+            </div>
+            <div class="footer-section">
+                <h4>Quick Links</h4>
+                <a href="about.html">About Us</a>
+                <a href="contact.html">Contact</a>
+                <a href="faq.html">FAQ</a>
+            </div>
+            <div class="footer-section">
+                <h4>Legal</h4>
+                <a href="terms.html">Terms of Service</a>
+                <a href="privacy.html">Privacy Policy</a>
+            </div>
+            <div class="footer-section">
+                <h4>Follow Us</h4>
+                <div class="social-links">
+                    <a href="#"><i class="fab fa-facebook"></i></a>
+                    <a href="#"><i class="fab fa-twitter"></i></a>
+                    <a href="#"><i class="fab fa-instagram"></i></a>
+                </div>
+            </div>
+        </div>
+        <div class="footer-bottom">
+            <p>&copy; 2026 BorrowBuddy Platform. All rights reserved.</p>
+        </div>
+    </footer>
+
+    <!-- JavaScript Files -->
+    <script src="config.js"></script>
+    <script src="auth.js"></script>
+    <script src="dashboard.js"></script>
+    <script src="my-items.js"></script>
+    <script src="init-data.js"></script>
+    <script src="ai-assistant.js"></script>
+    
+    <script>
+        // Mobile Navigation Toggle
+        document.getElementById('navToggle')?.addEventListener('click', function() {
+            document.getElementById('navMenu')?.classList.toggle('active');
+        });
+    </script>
+    <script src="storage-sync.js"></script>
+    <script src="notifications.js"></script>
+    <script src="dark-mode.js"></script>
+    <script src="bottom-nav.js"></script>
+    <script src="skeletons.js"></script>
+    <script src="empty-states.js"></script>
+    <script src="onboarding.js"></script>
+    <script src="pwa.js"></script>
+</body>
+</html>

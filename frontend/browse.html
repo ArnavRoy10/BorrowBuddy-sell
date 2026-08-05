@@ -1,0 +1,325 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Browse Items - BorrowBuddy</title>
+    
+    <!-- Font Awesome -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    
+    <!-- CSS Files -->
+    <link rel="stylesheet" href="styles.css">
+    <link rel="stylesheet" href="dashboard.css">
+    <link rel="stylesheet" href="bottom-nav.css">
+    <link rel="stylesheet" href="dark-mode.css">
+    <link rel="stylesheet" href="browse.css">
+    <link rel="stylesheet" href="ai-assistant.css">
+    <!-- BorrowBuddy UX modules -->
+    <link rel="stylesheet" href="skeletons.css">
+    <link rel="stylesheet" href="empty-states.css">
+    <link rel="stylesheet" href="onboarding.css">
+    <link rel="stylesheet" href="pwa.css">
+    <link rel="manifest" href="manifest.json">
+    <meta name="theme-color" content="#2563eb">
+    <link rel="apple-touch-icon" href="icons/icon-192.png">
+</head>
+<body>
+    <!-- Navigation -->
+    <nav class="navbar">
+        <div class="nav-container">
+            <div class="nav-brand">
+                <i class="fas fa-exchange-alt"></i>
+                <span>BorrowBuddy</span>
+            </div>
+            <div class="nav-menu" id="navMenu">
+                <a href="index.html" class="nav-item">
+                    <i class="fas fa-home"></i> Home
+                </a>
+                <a href="browse.html" class="nav-item active">
+                    <i class="fas fa-search"></i> Browse
+                </a>
+                <a href="dashboard-enhanced.html" class="nav-item">
+                    <i class="fas fa-th-large"></i> Dashboard
+                </a>
+                <a href="lend.html" class="nav-item">
+                    <i class="fas fa-plus-circle"></i> Add Item
+                </a>
+                <a href="cart.html" class="nav-item">
+                    <i class="fas fa-shopping-cart"></i> Cart
+                    <span class="badge" id="cartBadge">0</span>
+                </a>
+                <a href="disputes.html" class="nav-item"><i class="fas fa-shield-halved"></i> Disputes</a>                <a href="settings.html" class="nav-item"><i class="fas fa-cog"></i> Settings</a>
+                    <a href="#" onclick="logout()" class="nav-item">
+                    <i class="fas fa-sign-out-alt"></i> Logout
+                </a>
+            </div>
+            <button class="nav-toggle" id="navToggle">
+                <i class="fas fa-bars"></i>
+            </button>
+        </div>
+    </nav>
+
+    <!-- Main Content -->
+    <main class="browse-container">
+        <!-- Page Header -->
+        <div class="browse-header">
+            <h1><i class="fas fa-search"></i> Browse Items</h1>
+            <p>Find items to borrow from the community</p>
+        </div>
+
+        <!-- Search and Filter Bar -->
+        <div class="search-filter-bar">
+            <div class="search-box" style="position:relative">
+                <i class="fas fa-search"></i>
+                <input 
+                    type="text" 
+                    id="searchInput" 
+                    placeholder="Search items by name or description..."
+                    autocomplete="off"
+                >
+                <div id="searchSuggestions" style="
+                    display:none;position:absolute;top:calc(100% + 6px);left:0;right:0;
+                    background:white;border:1px solid #e5e7eb;border-radius:12px;
+                    box-shadow:0 12px 40px rgba(0,0,0,.12);z-index:200;
+                    max-height:320px;overflow-y:auto;
+                "></div>
+            </div>
+            <div class="filter-group">
+                <select id="priceFilter" class="filter-select">
+                    <option value="all">All Prices</option>
+                    <option value="free">Free</option>
+                    <option value="paid">Paid</option>
+                    <option value="under100">Under ₹100/day</option>
+                    <option value="under500">₹100–₹500/day</option>
+                </select>
+                <select id="sortFilter" class="filter-select">
+                    <option value="newest">Newest First</option>
+                    <option value="oldest">Oldest First</option>
+                    <option value="price-low">Price: Low to High</option>
+                    <option value="price-high">Price: High to Low</option>
+                    <option value="rating">Highest Rated</option>
+                    <option value="popular">Most Borrowed</option>
+                </select>
+                <input type="text" id="locationFilter" class="filter-select"
+                    placeholder="🔍 Filter by location…"
+                    style="padding:.5rem .75rem;border:1px solid #e5e7eb;border-radius:8px;font-size:.875rem;outline:none;min-width:150px">
+            </div>
+        </div>
+
+        <!-- Category Tabs -->
+        <div class="category-tabs">
+    <button class="category-btn active" data-category="all">
+        <i class="fas fa-th"></i> All Items
+    </button>
+    <button class="category-btn" data-category="electronics">
+        <i class="fas fa-laptop"></i> Electronics
+    </button>
+    <button class="category-btn" data-category="books">
+        <i class="fas fa-book"></i> Books
+    </button>
+    <button class="category-btn" data-category="tools">
+        <i class="fas fa-tools"></i> Tools
+    </button>
+    <button class="category-btn" data-category="sports">
+        <i class="fas fa-football-ball"></i> Sports
+    </button>
+    <button class="category-btn" data-category="stationery">
+        <i class="fas fa-pencil-alt"></i> Stationery
+    </button>
+    <button class="category-btn" data-category="vehicles">
+        <i class="fas fa-car"></i> Vehicles
+    </button>
+    <button class="category-btn" data-category="appliances">
+        <i class="fas fa-blender"></i> Appliances
+    </button>
+    <button class="category-btn" data-category="furniture">
+        <i class="fas fa-couch"></i> Furniture & Blankets
+    </button>
+    <button class="category-btn" data-category="fashion">
+        <i class="fas fa-tshirt"></i> Fashion
+    </button>
+    <button class="category-btn" data-category="properties">
+        <i class="fas fa-building"></i> Properties
+    </button>
+    <button class="category-btn" data-category="others">
+        <i class="fas fa-ellipsis-h"></i> Others
+    </button>
+</div>
+
+        <!-- Browse Layout -->
+        <div class="browse-layout">
+            <!-- Sidebar Filters -->
+            <aside class="filter-sidebar" id="filterSidebar">
+                <h3 style="margin-bottom: 1.5rem; font-size: 1.25rem;">
+                    <i class="fas fa-filter"></i> Filters
+                </h3>
+
+                <!-- Condition Filter -->
+                <div class="filter-section">
+                    <h3><i class="fas fa-star"></i> Condition</h3>
+                    <div class="filter-options">
+                        <label class="filter-option">
+                            <input type="checkbox" name="condition" value="new">
+                            <span>New</span>
+                        </label>
+                        <label class="filter-option">
+                            <input type="checkbox" name="condition" value="good">
+                            <span>Good</span>
+                        </label>
+                        <label class="filter-option">
+                            <input type="checkbox" name="condition" value="used">
+                            <span>Used</span>
+                        </label>
+                    </div>
+                </div>
+
+                <!-- Clear Filters Button -->
+                <button class="clear-filters" onclick="clearAllFilters()">
+                    <i class="fas fa-redo"></i> Clear All Filters
+                </button>
+            </aside>
+
+            <!-- Items Section -->
+            <section class="items-section">
+                <!-- Items Header -->
+                <div class="items-header"></div>
+
+                <!-- Filter Toggle Button (Mobile) -->
+                <button class="filter-toggle-btn" onclick="toggleFilters()">
+                    <i class="fas fa-filter"></i> Show Filters
+                </button>
+
+                <!-- Items Grid -->
+                <div id="itemsGrid">
+                    <!-- Items will be dynamically loaded here -->
+                </div>
+            </section>
+        </div>
+    </main>
+
+    <!-- Footer -->
+    <footer class="footer">
+        <div class="footer-content">
+            <div class="footer-section">
+                <h3><i class="fas fa-exchange-alt"></i> BorrowBuddy</h3>
+                <p>Share resources, build community</p>
+            </div>
+            <div class="footer-section">
+                <h4>Quick Links</h4>
+                <a href="about.html">About Us</a>
+                <a href="contact.html">Contact</a>
+                <a href="faq.html">FAQ</a>
+            </div>
+            <div class="footer-section">
+                <h4>Legal</h4>
+                <a href="terms.html">Terms of Service</a>
+                <a href="privacy.html">Privacy Policy</a>
+            </div>
+            <div class="footer-section">
+                <h4>Follow Us</h4>
+                <div class="social-links">
+                    <a href="#"><i class="fab fa-facebook"></i></a>
+                    <a href="#"><i class="fab fa-twitter"></i></a>
+                    <a href="#"><i class="fab fa-instagram"></i></a>
+                </div>
+            </div>
+        </div>
+        <div class="footer-bottom">
+            <p>&copy; 2026 BorrowBuddy Platform. All rights reserved.</p>
+        </div>
+    </footer>
+
+    <!-- JavaScript Files -->
+    <script src="config.js"></script>
+    <script src="auth.js"></script>
+    <script src="dashboard.js"></script>
+    <script src="browse.js"></script>
+    <script src="ai-assistant.js"></script>
+    
+    <script>
+        // Mobile Navigation Toggle
+        document.getElementById('navToggle')?.addEventListener('click', function() {
+            document.getElementById('navMenu')?.classList.toggle('active');
+        });
+
+        // Update cart badge on page load
+        window.addEventListener('DOMContentLoaded', () => {
+            const cart = JSON.parse(localStorage.getItem('cart') || '[]');
+            const badge = document.getElementById('cartBadge');
+            if (badge) {
+                badge.textContent = cart.length;
+                badge.style.display = cart.length > 0 ? 'inline-block' : 'none';
+            }
+
+            // Update items count
+            updateItemsCount();
+        });
+
+        // Clear all filters
+        function clearAllFilters() {
+            // Clear search
+            document.getElementById('searchInput').value = '';
+            
+            // Clear condition checkboxes
+            document.querySelectorAll('input[name="condition"]').forEach(cb => {
+                cb.checked = false;
+            });
+            
+            // Reset price and sort filters
+            document.getElementById('priceFilter').value    = 'all';
+            document.getElementById('sortFilter').value     = 'newest';
+            const locFilter = document.getElementById('locationFilter');
+            if (locFilter) locFilter.value = '';
+            
+            // Reset category to all
+            document.querySelectorAll('.category-btn').forEach(btn => {
+                btn.classList.remove('active');
+            });
+            document.querySelector('.category-btn[data-category="all"]')?.classList.add('active');
+            
+            // Trigger filter update
+            if (window.applyFilters) {
+                window.applyFilters();
+            }
+        }
+
+        // Toggle filters on mobile
+        function toggleFilters() {
+            const sidebar = document.getElementById('filterSidebar');
+            if (sidebar) {
+                sidebar.classList.toggle('mobile-visible');
+            }
+        }
+
+        // Update items count
+        function updateItemsCount() {
+            const itemsGrid = document.getElementById('itemsGrid');
+            const itemCount = document.getElementById('itemCount');
+            
+            if (itemsGrid && itemCount) {
+                const items = itemsGrid.querySelectorAll('.item-card');
+                itemCount.textContent = items.length;
+            }
+        }
+
+        // Wrap applyFilters AFTER browse.js DOMContentLoaded has registered it
+        window.addEventListener("DOMContentLoaded", () => {
+            const _orig = window.applyFilters;
+            window.applyFilters = function() {
+                if (_orig) _orig();
+                setTimeout(updateItemsCount, 100);
+            };
+        });
+    </script>
+    <script src="storage-sync.js"></script>
+    <script src="notifications.js"></script>
+    <script src="referral-system.js"></script>
+    <script src="dark-mode.js"></script>
+    <script src="bottom-nav.js"></script>
+    <script src="skeletons.js"></script>
+    <script src="empty-states.js"></script>
+    <script src="onboarding.js"></script>
+    <script src="pwa.js"></script>
+</body>
+</html>

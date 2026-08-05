@@ -1,0 +1,283 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Authentication Successful - BorrowBuddy</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            min-height: 100vh;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+        }
+
+        .container {
+            text-align: center;
+            background: white;
+            padding: 3rem 2rem;
+            border-radius: 16px;
+            box-shadow: 0 20px 60px rgba(0,0,0,0.3);
+            max-width: 400px;
+            width: 90%;
+        }
+
+        .icon-wrapper {
+            margin-bottom: 1.5rem;
+        }
+
+        .check-icon {
+            width: 80px;
+            height: 80px;
+            background: linear-gradient(135deg, #667eea, #764ba2);
+            border-radius: 50%;
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            animation: scaleIn 0.5s ease;
+        }
+
+        .check-icon i {
+            font-size: 3rem;
+            color: white;
+        }
+
+        .spinner {
+            border: 4px solid #f3f3f3;
+            border-top: 4px solid #667eea;
+            border-radius: 50%;
+            width: 50px;
+            height: 50px;
+            animation: spin 1s linear infinite;
+            margin: 0 auto 1.5rem;
+        }
+
+        @keyframes spin {
+            0% { transform: rotate(0deg); }
+            100% { transform: rotate(360deg); }
+        }
+
+        @keyframes scaleIn {
+            0% { transform: scale(0); }
+            50% { transform: scale(1.1); }
+            100% { transform: scale(1); }
+        }
+
+        h2 {
+            color: #333;
+            margin: 0 0 0.5rem 0;
+            font-size: 1.75rem;
+        }
+
+        p {
+            color: #666;
+            margin: 0 0 1.5rem 0;
+            font-size: 1rem;
+        }
+
+        .error-message {
+            background: #fee;
+            color: #c33;
+            padding: 1rem;
+            border-radius: 8px;
+            margin-bottom: 1rem;
+        }
+
+        .loading {
+            display: block;
+        }
+
+        .success {
+            display: none;
+        }
+
+        .error {
+            display: none;
+        }
+
+        .btn {
+            display: inline-block;
+            padding: 0.75rem 2rem;
+            background: linear-gradient(135deg, #667eea, #764ba2);
+            color: white;
+            text-decoration: none;
+            border-radius: 8px;
+            font-weight: 600;
+            transition: transform 0.2s;
+        }
+
+        .btn:hover {
+            transform: translateY(-2px);
+        }
+    </style>
+    <!-- BorrowBuddy UX modules -->
+    <link rel="stylesheet" href="skeletons.css">
+    <link rel="stylesheet" href="empty-states.css">
+    <link rel="stylesheet" href="onboarding.css">
+    <link rel="stylesheet" href="pwa.css">
+    <link rel="manifest" href="manifest.json">
+    <meta name="theme-color" content="#2563eb">
+    <link rel="apple-touch-icon" href="icons/icon-192.png">
+</head>
+<body>
+    <div class="container">
+        <!-- Loading State -->
+        <div id="loadingState" class="loading">
+            <div class="spinner"></div>
+            <h2>Authenticating...</h2>
+            <p>Please wait while we complete your login</p>
+        </div>
+
+        <!-- Success State -->
+        <div id="successState" class="success">
+            <div class="icon-wrapper">
+                <div class="check-icon">
+                    <i class="fas fa-check"></i>
+                </div>
+            </div>
+            <h2>Authentication Successful!</h2>
+            <p>Redirecting to your dashboard...</p>
+        </div>
+
+        <!-- Error State -->
+        <div id="errorState" class="error">
+            <div class="icon-wrapper">
+                <i class="fas fa-exclamation-circle" style="font-size: 4rem; color: #c33;"></i>
+            </div>
+            <h2>Authentication Failed</h2>
+            <div class="error-message" id="errorMessage"></div>
+            <a href="login.html" class="btn">Back to Login</a>
+        </div>
+    </div>
+
+    <script src="config.js"></script>
+    <script>
+        // ⚠️ IMPORTANT: Set your backend URL in config.js — this file reads from there.
+        // If self-hosting the OAuth callback, Google Cloud Console's redirect URI must match
+        // ${BORROWBUDDY_CONFIG.API_BASE_URL}/api/auth/google/callback exactly.
+        const BACKEND_URL = self.BORROWBUDDY_CONFIG.API_BASE_URL;
+
+        // Get token from URL
+        const urlParams = new URLSearchParams(window.location.search);
+        const token = urlParams.get('token');
+        const error = urlParams.get('error');
+
+        // Show different states
+        const showLoading = () => {
+            document.getElementById('loadingState').style.display = 'block';
+            document.getElementById('successState').style.display = 'none';
+            document.getElementById('errorState').style.display = 'none';
+        };
+
+        const showSuccess = () => {
+            document.getElementById('loadingState').style.display = 'none';
+            document.getElementById('successState').style.display = 'block';
+            document.getElementById('errorState').style.display = 'none';
+        };
+
+        const showError = (message) => {
+            document.getElementById('loadingState').style.display = 'none';
+            document.getElementById('successState').style.display = 'none';
+            document.getElementById('errorState').style.display = 'block';
+            document.getElementById('errorMessage').textContent = message;
+        };
+
+        // Main authentication handler
+        async function handleAuth() {
+            // Check for error parameter
+            if (error) {
+                let errorMessage = 'Authentication failed. Please try again.';
+                
+                if (error === 'google_auth_failed') {
+                    errorMessage = 'Google authentication failed. Please try again or use a different method.';
+                } else if (error === 'facebook_auth_failed') {
+                    errorMessage = 'Facebook authentication failed. Please try again or use a different method.';
+                } else if (error === 'server_error') {
+                    errorMessage = 'Server error occurred. Please try again later.';
+                }
+                
+                showError(errorMessage);
+                return;
+            }
+
+            // Check if token exists
+            if (!token) {
+                showError('No authentication token received. Please try logging in again.');
+                return;
+            }
+
+            try {
+                // Fetch user data from backend
+                const response = await fetch(`${BACKEND_URL}/api/auth/me`, {
+                    method: 'GET',
+                    headers: {
+                        'Authorization': `Bearer ${token}`,
+                        'Content-Type': 'application/json'
+                    }
+                });
+
+                const data = await response.json();
+
+                if (data.success && data.user) {
+                    // Store authentication data
+                    localStorage.setItem('authToken', token);
+                    localStorage.setItem('isLoggedIn', 'true');
+                    localStorage.setItem('username', data.user.username);
+                    localStorage.setItem('email', data.user.email);
+                    
+                    // Store additional user data
+                    if (data.user.firstName) localStorage.setItem('firstName', data.user.firstName);
+                    if (data.user.lastName)  localStorage.setItem('lastName',  data.user.lastName);
+                    if (data.user.avatar)    localStorage.setItem('avatar',    data.user.avatar);
+
+                    // Save full profile so dashboard + profile page show real name
+                    const profileKey = `profile_${data.user.username}`;
+                    const existing   = JSON.parse(localStorage.getItem(profileKey) || '{}');
+                    localStorage.setItem(profileKey, JSON.stringify({
+                        ...existing,
+                        username:  data.user.username,
+                        email:     data.user.email,
+                        firstName: data.user.firstName || existing.firstName || '',
+                        lastName:  data.user.lastName  || existing.lastName  || '',
+                        avatar:    data.user.avatar    || existing.avatar    || '',
+                        phone:     data.user.phone     || existing.phone     || '',
+                        location:  data.user.location  || existing.location  || '',
+                        bio:       data.user.bio       || existing.bio       || ''
+                    }));
+                    
+                    console.log('✅ Authentication successful:', data.user.username);
+                    
+                    // Show success and redirect
+                    showSuccess();
+                    
+                    setTimeout(() => {
+                        window.location.href = 'dashboard-enhanced.html';
+                    }, 1500);
+                } else {
+                    throw new Error(data.message || 'Failed to fetch user data');
+                }
+            } catch (error) {
+                console.error('❌ Authentication error:', error);
+                showError('Failed to complete authentication. Please try again.');
+            }
+        }
+
+        // Run authentication on page load
+        showLoading();
+        handleAuth();
+    </script>
+    <script src="skeletons.js"></script>
+    <script src="empty-states.js"></script>
+    <script src="onboarding.js"></script>
+    <script src="pwa.js"></script>
+</body>
+</html>
