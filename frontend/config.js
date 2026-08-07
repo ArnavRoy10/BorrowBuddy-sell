@@ -12,5 +12,5 @@
  * the service worker (sw.js), which has no `window` object.
  */
 self.BORROWBUDDY_CONFIG = {
-    API_BASE_URL: 'http://localhost:5000'
+    API_BASE_URL: 'https://borrowbuddy-sell.onrender.com'
 };
