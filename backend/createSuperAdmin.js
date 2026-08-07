@@ -19,9 +19,9 @@ const MONGO_URI = process.env.MONGO_URI
 
 async function run() {
     // ── Edit these before running ──────────────────
-    const NAME     = 'Admin';
-    const EMAIL    = 'admin@yourapp.com';
-    const PASSWORD = 'ChangeThisPassword123!';
+    const NAME     = 'Arnav';
+    const EMAIL    = 'arnavbhi5@gmail.com';
+    const PASSWORD = 'Arnav@123';
     // ──────────────────────────────────────────────
 
     console.log('Connecting to:', MONGO_URI);
