@@ -609,16 +609,16 @@ async function initiateGoogleOAuth() {
     const googleBtns = document.querySelectorAll('.btn-google');
     googleBtns.forEach(btn => {
         btn.disabled = true;
-        btn.innerHTML = '<i class="fas fa-spinner fa-spin"></i> Connecting...';
+        btn.innerHTML = '<i class="fas fa-spinner fa-spin"></i> Waking up server...';
     });
 
     try {
-        // Step 1: Check if backend is running on port 5000
-        const health = await fetch(`${AUTH_API_URL}/health`, { signal: AbortSignal.timeout(3000) });
+        // Check if backend is reachable (allow up to 35s for Render free tier cold start)
+        const health = await fetch(`${AUTH_API_URL}/health`, { signal: AbortSignal.timeout(35000) });
 
         if (!health.ok) throw new Error('Backend not healthy');
 
-        // Step 2: Backend is running — redirect to Google via backend
+        // Backend is running — redirect to Google via backend
         console.log('✅ Backend running. Redirecting to Google OAuth...');
         window.location.href = `${AUTH_API_URL}/api/auth/google`;
 
@@ -657,15 +657,9 @@ function showGoogleError(type) {
 
     if (type === 'backend_offline') {
         box.innerHTML = `
-            <strong>⚠️ Backend Server Not Running</strong><br><br>
-            You must start the backend server first:<br><br>
-            <code style="background:#fee2e2;padding:4px 8px;border-radius:4px;display:block;margin:4px 0;">cd backend</code>
-            <code style="background:#fee2e2;padding:4px 8px;border-radius:4px;display:block;margin:4px 0;">npm install</code>
-            <code style="background:#fee2e2;padding:4px 8px;border-radius:4px;display:block;margin:4px 0;">node server.js</code>
-            <br>
-            <strong>Also check:</strong> Google Cloud Console → Credentials → Authorized Redirect URIs must include:<br>
-            <code style="background:#fee2e2;padding:4px 8px;border-radius:4px;display:block;margin:4px 0;word-break:break-all;">http://localhost:5000/api/auth/google/callback</code>
-            <small style="color:#991b1b;">❌ NOT http://localhost:5500/... — that causes the 404 error</small>
+            <strong>⚠️ Server is waking up...</strong><br><br>
+            The server takes up to 30 seconds to start after being idle.<br><br>
+            Please wait a moment and try again.
         `;
     } else {
         box.innerHTML = `<strong>❌ Google Sign-In Failed</strong><br>Please try again or use email/password login.`;
