@@ -55,3 +55,25 @@ body.dark-mode .sh-group-head:hover { background: #263244; }
 body.dark-mode .sh-event .sh-msg { color: #e2e8f0; }
 body.dark-mode .sh-filter.active,
 body.dark-mode .sh-btn.primary { background: #2563eb; border-color: #2563eb; color: #fff; }
+/* ── Mobile Responsive ─────────────────────────────────── */
+@media (max-width: 768px) {
+    .sh-stats { grid-template-columns: 1fr 1fr; gap: 0.75rem; }
+    .sh-stat { padding: 0.875rem; }
+
+    .sh-filters { flex-wrap: wrap; gap: 0.4rem; }
+    .sh-filter { padding: 0.4rem 0.75rem; font-size: 0.78rem; }
+
+    .sh-group-head { flex-wrap: wrap; gap: 0.5rem; }
+    .sh-title h3 { font-size: 0.95rem; }
+    .sh-title small { font-size: 0.72rem; }
+
+    .sh-event { padding: 0.6rem 0.75rem; }
+    .sh-msg { font-size: 0.82rem; }
+
+    .sh-actions { flex-direction: column; gap: 0.5rem; }
+    .sh-btn { width: 100%; justify-content: center; }
+}
+
+@media (max-width: 480px) {
+    .sh-stats { grid-template-columns: 1fr 1fr; }
+}
