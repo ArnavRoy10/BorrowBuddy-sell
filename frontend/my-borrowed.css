@@ -1,4 +1,3 @@
-
 /* Remove Button for Returned Items */
 .btn.btn-small.remove-item-btn {
     background: #dc2626;
@@ -12,4 +11,24 @@
     background: #b91c1c;
     transform: translateY(-2px);
     box-shadow: 0 4px 8px rgba(220, 38, 38, 0.3);
+}
+
+/* ── Mobile Responsive ─────────────────────────────────── */
+@media (max-width: 768px) {
+    .category-tabs { gap: 0.5rem; flex-wrap: wrap; }
+    .category-tabs .btn { padding: 0.5rem 0.875rem; font-size: 0.8rem; }
+
+    .item-card { flex-direction: column; }
+    .item-card img, .item-thumb { width: 100%; height: 180px; border-radius: 8px 8px 0 0; }
+
+    .item-actions { flex-wrap: wrap; gap: 0.5rem; }
+    .item-actions .btn { flex: 1; min-width: 120px; justify-content: center; font-size: 0.8rem; }
+
+    .filter-bar { flex-direction: column; gap: 0.5rem; }
+    .filter-bar select, .filter-bar input { width: 100%; }
+}
+
+@media (max-width: 480px) {
+    .page-header h1 { font-size: 1.4rem; }
+    .item-meta { font-size: 0.78rem; flex-wrap: wrap; gap: 0.3rem; }
 }
