@@ -233,3 +233,27 @@ body.dark-mode .d-msg { background: #151b27; }
 .queued-evidence-item[data-status="dropped"] img { filter: grayscale(100%); }
 
 .qe-placeholder { width: 100%; height: 100%; background: var(--bg-light); }
+/* ── Mobile Responsive ─────────────────────────────────── */
+@media (max-width: 768px) {
+    .dispute-card { flex-direction: column; }
+    .dispute-thumb { width: 100%; height: 160px; border-radius: 8px 8px 0 0; object-fit: cover; }
+
+    .dispute-tabs { flex-wrap: wrap; gap: 0.4rem; }
+    .dispute-tab { padding: 0.45rem 0.8rem; font-size: 0.78rem; }
+
+    .d-badge { font-size: 0.7rem; padding: 0.2rem 0.5rem; }
+
+    .dispute-modal { padding: 1rem; margin: 0.5rem; }
+    .dispute-modal h2 { font-size: 1.1rem; }
+
+    .d-field input, .d-field textarea, .d-field select { font-size: 0.9rem; }
+
+    .queued-actions { flex-wrap: wrap; }
+    .queued-evidence { gap: 0.4rem; }
+    .queued-evidence-item { width: 44px; height: 44px; }
+}
+
+@media (max-width: 480px) {
+    .dispute-meta { font-size: 0.75rem; flex-wrap: wrap; gap: 0.25rem; }
+    .dispute-desc { font-size: 0.85rem; }
+}
