@@ -1,7 +1,7 @@
 {
-  "name": "BorrowBuddy — Share Resources, Build Community",
+  "name": "BorrowBuddy — Own Less, Access More",
   "short_name": "BorrowBuddy",
-  "description": "Borrow what you need and earn by lending what you don't use right in your community.",
+  "description": "Borrow what you need and earn by lending what you don't use — right in your community.",
   "start_url": "./index.html",
   "scope": "./",
   "display": "standalone",
@@ -15,8 +15,8 @@
     { "src": "icons/icon-512.png", "sizes": "512x512", "type": "image/png", "purpose": "maskable" }
   ],
   "shortcuts": [
-    { "name": "Browse items", "url": "./browse.html", "description": "Find something to borrow" },
-    { "name": "List an item", "url": "./add-item.html", "description": "Lend something out" },
-    { "name": "Dashboard", "url": "./dashboard-enhanced.html", "description": "Manage borrows, lends, and requests" }
+    { "name": "Browse Items", "url": "./browse.html", "description": "Find something to borrow" },
+    { "name": "List an Item", "url": "./lend.html", "description": "Lend something out" },
+    { "name": "Dashboard", "url": "./dashboard-enhanced.html", "description": "Manage borrows, lends and requests" }
   ]
 }
