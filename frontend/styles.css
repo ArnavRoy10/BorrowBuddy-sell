@@ -29,6 +29,13 @@ body {
 
 html {
     scroll-behavior: smooth;
+    -webkit-text-size-adjust: 100%;
+    text-size-adjust: 100%;
+}
+
+/* Prevent horizontal overflow on all screens */
+*, *::before, *::after {
+    max-width: 100%;
 }
 
 a {
@@ -604,19 +611,88 @@ img {
     }
 
     .hero-title {
-        font-size: 2.5rem;
+        font-size: 2rem;
     }
 
     .hero-subtitle {
-        font-size: 1.1rem;
+        font-size: 1rem;
     }
 
     .hero-stats {
-        grid-template-columns: 1fr;
+        grid-template-columns: repeat(3, 1fr);
+        gap: 0.75rem;
+    }
+
+    .hero-stats .stat-item h3 {
+        font-size: 1.2rem;
+    }
+
+    .hero-stats .stat-item p {
+        font-size: 0.75rem;
     }
 
     .section-header h2 {
-        font-size: 2rem;
+        font-size: 1.75rem;
+    }
+
+    .features-grid,
+    .categories-grid {
+        grid-template-columns: 1fr 1fr;
+        gap: 1rem;
+    }
+
+    .cta-content {
+        padding: 2rem 1.25rem;
+    }
+
+    .cta-content h2 {
+        font-size: 1.6rem;
+    }
+
+    .footer-content {
+        grid-template-columns: 1fr 1fr;
+        gap: 1.5rem;
+    }
+
+    .btn-large {
+        padding: 0.875rem 1.5rem;
+        font-size: 1rem;
+    }
+}
+
+@media (max-width: 480px) {
+    .hero-title {
+        font-size: 1.75rem;
+    }
+
+    .hero-subtitle {
+        font-size: 0.95rem;
+    }
+
+    .hero-buttons {
+        flex-direction: column;
+        gap: 0.75rem;
+    }
+
+    .btn-large {
+        width: 100%;
+        justify-content: center;
+        padding: 0.875rem 1.25rem;
+        font-size: 0.95rem;
+    }
+
+    .hero-illustration {
+        height: 200px;
+        font-size: 3rem;
+    }
+
+    .hero-stats {
+        grid-template-columns: repeat(3, 1fr);
+        gap: 0.5rem;
+    }
+
+    .hero-stats .stat-item h3 {
+        font-size: 1rem;
     }
 
     .features-grid,
@@ -624,36 +700,12 @@ img {
         grid-template-columns: 1fr;
     }
 
-    .cta-content {
-        padding: 3rem 2rem;
-    }
-
-    .cta-content h2 {
-        font-size: 2rem;
+    .section-header h2 {
+        font-size: 1.5rem;
     }
 
     .footer-content {
         grid-template-columns: 1fr;
-    }
-}
-
-@media (max-width: 480px) {
-    .hero-title {
-        font-size: 2rem;
-    }
-
-    .hero-buttons {
-        flex-direction: column;
-    }
-
-    .btn-large {
-        width: 100%;
-        justify-content: center;
-    }
-
-    .hero-illustration {
-        height: 300px;
-        font-size: 4rem;
     }
 }
 
