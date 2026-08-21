@@ -226,9 +226,36 @@ if (loginForm) {
                 }
             }
         } else {
-            // Still record attempt for non-existent users to prevent enumeration
-            LoginRateLimiter.recordAttempt(username);
-            showError('Invalid username or password');
+            // User not in localStorage — try MongoDB backend directly
+            // This handles: different device, cleared browser data, or registered via API
+            try {
+                const tokenRes = await fetch(`${API_BASE_URL}/api/auth/login`, {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({ username, password })
+                });
+                const tokenData = await tokenRes.json();
+
+                if (tokenRes.ok && tokenData.token) {
+                    // Successful backend login — sync to localStorage
+                    LoginRateLimiter.resetAttempts(username);
+                    localStorage.setItem('isLoggedIn', 'true');
+                    localStorage.setItem('username', tokenData.user?.username || username);
+                    localStorage.setItem('email', tokenData.user?.email || '');
+                    localStorage.setItem('authToken', tokenData.token);
+
+                    showSuccess('Login successful! Redirecting...');
+                    setTimeout(() => {
+                        window.location.href = 'dashboard-enhanced.html';
+                    }, REDIRECT_DELAY_MS);
+                } else {
+                    LoginRateLimiter.recordAttempt(username);
+                    showError(tokenData.message || 'Invalid username or password');
+                }
+            } catch (e) {
+                LoginRateLimiter.recordAttempt(username);
+                showError('Could not connect to server. Please try again.');
+            }
         }
     });
 }
@@ -609,16 +636,16 @@ async function initiateGoogleOAuth() {
     const googleBtns = document.querySelectorAll('.btn-google');
     googleBtns.forEach(btn => {
         btn.disabled = true;
-        btn.innerHTML = '<i class="fas fa-spinner fa-spin"></i> Waking up server...';
+        btn.innerHTML = '<i class="fas fa-spinner fa-spin"></i> Connecting...';
     });
 
     try {
-        // Check if backend is reachable (allow up to 35s for Render free tier cold start)
-        const health = await fetch(`${AUTH_API_URL}/health`, { signal: AbortSignal.timeout(35000) });
+        // Step 1: Check if backend is running on port 5000
+        const health = await fetch(`${AUTH_API_URL}/health`, { signal: AbortSignal.timeout(3000) });
 
         if (!health.ok) throw new Error('Backend not healthy');
 
-        // Backend is running — redirect to Google via backend
+        // Step 2: Backend is running — redirect to Google via backend
         console.log('✅ Backend running. Redirecting to Google OAuth...');
         window.location.href = `${AUTH_API_URL}/api/auth/google`;
 
@@ -657,9 +684,15 @@ function showGoogleError(type) {
 
     if (type === 'backend_offline') {
         box.innerHTML = `
-            <strong>⚠️ Server is waking up...</strong><br><br>
-            The server takes up to 30 seconds to start after being idle.<br><br>
-            Please wait a moment and try again.
+            <strong>⚠️ Backend Server Not Running</strong><br><br>
+            You must start the backend server first:<br><br>
+            <code style="background:#fee2e2;padding:4px 8px;border-radius:4px;display:block;margin:4px 0;">cd backend</code>
+            <code style="background:#fee2e2;padding:4px 8px;border-radius:4px;display:block;margin:4px 0;">npm install</code>
+            <code style="background:#fee2e2;padding:4px 8px;border-radius:4px;display:block;margin:4px 0;">node server.js</code>
+            <br>
+            <strong>Also check:</strong> Google Cloud Console → Credentials → Authorized Redirect URIs must include:<br>
+            <code style="background:#fee2e2;padding:4px 8px;border-radius:4px;display:block;margin:4px 0;word-break:break-all;">http://localhost:5000/api/auth/google/callback</code>
+            <small style="color:#991b1b;">❌ NOT http://localhost:5500/... — that causes the 404 error</small>
         `;
     } else {
         box.innerHTML = `<strong>❌ Google Sign-In Failed</strong><br>Please try again or use email/password login.`;
