@@ -670,6 +670,81 @@ hr {
     }
 }
 
+@media (max-width: 768px) {
+    .product-container {
+        padding: 1rem;
+    }
+
+    .product-title {
+        font-size: 1.3rem;
+    }
+
+    .product-price {
+        font-size: 1.4rem;
+    }
+
+    .spec-table td, .spec-table th {
+        padding: 0.6rem 0.5rem;
+        font-size: 0.875rem;
+        word-break: break-word;
+    }
+
+    .spec-table td:last-child {
+        max-width: 55vw;
+        word-break: break-word;
+        overflow-wrap: break-word;
+    }
+
+    .lender-card {
+        padding: 1rem;
+    }
+
+    .lender-info {
+        font-size: 0.9rem;
+    }
+
+    .contact-item {
+        font-size: 0.875rem;
+        word-break: break-word;
+    }
+
+    .contact-item p {
+        word-break: break-word;
+        overflow-wrap: break-word;
+        max-width: calc(100vw - 6rem);
+    }
+
+    .action-buttons .btn {
+        width: 100%;
+        justify-content: center;
+    }
+
+    .image-thumbnails {
+        gap: 0.5rem;
+    }
+
+    .thumbnail {
+        width: 56px;
+        height: 56px;
+    }
+}
+
+@media (max-width: 480px) {
+    .product-meta {
+        flex-wrap: wrap;
+        gap: 0.4rem;
+    }
+
+    .meta-badge {
+        font-size: 0.75rem;
+        padding: 0.25rem 0.6rem;
+    }
+
+    .spec-table td:last-child {
+        max-width: 48vw;
+    }
+}
+
 /* Contact Information */
 .contact-info {
     margin-top: 1.5rem;
