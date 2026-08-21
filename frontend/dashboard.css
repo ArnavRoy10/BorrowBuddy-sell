@@ -457,7 +457,7 @@
         padding: 1.25rem;
         border-radius: 12px;
     }
-    .welcome-section h1 { font-size: 1.4rem; }
+    .welcome-section h1 { font-size: 1.3rem; }
     .welcome-actions { flex-direction: column; gap: 0.5rem; }
     .welcome-actions .btn { width: 100%; justify-content: center; }
 
@@ -466,25 +466,78 @@
         gap: 0.75rem;
     }
 
+    .stat-card {
+        padding: 1rem;
+    }
+
+    .stat-number {
+        font-size: 1.6rem;
+    }
+
     .quick-actions-grid {
         grid-template-columns: 1fr 1fr;
         gap: 0.75rem;
     }
 
-    .action-card { padding: 1rem; }
-    .action-card .action-icon { width: 44px; height: 44px; font-size: 1.1rem; }
-    .action-card h3 { font-size: 0.85rem; }
-    .action-card p { font-size: 0.75rem; }
+    .action-card {
+        padding: 1rem;
+    }
 
-    .chart-container { overflow-x: auto; }
+    .action-card .action-icon {
+        width: 44px;
+        height: 44px;
+        font-size: 1.1rem;
+    }
 
-    .activity-table { font-size: 0.8rem; }
-    .activity-table th, .activity-table td { padding: 0.5rem; }
+    .action-card h3 {
+        font-size: 0.85rem;
+    }
+
+    .action-card p {
+        font-size: 0.75rem;
+    }
+
+    .chart-container {
+        overflow-x: auto;
+    }
+
+    .activity-table {
+        font-size: 0.8rem;
+    }
+
+    .activity-table th,
+    .activity-table td {
+        padding: 0.5rem 0.4rem;
+    }
+
+    .user-stats-grid {
+        grid-template-columns: 1fr 1fr;
+        gap: 0.75rem;
+    }
+
+    .user-stat-card {
+        padding: 1rem;
+    }
 }
 
 @media (max-width: 480px) {
-    .stats-grid { grid-template-columns: 1fr 1fr; }
-    .quick-actions-grid { grid-template-columns: 1fr 1fr; }
-    .stat-card { padding: 0.875rem; }
-    .stat-number { font-size: 1.5rem; }
+    .stats-grid {
+        grid-template-columns: 1fr 1fr;
+    }
+
+    .quick-actions-grid {
+        grid-template-columns: 1fr 1fr;
+    }
+
+    .stat-card {
+        padding: 0.875rem;
+    }
+
+    .stat-number {
+        font-size: 1.4rem;
+    }
+
+    .user-stats-grid {
+        grid-template-columns: 1fr 1fr;
+    }
 }
