@@ -5,7 +5,7 @@
 // is loaded directly here to get BORROWBUDDY_CONFIG.API_BASE_URL.
 importScripts('./config.js');
 
-const VERSION    = 'bb-v9';
+const VERSION    = 'bb-v10';
 const SHELL      = `${VERSION}-shell`;
 const RUNTIME    = `${VERSION}-runtime`;
 const OFFLINE_URL = 'offline.html';
