@@ -899,8 +899,49 @@ img {
         font-size: 1.5rem;
     }
 
+    .footer {
+        padding: 3rem 1.5rem 1.5rem;
+    }
+
+    .footer-bottom {
+        padding-top: 1.5rem;
+        font-size: 0.8rem;
+    }
+
     .footer-content {
         grid-template-columns: 1fr;
+        gap: 2rem;
+        text-align: center;
+    }
+
+    .footer-section h3 {
+        justify-content: center;
+        font-size: 1.35rem;
+    }
+
+    .footer-section h4 {
+        font-size: 1rem;
+        padding-top: 1.5rem;
+        border-top: 1px solid rgba(255, 255, 255, 0.1);
+    }
+
+    .footer-section:first-child h4 {
+        border-top: none;
+        padding-top: 0;
+    }
+
+    .footer-section p {
+        font-size: 0.9rem;
+        margin-bottom: 1rem;
+    }
+
+    .footer-section a {
+        font-size: 0.9rem;
+        margin-bottom: 0.6rem;
+    }
+
+    .social-links {
+        justify-content: center;
     }
 }
 
