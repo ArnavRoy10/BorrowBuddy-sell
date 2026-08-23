@@ -47,7 +47,7 @@
         /* Stats Grid in Hero */
         .hero-stats-grid {
             display: grid;
-            grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+            grid-template-columns: repeat(3, 1fr);
             gap: 1rem;
             margin-top: 2rem;
         }
@@ -58,6 +58,7 @@
             border: 1px solid rgba(255, 255, 255, 0.2);
             border-radius: 12px;
             padding: 1rem;
+            min-width: 0;
         }
 
         .hero-stat-header {
@@ -142,6 +143,44 @@
 
         @media (max-width: 768px) {
             .hero-charts-grid { display: none; }
+
+            .hero-stats-grid {
+                gap: 0.5rem;
+            }
+
+            .hero-stat-card {
+                padding: 0.6rem;
+                border-radius: 10px;
+            }
+
+            .hero-stat-header {
+                gap: 0.4rem;
+                margin-bottom: 0.3rem;
+            }
+
+            .hero-stat-icon {
+                width: 28px;
+                height: 28px;
+                border-radius: 6px;
+            }
+
+            .hero-stat-icon i {
+                font-size: 0.75rem;
+            }
+
+            .hero-stat-value {
+                font-size: 1.05rem;
+            }
+
+            .hero-stat-label {
+                font-size: 0.62rem;
+                line-height: 1.2;
+            }
+
+            .hero-stat-change {
+                font-size: 0.55rem;
+                margin-top: 0.15rem;
+            }
         }
 
         /* User Stats Cards */
