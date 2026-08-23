@@ -913,15 +913,21 @@
     <script src="pwa.js"></script>
     <script>
         // Switch user-stats-grid to 2x2 when the icon and the status badge
-        // in a card's header get within 5px of touching each other.
+        // in a card's header would get within 5px of touching each other.
         (function () {
             const grid = document.querySelector('.user-stats-grid');
             if (!grid) return;
+            const container = grid.parentElement || grid;
 
-            function checkGap() {
+            function measureGapIn4ColLayout() {
+                // Always measure as if in the natural 4-column layout,
+                // so toggling compact mode never feeds back into the
+                // measurement (which would cause endless flip-flopping).
+                const wasCompact = grid.classList.contains('compact-grid');
+                if (wasCompact) grid.classList.remove('compact-grid');
+
                 const headers = grid.querySelectorAll('.user-stat-header');
                 let minGap = Infinity;
-
                 headers.forEach(function (header) {
                     const icon = header.querySelector('.user-stat-icon');
                     const badge = header.querySelector('.user-stat-change');
@@ -932,12 +938,17 @@
                     if (gap < minGap) minGap = gap;
                 });
 
+                if (wasCompact) grid.classList.add('compact-grid');
+                return minGap;
+            }
+
+            function checkGap() {
+                const minGap = measureGapIn4ColLayout();
                 if (minGap === Infinity) return;
 
                 if (minGap <= 5) {
                     grid.classList.add('compact-grid');
-                } else if (minGap > 15) {
-                    // hysteresis so it doesn't flicker right at the threshold
+                } else {
                     grid.classList.remove('compact-grid');
                 }
             }
@@ -951,7 +962,10 @@
             window.addEventListener('resize', scheduleCheck);
             window.addEventListener('load', scheduleCheck);
             if (window.ResizeObserver) {
-                new ResizeObserver(scheduleCheck).observe(grid);
+                // Observe the container, not the grid itself — the
+                // container's width doesn't change when the grid's own
+                // column count toggles, so this can't self-trigger.
+                new ResizeObserver(scheduleCheck).observe(container);
             }
             scheduleCheck();
         })();
