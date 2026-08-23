@@ -220,44 +220,43 @@
             }
         }
 
-        @media (max-width: 480px) {
-            .user-stats-grid {
-                grid-template-columns: repeat(2, 1fr);
-                gap: 0.75rem;
-            }
+        /* Applied by JS when icon/badge gap gets too tight */
+        .user-stats-grid.compact-grid {
+            grid-template-columns: repeat(2, 1fr);
+            gap: 0.75rem;
+        }
 
-            .user-stat-card {
-                padding: 0.9rem;
-                border-radius: 10px;
-            }
+        .user-stats-grid.compact-grid .user-stat-card {
+            padding: 0.9rem;
+            border-radius: 10px;
+        }
 
-            .user-stat-header {
-                margin-bottom: 0.6rem;
-            }
+        .user-stats-grid.compact-grid .user-stat-header {
+            margin-bottom: 0.6rem;
+        }
 
-            .user-stat-icon {
-                width: 34px;
-                height: 34px;
-                border-radius: 8px;
-            }
+        .user-stats-grid.compact-grid .user-stat-icon {
+            width: 34px;
+            height: 34px;
+            border-radius: 8px;
+        }
 
-            .user-stat-icon i {
-                font-size: 0.9rem;
-            }
+        .user-stats-grid.compact-grid .user-stat-icon i {
+            font-size: 0.9rem;
+        }
 
-            .user-stat-change {
-                font-size: 0.65rem;
-                padding: 0.2rem 0.4rem;
-            }
+        .user-stats-grid.compact-grid .user-stat-change {
+            font-size: 0.65rem;
+            padding: 0.2rem 0.4rem;
+        }
 
-            .user-stat-label {
-                font-size: 0.75rem;
-                margin-bottom: 0.2rem;
-            }
+        .user-stats-grid.compact-grid .user-stat-label {
+            font-size: 0.75rem;
+            margin-bottom: 0.2rem;
+        }
 
-            .user-stat-value {
-                font-size: 1.35rem;
-            }
+        .user-stats-grid.compact-grid .user-stat-value {
+            font-size: 1.35rem;
         }
 
         /* User Stats Cards */
@@ -912,5 +911,50 @@
     <script src="empty-states.js"></script>
     <script src="onboarding.js"></script>
     <script src="pwa.js"></script>
+    <script>
+        // Switch user-stats-grid to 2x2 when the icon and the status badge
+        // in a card's header get within 5px of touching each other.
+        (function () {
+            const grid = document.querySelector('.user-stats-grid');
+            if (!grid) return;
+
+            function checkGap() {
+                const headers = grid.querySelectorAll('.user-stat-header');
+                let minGap = Infinity;
+
+                headers.forEach(function (header) {
+                    const icon = header.querySelector('.user-stat-icon');
+                    const badge = header.querySelector('.user-stat-change');
+                    if (!icon || !badge) return;
+                    const iconRect = icon.getBoundingClientRect();
+                    const badgeRect = badge.getBoundingClientRect();
+                    const gap = badgeRect.left - iconRect.right;
+                    if (gap < minGap) minGap = gap;
+                });
+
+                if (minGap === Infinity) return;
+
+                if (minGap <= 5) {
+                    grid.classList.add('compact-grid');
+                } else if (minGap > 15) {
+                    // hysteresis so it doesn't flicker right at the threshold
+                    grid.classList.remove('compact-grid');
+                }
+            }
+
+            let rafId = null;
+            function scheduleCheck() {
+                if (rafId) cancelAnimationFrame(rafId);
+                rafId = requestAnimationFrame(checkGap);
+            }
+
+            window.addEventListener('resize', scheduleCheck);
+            window.addEventListener('load', scheduleCheck);
+            if (window.ResizeObserver) {
+                new ResizeObserver(scheduleCheck).observe(grid);
+            }
+            scheduleCheck();
+        })();
+    </script>
 </body>
 </html>
