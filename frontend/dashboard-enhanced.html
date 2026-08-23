@@ -181,12 +181,49 @@
                 font-size: 0.55rem;
                 margin-top: 0.15rem;
             }
+
+            .user-stats-grid {
+                gap: 0.4rem;
+            }
+
+            .user-stat-card {
+                padding: 0.5rem;
+                border-radius: 8px;
+            }
+
+            .user-stat-header {
+                margin-bottom: 0.4rem;
+            }
+
+            .user-stat-icon {
+                width: 26px;
+                height: 26px;
+                border-radius: 6px;
+            }
+
+            .user-stat-icon i {
+                font-size: 0.7rem;
+            }
+
+            .user-stat-change {
+                font-size: 0.5rem;
+                padding: 0.15rem 0.3rem;
+            }
+
+            .user-stat-label {
+                font-size: 0.55rem;
+                margin-bottom: 0.15rem;
+            }
+
+            .user-stat-value {
+                font-size: 1rem;
+            }
         }
 
         /* User Stats Cards */
         .user-stats-grid {
             display: grid;
-            grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+            grid-template-columns: repeat(4, 1fr);
             gap: 1.5rem;
             margin-bottom: 2rem;
         }
@@ -197,6 +234,7 @@
             padding: 1.5rem;
             border: 1px solid #e5e7eb;
             transition: box-shadow 0.2s;
+            min-width: 0;
         }
 
         .user-stat-card:hover {
