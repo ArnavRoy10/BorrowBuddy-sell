@@ -74,8 +74,12 @@
             <section class="cart-items-section">
                 <div class="cart-items-header">
                     <h2>Items in Cart (<span id="cartItemCount">0</span>)</h2>
+                    <div class="cart-subtotal-inline">
+                        Subtotal (<span id="cartItemCountInline">0</span> items):
+                        <strong id="cartSubtotalInline">₹0.00</strong>
+                    </div>
                     <button class="clear-cart-btn" id="clearCartBtn">
-                        <i class="fas fa-trash"></i> Clear All
+                        <i class="fas fa-trash"></i> Clear cart
                     </button>
                 </div>
 
@@ -102,7 +106,7 @@
                     
                     <!-- Summary Items -->
                     <div id="cartSummaryItems">
-                        <p style="color: rgba(255,255,255,0.7); font-size: 0.9rem;">
+                        <p style="color: #6b7280; font-size: 0.9rem;">
                             Set dates for items to see pricing
                         </p>
                     </div>
