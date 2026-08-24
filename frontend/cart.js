@@ -42,68 +42,50 @@ function renderCart() {
         const deposit= parseFloat(item.securityDeposit) || 0;
 
         return `
-        <div class="cart-item" id="cart-item-${i}" style="
-            background:white;border-radius:16px;padding:1.25rem;
-            margin-bottom:1rem;display:flex;gap:1rem;align-items:flex-start;
-            box-shadow:0 2px 12px rgba(0,0,0,.07);border:1px solid #e5e7eb;
-            transition:box-shadow .2s;
-        " onmouseover="this.style.boxShadow='0 6px 24px rgba(0,0,0,.12)'"
-           onmouseout="this.style.boxShadow='0 2px 12px rgba(0,0,0,.07)'">
+        <div class="cart-item" id="cart-item-${i}">
+            <div class="cart-item-image">
+                <img src="${img}" alt="${esc(item.name)}"
+                     onerror="this.src='https://via.placeholder.com/140'">
+            </div>
 
-            <img src="${img}" alt="${esc(item.name)}"
-                 style="width:90px;height:90px;object-fit:cover;border-radius:10px;flex-shrink:0"
-                 onerror="this.src='https://via.placeholder.com/90'">
+            <div class="cart-item-details">
+                <h3 class="cart-item-title">${esc(item.name)}</h3>
 
-            <div style="flex:1;min-width:0">
-                <div style="display:flex;justify-content:space-between;align-items:start;gap:.5rem">
-                    <div>
-                        <div style="font-weight:700;font-size:1rem;color:#1f2937">${esc(item.name)}</div>
-                        <div style="font-size:.8rem;color:#6b7280;margin-top:.2rem">
-                            <i class="fas fa-user"></i> ${esc(item.owner)} &nbsp;·&nbsp;
-                            <span style="background:#eff6ff;color:#2563eb;padding:.15rem .5rem;border-radius:6px;font-weight:600">
-                                ${esc(item.category||'item')}
-                            </span>
-                        </div>
-                    </div>
-                    <button onclick="removeItem(${i})" style="
-                        background:none;border:none;color:#ef4444;cursor:pointer;
-                        font-size:1.1rem;padding:.25rem;flex-shrink:0;
-                        transition:transform .15s;
-                    " onmouseover="this.style.transform='scale(1.2)'"
-                       onmouseout="this.style.transform='scale(1)'"
-                       title="Remove from cart">
-                        <i class="fas fa-times-circle"></i>
-                    </button>
+                <div class="item-meta">
+                    <span><i class="fas fa-user"></i> ${esc(item.owner)}</span>
+                    <span class="item-category-badge">${esc(item.category||'item')}</span>
                 </div>
 
-                <!-- Date pickers -->
-                <div style="display:flex;gap:.75rem;margin-top:.75rem;flex-wrap:wrap;align-items:center">
-                    <div style="display:flex;align-items:center;gap:.4rem">
-                        <label style="font-size:.75rem;color:#6b7280;font-weight:600">FROM</label>
-                        <input type="date" value="${item.fromDate||''}"
+                <div class="date-selection">
+                    <div class="date-input-group">
+                        <label><i class="fas fa-calendar-alt"></i> From</label>
+                        <input type="date" class="date-input" value="${item.fromDate||''}"
                                min="${new Date().toISOString().split('T')[0]}"
-                               onchange="updateDates(${i},'from',this.value)"
-                               style="border:1px solid #e5e7eb;border-radius:8px;padding:.3rem .6rem;font-size:.8rem;color:#1f2937;outline:none">
+                               onchange="updateDates(${i},'from',this.value)">
                     </div>
-                    <div style="display:flex;align-items:center;gap:.4rem">
-                        <label style="font-size:.75rem;color:#6b7280;font-weight:600">TO</label>
-                        <input type="date" value="${item.toDate||''}"
+                    <div class="date-input-group">
+                        <label><i class="fas fa-calendar-check"></i> To</label>
+                        <input type="date" class="date-input" value="${item.toDate||''}"
                                min="${item.fromDate||new Date().toISOString().split('T')[0]}"
-                               onchange="updateDates(${i},'to',this.value)"
-                               style="border:1px solid #e5e7eb;border-radius:8px;padding:.3rem .6rem;font-size:.8rem;color:#1f2937;outline:none">
+                               onchange="updateDates(${i},'to',this.value)">
                     </div>
                     ${days > 0 && item.fromDate && item.toDate ? `
-                    <span style="font-size:.78rem;color:#10b981;font-weight:600;background:#f0fdf4;padding:.25rem .6rem;border-radius:6px">
+                    <span class="days-badge">
                         <i class="fas fa-clock"></i> ${days} day${days!==1?'s':''}
                     </span>` : ''}
                 </div>
 
-                <!-- Pricing -->
-                <div style="display:flex;gap:1rem;margin-top:.6rem;font-size:.82rem;flex-wrap:wrap">
-                    <span style="color:#6b7280"><i class="fas fa-rupee-sign"></i> ${price>0?`₹${price}/day`:'Free'}</span>
-                    ${rental > 0 ? `<span style="color:#2563eb;font-weight:600">Rental: ₹${rental.toFixed(2)}</span>` : ''}
-                    ${deposit > 0 ? `<span style="color:#f59e0b;font-weight:600">Deposit: ₹${deposit}</span>` : ''}
+                <div class="cart-item-actions-row">
+                    <button class="cart-text-action" onclick="removeItem(${i})" title="Remove from cart">
+                        <i class="fas fa-trash"></i> Delete
+                    </button>
                 </div>
+            </div>
+
+            <div class="cart-item-price-col">
+                <div class="price">${price>0?`₹${price}<span>/day</span>`:'Free'}</div>
+                ${rental > 0 ? `<div class="price-sub">Rental: ₹${rental.toFixed(2)}</div>` : ''}
+                ${deposit > 0 ? `<div class="price-sub deposit"><i class="fas fa-shield-alt"></i> Deposit: ₹${deposit}</div>` : ''}
             </div>
         </div>`;
     }).join('');
@@ -113,11 +95,15 @@ function renderSummary() {
     const summaryEl = document.getElementById('cartSummaryItems');
     const totalEl   = document.getElementById('cartTotal');
     const depositEl = document.getElementById('totalDeposit');
+    const inlineCountEl = document.getElementById('cartItemCountInline');
+    const inlineTotalEl = document.getElementById('cartSubtotalInline');
 
     if (!cartItems.length) {
-        summaryEl.innerHTML = '<p style="color:rgba(255,255,255,.6);font-size:.875rem">Your cart is empty</p>';
+        summaryEl.innerHTML = '<p style="color:#6b7280;font-size:.875rem">Your cart is empty</p>';
         totalEl.textContent  = '₹0.00';
         if (depositEl) depositEl.innerHTML = '';
+        if (inlineCountEl) inlineCountEl.textContent = '0';
+        if (inlineTotalEl) inlineTotalEl.textContent = '₹0.00';
         return;
     }
 
@@ -134,28 +120,30 @@ function renderSummary() {
 
         return `
         <div style="display:flex;justify-content:space-between;align-items:start;
-                    padding:.5rem 0;border-bottom:1px solid rgba(255,255,255,.1);gap:.5rem">
-            <span style="font-size:.82rem;opacity:.85;flex:1">${esc(item.name)}</span>
-            <span style="font-size:.82rem;font-weight:700;white-space:nowrap">
+                    padding:.5rem 0;border-bottom:1px solid #e5e7eb;gap:.5rem">
+            <span style="font-size:.82rem;color:#4b5563;flex:1">${esc(item.name)}</span>
+            <span style="font-size:.82rem;font-weight:700;color:#1f2937;white-space:nowrap">
                 ${rental > 0 ? `₹${rental.toFixed(2)}` : 'Free'}
             </span>
         </div>`;
     }).join('');
 
     totalEl.textContent = rentalTotal > 0 ? `₹${rentalTotal.toFixed(2)}` : 'Free';
+    if (inlineCountEl) inlineCountEl.textContent = cartItems.length;
+    if (inlineTotalEl) inlineTotalEl.textContent = rentalTotal > 0 ? `₹${rentalTotal.toFixed(2)}` : 'Free';
 
     if (depositEl && depositTotal > 0) {
         depositEl.innerHTML = `
-        <div style="margin-top:.75rem;padding:.75rem;background:rgba(245,158,11,.15);
-                    border-radius:8px;border:1px solid rgba(245,158,11,.3)">
-            <div style="font-size:.78rem;color:#fcd34d;font-weight:700;margin-bottom:.25rem">
+        <div style="margin-top:.75rem;padding:.75rem;background:#fffbeb;
+                    border-radius:8px;border:1px solid #fde68a">
+            <div style="font-size:.78rem;color:#b45309;font-weight:700;margin-bottom:.25rem">
                 <i class="fas fa-shield-alt"></i> Security Deposits
             </div>
-            <div style="display:flex;justify-content:space-between;font-size:.82rem;color:rgba(255,255,255,.8)">
+            <div style="display:flex;justify-content:space-between;font-size:.82rem;color:#78350f">
                 <span>Total Deposits</span>
                 <span style="font-weight:700">₹${depositTotal.toFixed(2)}</span>
             </div>
-            <div style="font-size:.7rem;color:rgba(255,255,255,.5);margin-top:.3rem">
+            <div style="font-size:.7rem;color:#92400e;margin-top:.3rem">
                 Refunded after items are returned
             </div>
         </div>`;
