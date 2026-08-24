@@ -257,7 +257,14 @@ self.addEventListener('fetch', (event) => {
             const cached = await caches.match(request);
             const network = fetch(request).then(res => {
                 if (res && res.status === 200) {
-                    caches.open(RUNTIME).then(c => c.put(request, res.clone()));
+                    // Clone synchronously, right away — if we wait until the
+                    // caches.open() promise resolves, the browser may already
+                    // be streaming/consuming res's body by then, and calling
+                    // .clone() on an already-read body throws.
+                    const resToCache = res.clone();
+                    caches.open(RUNTIME)
+                        .then((c) => c.put(request, resToCache))
+                        .catch(() => {});
                 }
                 return res;
             }).catch(() => cached);
