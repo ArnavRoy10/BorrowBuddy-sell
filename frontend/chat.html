@@ -3,21 +3,113 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Shopping Cart - Borrow & Lend</title>
-    
-    <!-- Font Awesome -->
+    <title>Cart - BorrowBuddy</title>
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
-    
-    <!-- CSS Files -->
     <link rel="stylesheet" href="styles.css">
     <link rel="stylesheet" href="dashboard.css">
     <link rel="stylesheet" href="bottom-nav.css">
-    <link rel="stylesheet" href="dark-mode.css">
-    <link rel="stylesheet" href="cart.css?v=2">
+    <link rel="stylesheet" href="cart.css">
     <link rel="stylesheet" href="ai-assistant.css">
+    <script src="config.js"></script>
+    <script src="https://checkout.razorpay.com/v1/checkout.js"></script>
+    <style>
+        /* ── Extra cart styles ─────────────────────────────────── */
+        .cart-items-header {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            margin-bottom: 1.25rem;
+        }
+        .cart-items-header h2 {
+            font-size: 1.1rem;
+            font-weight: 700;
+            color: #1f2937;
+        }
+        .clear-cart-btn {
+            display: flex;
+            align-items: center;
+            gap: 0.4rem;
+            padding: 0.45rem 0.9rem;
+            background: #fee2e2;
+            color: #ef4444;
+            border: 1px solid #fca5a5;
+            border-radius: 8px;
+            font-size: 0.8rem;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.15s;
+        }
+        .clear-cart-btn:hover { background: #ef4444; color: white; }
+
+        /* Checkout button — replaces old "Request All Items" */
+        .btn-request {
+            width: 100%;
+            padding: 0.9rem;
+            background: linear-gradient(135deg, #2563eb, #7c3aed);
+            color: white;
+            border: none;
+            border-radius: 12px;
+            font-size: 1rem;
+            font-weight: 700;
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 0.5rem;
+            box-shadow: 0 6px 20px rgba(99,102,241,0.35);
+            transition: opacity 0.15s, transform 0.15s;
+            margin-top: 1.25rem;
+        }
+        .btn-request:hover:not(:disabled) { opacity: 0.9; transform: translateY(-1px); }
+        .btn-request:disabled { opacity: 0.45; cursor: not-allowed; transform: none; box-shadow: none; }
+
+        .cart-note {
+            display: flex;
+            align-items: flex-start;
+            gap: 0.5rem;
+            margin-top: 0.9rem;
+            font-size: 0.75rem;
+            color: #6b7280;
+            line-height: 1.5;
+        }
+        .cart-note i { margin-top: 0.1rem; flex-shrink: 0; color: #2563eb; }
+
+        /* Pathway hint below button */
+        .pathway-hint {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 0.5rem;
+            margin-top: 0.75rem;
+        }
+        .pathway-hint-item {
+            background: #f8fafc;
+            border: 1px solid #e5e7eb;
+            border-radius: 8px;
+            padding: 0.5rem 0.6rem;
+            font-size: 0.7rem;
+            color: #6b7280;
+            text-align: center;
+            line-height: 1.4;
+        }
+        .pathway-hint-item strong { display: block; color: #1f2937; margin-bottom: 0.15rem; font-size: 0.75rem; }
+
+        /* Empty cart */
+        .empty-cart {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            padding: 4rem 2rem;
+            text-align: center;
+            color: #9ca3af;
+        }
+        .empty-cart i { font-size: 4rem; margin-bottom: 1rem; opacity: 0.3; }
+        .empty-cart h3 { font-size: 1.25rem; color: #6b7280; margin-bottom: 0.5rem; }
+        .empty-cart p  { font-size: 0.9rem; margin-bottom: 1.5rem; }
+    </style>
     <!-- BorrowBuddy UX modules -->
     <link rel="stylesheet" href="skeletons.css">
-    <link rel="stylesheet" href="empty-states.css?v=2">
+    <link rel="stylesheet" href="empty-states.css">
     <link rel="stylesheet" href="onboarding.css">
     <link rel="stylesheet" href="pwa.css">
     <link rel="manifest" href="manifest.json">
@@ -33,30 +125,18 @@
                 <span>BorrowBuddy</span>
             </div>
             <div class="nav-menu" id="navMenu">
-                <a href="index.html" class="nav-item">
-                    <i class="fas fa-home"></i> Home
-                </a>
-                <a href="browse.html" class="nav-item">
-                    <i class="fas fa-search"></i> Browse
-                </a>
-                <a href="dashboard-enhanced.html" class="nav-item">
-                    <i class="fas fa-th-large"></i> Dashboard
-                </a>
-                <a href="lend.html" class="nav-item">
-                    <i class="fas fa-plus-circle"></i> Add Item
-                </a>
+                <a href="index.html" class="nav-item"><i class="fas fa-home"></i> Home</a>
+                <a href="browse.html" class="nav-item"><i class="fas fa-search"></i> Browse</a>
+                <a href="dashboard-enhanced.html" class="nav-item"><i class="fas fa-th-large"></i> Dashboard</a>
+                <a href="lend.html" class="nav-item"><i class="fas fa-plus-circle"></i> Add Item</a>
                 <a href="cart.html" class="nav-item active">
                     <i class="fas fa-shopping-cart"></i> Cart
                     <span class="badge" id="cartBadge">0</span>
                 </a>
-                <a href="disputes.html" class="nav-item"><i class="fas fa-shield-halved"></i> Disputes</a>                <a href="settings.html" class="nav-item"><i class="fas fa-cog"></i> Settings</a>
-                    <a href="#" onclick="logout()" class="nav-item">
-                    <i class="fas fa-sign-out-alt"></i> Logout
-                </a>
+                <a href="disputes.html" class="nav-item"><i class="fas fa-shield-halved"></i> Disputes</a>
+                <a href="#" onclick="logout()" class="nav-item"><i class="fas fa-sign-out-alt"></i> Logout</a>
             </div>
-            <button class="nav-toggle" id="navToggle">
-                <i class="fas fa-bars"></i>
-            </button>
+            <button class="nav-toggle" id="navToggle"><i class="fas fa-bars"></i></button>
         </div>
     </nav>
 
@@ -64,54 +144,45 @@
     <main class="cart-container">
         <!-- Page Header -->
         <div class="cart-header">
-            <h1><i class="fas fa-shopping-cart"></i> Shopping Cart</h1>
-            <p>Review your items and set borrow dates</p>
+            <h1><i class="fas fa-shopping-cart"></i> Your Cart</h1>
+            <p>Set your borrow dates, then choose how you want to proceed</p>
         </div>
 
         <!-- Cart Layout -->
         <div class="cart-layout">
-            <!-- Cart Items Section -->
+
+            <!-- Left: Cart Items -->
             <section class="cart-items-section">
                 <div class="cart-items-header">
-                    <h2>Items in Cart (<span id="cartItemCount">0</span>)</h2>
-                    <div class="cart-subtotal-inline">
-                        Subtotal (<span id="cartItemCountInline">0</span> items):
-                        <strong id="cartSubtotalInline">₹0.00</strong>
-                    </div>
+                    <h2>Items (<span id="cartItemCount">0</span>)</h2>
                     <button class="clear-cart-btn" id="clearCartBtn">
-                        <i class="fas fa-trash"></i> Clear cart
+                        <i class="fas fa-trash"></i> Clear All
                     </button>
                 </div>
 
-                <!-- Cart Items Container -->
-                <div id="cartItemsContainer">
-                    <!-- Items will be dynamically loaded here -->
-                </div>
+                <div id="cartItemsContainer"></div>
 
-                <!-- Empty Cart Message -->
-                <div class="empty-cart" id="emptyCartMessage" style="display: none;">
+                <div class="empty-cart" id="emptyCartMessage" style="display:none">
                     <i class="fas fa-shopping-cart"></i>
                     <h3>Your cart is empty</h3>
                     <p>Browse items and add them to your cart to get started</p>
                     <a href="browse.html" class="btn btn-primary">
-                        Browse Items
+                        <i class="fas fa-search"></i> Browse Items
                     </a>
                 </div>
             </section>
 
-            <!-- Cart Summary Sidebar -->
+            <!-- Right: Summary Sidebar -->
             <aside class="cart-summary">
                 <div class="cart-summary-card">
-                    <h2>Cart Summary</h2>
-                    
-                    <!-- Summary Items -->
+                    <h2>Order Summary</h2>
+
                     <div id="cartSummaryItems">
-                        <p style="color: #6b7280; font-size: 0.9rem;">
+                        <p style="color:#6b7280;font-size:.875rem">
                             Set dates for items to see pricing
                         </p>
                     </div>
 
-                    <!-- Total -->
                     <div class="cart-total">
                         <div class="total-row">
                             <span>Estimated Total</span>
@@ -119,25 +190,35 @@
                         </div>
                     </div>
 
-                    <!-- Security Deposits -->
                     <div id="totalDeposit"></div>
 
-                    <!-- Request Button -->
-                    <button class="btn btn-request" id="requestAllBtn">
-                        Request All Items
+                    <!-- Checkout Button -->
+                    <button class="btn-request" id="requestAllBtn" onclick="showCheckoutModal()" disabled>
+                        <i class="fas fa-bolt"></i> Checkout
                     </button>
 
-                    <!-- Info Note -->
+                    <!-- Pathway hint -->
+                    <div class="pathway-hint">
+                        <div class="pathway-hint-item">
+                            <strong>📬 Send Request</strong>
+                            Free · Wait for owner
+                        </div>
+                        <div class="pathway-hint-item">
+                            <strong>⚡ Instant Unlock</strong>
+                            Small fee · Instant access
+                        </div>
+                    </div>
+
                     <div class="cart-note">
                         <i class="fas fa-info-circle"></i>
-                        <span>Final amounts may vary based on owner approval</span>
+                        <span>You'll choose between a free request or instant paid access at checkout</span>
                     </div>
                 </div>
             </aside>
         </div>
 
         <!-- Continue Shopping -->
-        <div class="continue-shopping">
+        <div class="continue-shopping" style="margin-top:2rem">
             <a href="browse.html" class="btn btn-secondary">
                 <i class="fas fa-arrow-left"></i> Continue Shopping
             </a>
@@ -170,39 +251,23 @@
             </div>
         </div>
         <div class="footer-bottom">
-            <p>&copy; 2026 BorrowBuddy Platform. All rights reserved.</p>
+            <p>&copy; 2026 BorrowBuddy. All rights reserved.</p>
         </div>
     </footer>
 
-    <!-- JavaScript Files -->
-    <script src="config.js"></script>
     <script src="auth.js"></script>
     <script src="dashboard.js"></script>
-    <script src="init-data.js"></script>
     <script src="ai-assistant.js"></script>
     <script src="cart.js"></script>
-    
     <script>
-        // Mobile Navigation Toggle
-        document.getElementById('navToggle')?.addEventListener('click', function() {
+        document.getElementById('navToggle')?.addEventListener('click', () => {
             document.getElementById('navMenu')?.classList.toggle('active');
-        });
-
-        // Update cart badge on page load
-        window.addEventListener('DOMContentLoaded', () => {
-            const cart = JSON.parse(localStorage.getItem('cart') || '[]');
-            const badge = document.getElementById('cartBadge');
-            if (badge) {
-                badge.textContent = cart.length;
-                badge.style.display = cart.length > 0 ? 'inline-block' : 'none';
-            }
         });
     </script>
     <script src="storage-sync.js"></script>
-    <script src="dark-mode.js"></script>
     <script src="bottom-nav.js"></script>
     <script src="skeletons.js"></script>
-    <script src="empty-states.js?v=2"></script>
+    <script src="empty-states.js"></script>
     <script src="onboarding.js"></script>
     <script src="pwa.js"></script>
 </body>
