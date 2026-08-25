@@ -26,14 +26,14 @@
 /* Search and Filter Bar */
 .search-filter-bar {
     display: flex;
-    gap: 1rem;
-    margin-bottom: 2rem;
-    flex-wrap: wrap;
+    align-items: center;
+    gap: 0.75rem;
+    margin-bottom: 1.5rem;
 }
 
 .search-box {
     flex: 1;
-    min-width: 250px;
+    min-width: 0;
     position: relative;
 }
 
@@ -85,6 +85,31 @@
     outline: none;
     border-color: var(--primary-blue);
     box-shadow: 0 0 0 4px rgba(37, 99, 235, 0.1);
+}
+
+/* Full-width selects/inputs used inside the filter sidebar */
+.filter-select-block {
+    width: 100%;
+    padding: 0.75rem 2.5rem 0.75rem 0.875rem;
+    border: 2px solid var(--border-color);
+    border-radius: 10px;
+    font-size: 0.9rem;
+    background: white;
+    color: var(--text-dark);
+    outline: none;
+    transition: border-color 0.2s;
+}
+
+select.filter-select-block {
+    cursor: pointer;
+    appearance: none;
+    background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='12' height='12' viewBox='0 0 12 12'%3E%3Cpath fill='%236b7280' d='M6 9L1 4h10z'/%3E%3C/svg%3E");
+    background-repeat: no-repeat;
+    background-position: right 0.875rem center;
+}
+
+.filter-select-block:focus {
+    border-color: var(--primary-blue);
 }
 
 /* Category Tabs */
@@ -141,8 +166,9 @@
 /* Browse Layout */
 .browse-layout {
     display: grid;
-    grid-template-columns: 280px 1fr;
-    gap: 2rem;
+    grid-template-columns: 260px 1fr;
+    gap: 1.5rem;
+    align-items: start;
 }
 
 /* Sidebar Filters */
@@ -153,6 +179,51 @@
     box-shadow: 0 2px 8px rgba(0, 0, 0, 0.05);
     height: fit-content;
     position: sticky;
+    top: 88px;
+}
+
+.filter-sidebar-header {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    margin-bottom: 1.25rem;
+}
+
+.filter-sidebar-header h3 {
+    font-size: 1.15rem;
+    margin: 0;
+}
+
+.filter-sidebar-close {
+    display: none;
+    width: 32px;
+    height: 32px;
+    border: none;
+    background: var(--bg-light);
+    border-radius: 50%;
+    color: var(--text-gray);
+    cursor: pointer;
+    align-items: center;
+    justify-content: center;
+    font-size: 0.95rem;
+}
+
+.apply-filters-btn {
+    display: none;
+    width: 100%;
+    padding: 0.9rem;
+    margin-top: 1rem;
+    background: var(--primary-blue);
+    color: white;
+    border: none;
+    border-radius: 10px;
+    font-weight: 700;
+    font-size: 0.95rem;
+    cursor: pointer;
+}
+
+.filter-sidebar-overlay {
+    display: none;
 }
 
 .filter-section {
@@ -574,28 +645,33 @@
     }
 
     .search-filter-bar {
-        flex-direction: column;
-        gap: 0.6rem;
+        gap: 0.5rem;
+        margin-bottom: 1rem;
     }
 
-    .search-box {
-        width: 100%;
+    .search-box input {
+        padding: 0.7rem 1rem 0.7rem 2.75rem;
+        font-size: 0.9rem;
+        border-radius: 10px;
     }
 
-    .filter-select {
-        width: 100%;
+    .search-box i {
+        left: 0.875rem;
+        font-size: 1rem;
     }
 
     .category-tabs {
+        gap: 0.5rem;
         margin-left: -1rem;
         margin-right: -1rem;
+        margin-bottom: 1rem;
         padding-left: 1rem;
         padding-right: 1rem;
     }
 
     .category-btn {
-        padding: 0.5rem 1rem;
-        font-size: 0.85rem;
+        padding: 0.4rem 0.85rem;
+        font-size: 0.8rem;
         white-space: nowrap;
     }
 
@@ -606,12 +682,8 @@
     }
 
     #itemsGrid {
-        grid-template-columns: repeat(auto-fill, minmax(160px, 1fr));
-        gap: 0.875rem;
-    }
-
-    .filter-sidebar {
-        display: none;
+        grid-template-columns: 1fr 1fr;
+        gap: 0.75rem;
     }
 
     .item-card-title {
@@ -667,50 +739,98 @@
     }
 }
 
-/* Filter Toggle Button (Mobile) */
+/* Filter Toggle Button — compact icon button next to the search box (mobile only) */
 .filter-toggle-btn {
     display: none;
-    width: 100%;
-    padding: 0.875rem;
+    flex-shrink: 0;
+    align-items: center;
+    justify-content: center;
+    gap: 0.4rem;
+    width: 48px;
+    height: 48px;
+    padding: 0;
     background: white;
     border: 2px solid var(--border-color);
     border-radius: 12px;
     color: var(--text-dark);
     font-weight: 600;
+    font-size: 1.05rem;
     cursor: pointer;
-    margin-bottom: 1rem;
-    transition: all 0.3s;
+    transition: all 0.2s;
 }
 
-.filter-toggle-btn:hover {
+.filter-toggle-btn:hover,
+.filter-toggle-btn.has-active {
     border-color: var(--primary-blue);
     color: var(--primary-blue);
 }
 
-.filter-toggle-btn i {
-    margin-right: 0.5rem;
+.filter-toggle-btn .filter-toggle-label {
+    display: none;
 }
 
 @media (max-width: 768px) {
     .filter-toggle-btn {
-        display: block;
+        display: flex;
     }
 
-    .filter-sidebar.mobile-hidden {
-        display: none;
+    .filter-sidebar-close {
+        display: flex;
     }
 
-    .filter-sidebar.mobile-visible {
+    /* Sidebar becomes a slide-up bottom sheet on mobile */
+    .filter-sidebar {
         display: block;
         position: fixed;
-        top: 0;
+        top: auto;
         left: 0;
         right: 0;
         bottom: 0;
+        max-height: 0;
         z-index: 9999;
         overflow-y: auto;
         margin: 0;
-        border-radius: 0;
+        border-radius: 20px 20px 0 0;
+        padding: 1.25rem 1.25rem calc(1.25rem + env(safe-area-inset-bottom, 0));
+        box-shadow: 0 -8px 30px rgba(0, 0, 0, 0.18);
+        transform: translateY(100%);
+        opacity: 0;
+        transition: transform 0.28s ease, opacity 0.28s ease, max-height 0s linear 0.28s;
+        visibility: hidden;
+    }
+
+    .filter-sidebar.mobile-visible {
+        max-height: 85vh;
+        transform: translateY(0);
+        opacity: 1;
+        visibility: visible;
+        transition: transform 0.28s ease, opacity 0.28s ease;
+    }
+
+    .apply-filters-btn {
+        display: block;
+        position: sticky;
+        bottom: -1px;
+    }
+
+    .filter-sidebar-overlay {
+        display: block;
+        position: fixed;
+        inset: 0;
+        background: rgba(15, 23, 42, 0.45);
+        z-index: 9998;
+        opacity: 0;
+        pointer-events: none;
+        transition: opacity 0.25s ease;
+    }
+
+    .filter-sidebar-overlay.active {
+        opacity: 1;
+        pointer-events: auto;
+    }
+
+    body.filters-open {
+        overflow: hidden;
     }
 }
 
