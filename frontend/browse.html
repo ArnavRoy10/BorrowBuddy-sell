@@ -87,26 +87,11 @@
                     max-height:320px;overflow-y:auto;
                 "></div>
             </div>
-            <div class="filter-group">
-                <select id="priceFilter" class="filter-select">
-                    <option value="all">All Prices</option>
-                    <option value="free">Free</option>
-                    <option value="paid">Paid</option>
-                    <option value="under100">Under ₹100/day</option>
-                    <option value="under500">₹100–₹500/day</option>
-                </select>
-                <select id="sortFilter" class="filter-select">
-                    <option value="newest">Newest First</option>
-                    <option value="oldest">Oldest First</option>
-                    <option value="price-low">Price: Low to High</option>
-                    <option value="price-high">Price: High to Low</option>
-                    <option value="rating">Highest Rated</option>
-                    <option value="popular">Most Borrowed</option>
-                </select>
-                <input type="text" id="locationFilter" class="filter-select"
-                    placeholder="🔍 Filter by location…"
-                    style="padding:.5rem .75rem;border:1px solid #e5e7eb;border-radius:8px;font-size:.875rem;outline:none;min-width:150px">
-            </div>
+            <!-- Compact filter trigger — opens the filter sidebar/sheet, which now
+                 holds sort, price and location alongside condition. -->
+            <button class="filter-toggle-btn" onclick="toggleFilters()" aria-label="Show filters">
+                <i class="fas fa-sliders-h"></i><span class="filter-toggle-label">Filters</span>
+            </button>
         </div>
 
         <!-- Category Tabs -->
@@ -153,9 +138,44 @@
         <div class="browse-layout">
             <!-- Sidebar Filters -->
             <aside class="filter-sidebar" id="filterSidebar">
-                <h3 style="margin-bottom: 1.5rem; font-size: 1.25rem;">
-                    <i class="fas fa-filter"></i> Filters
-                </h3>
+                <div class="filter-sidebar-header">
+                    <h3><i class="fas fa-filter"></i> Filters</h3>
+                    <button class="filter-sidebar-close" onclick="toggleFilters()" aria-label="Close filters">
+                        <i class="fas fa-times"></i>
+                    </button>
+                </div>
+
+                <!-- Sort -->
+                <div class="filter-section">
+                    <h3><i class="fas fa-sort"></i> Sort By</h3>
+                    <select id="sortFilter" class="filter-select filter-select-block">
+                        <option value="newest">Newest First</option>
+                        <option value="oldest">Oldest First</option>
+                        <option value="price-low">Price: Low to High</option>
+                        <option value="price-high">Price: High to Low</option>
+                        <option value="rating">Highest Rated</option>
+                        <option value="popular">Most Borrowed</option>
+                    </select>
+                </div>
+
+                <!-- Price Filter -->
+                <div class="filter-section">
+                    <h3><i class="fas fa-tag"></i> Price</h3>
+                    <select id="priceFilter" class="filter-select filter-select-block">
+                        <option value="all">All Prices</option>
+                        <option value="free">Free</option>
+                        <option value="paid">Paid</option>
+                        <option value="under100">Under ₹100/day</option>
+                        <option value="under500">₹100–₹500/day</option>
+                    </select>
+                </div>
+
+                <!-- Location Filter -->
+                <div class="filter-section">
+                    <h3><i class="fas fa-map-marker-alt"></i> Location</h3>
+                    <input type="text" id="locationFilter" class="filter-select filter-select-block"
+                        placeholder="Filter by location…">
+                </div>
 
                 <!-- Condition Filter -->
                 <div class="filter-section">
@@ -180,17 +200,18 @@
                 <button class="clear-filters" onclick="clearAllFilters()">
                     <i class="fas fa-redo"></i> Clear All Filters
                 </button>
+
+                <!-- Apply button (mobile sheet only) -->
+                <button class="apply-filters-btn" onclick="toggleFilters()">
+                    Show Results
+                </button>
             </aside>
+            <div class="filter-sidebar-overlay" id="filterSidebarOverlay" onclick="toggleFilters()"></div>
 
             <!-- Items Section -->
             <section class="items-section">
                 <!-- Items Header -->
                 <div class="items-header"></div>
-
-                <!-- Filter Toggle Button (Mobile) -->
-                <button class="filter-toggle-btn" onclick="toggleFilters()">
-                    <i class="fas fa-filter"></i> Show Filters
-                </button>
 
                 <!-- Items Grid -->
                 <div id="itemsGrid">
@@ -284,12 +305,13 @@
             }
         }
 
-        // Toggle filters on mobile
+        // Toggle filters on mobile (slide-up sheet + backdrop)
         function toggleFilters() {
             const sidebar = document.getElementById('filterSidebar');
-            if (sidebar) {
-                sidebar.classList.toggle('mobile-visible');
-            }
+            const overlay = document.getElementById('filterSidebarOverlay');
+            if (sidebar) sidebar.classList.toggle('mobile-visible');
+            if (overlay) overlay.classList.toggle('active');
+            document.body.classList.toggle('filters-open', sidebar?.classList.contains('mobile-visible'));
         }
 
         // Update items count
