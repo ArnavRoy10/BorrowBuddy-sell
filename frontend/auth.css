@@ -12,6 +12,9 @@
     overflow: hidden;
 }
 
+/* The liquid-blob field is scoped to this container instead of
+   the whole viewport (position:relative + overflow:hidden above) */
+
 /* Animated Background */
 .auth-container::before {
     content: '';

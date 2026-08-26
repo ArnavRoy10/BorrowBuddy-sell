@@ -26,10 +26,15 @@
     
     <!-- Font Awesome -->
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <!-- Display font for a bolder, premium headline feel -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Sora:wght@400;600;700;800&display=swap" rel="stylesheet">
     
     <!-- CSS Files -->
     <link rel="stylesheet" href="styles.css?v=12">
     <link rel="stylesheet" href="bottom-nav.css?v=10">
+    <link rel="stylesheet" href="premium.css">
     <!-- BorrowBuddy UX modules -->
     <link rel="stylesheet" href="skeletons.css">
     <link rel="stylesheet" href="empty-states.css">
@@ -39,7 +44,9 @@
     <meta name="theme-color" content="#2563eb">
     <link rel="apple-touch-icon" href="icons/icon-192.png">
 </head>
-<body>
+<body class="has-mesh-bg">
+    <div data-mesh-bg aria-hidden="true"></div>
+
     <!-- Navigation -->
     <nav class="navbar navbar-landing">
         <div class="nav-container">
@@ -66,55 +73,64 @@
     </nav>
 
     <!-- Hero Section -->
-    <section class="hero">
-        <div class="hero-content">
-            <h1 class="hero-title">
-                Own Less,<br>
-                Access <span class="gradient-text">More.</span>
-            </h1>
-            <p class="hero-subtitle">
-                BorrowBuddy is a peer-to-peer platform where you can borrow what you need
-                and earn by lending what you don't use — right in your community.
-            </p>
-            <div class="hero-buttons">
-                <a href="signup.html" class="btn btn-large btn-primary">
-                    <i class="fas fa-rocket"></i> Get Started Free
-                </a>
-                <a href="browse.html" class="btn btn-large btn-secondary">
-                    <i class="fas fa-search"></i> Browse Items
-                </a>
-            </div>
-            <div class="hero-stats">
-                <div class="stat-item">
-                    <h3>🚀</h3>
-                    <p>Just Launched</p>
-                </div>
-                <div class="stat-item">
-                    <h3>100%</h3>
-                    <p>Free to Join</p>
-                </div>
-                <div class="stat-item">
-                    <h3>PWA</h3>
-                    <p>Works Offline</p>
-                </div>
-            </div>
+    <section class="hero-premium-wrap">
+        <div class="hero-blob-field" aria-hidden="true">
+            <span class="liquid-blob blob-a"></span>
+            <span class="liquid-blob blob-b"></span>
+            <span class="liquid-blob blob-c"></span>
+            <span class="liquid-blob blob-d"></span>
         </div>
-        <div class="hero-image">
-            <div class="hero-illustration">
-                <i class="fas fa-exchange-alt"></i>
+        <div class="hero">
+            <div class="hero-content reveal">
+                <span class="hero-eyebrow"><span class="dot"></span> Just launched · Free to join</span>
+                <h1 class="hero-title">
+                    Own Less,<br>
+                    Access <span class="gradient-text">More.</span>
+                </h1>
+                <p class="hero-subtitle">
+                    BorrowBuddy is a peer-to-peer platform where you can borrow what you need
+                    and earn by lending what you don't use — right in your community.
+                </p>
+                <div class="hero-buttons">
+                    <a href="signup.html" class="btn btn-large btn-primary btn-glow">
+                        <i class="fas fa-rocket"></i> Get Started Free
+                    </a>
+                    <a href="browse.html" class="btn btn-large btn-secondary">
+                        <i class="fas fa-search"></i> Browse Items
+                    </a>
+                </div>
+                <div class="hero-stats">
+                    <div class="stat-item">
+                        <h3>🚀</h3>
+                        <p>Just Launched</p>
+                    </div>
+                    <div class="stat-item">
+                        <h3>100%</h3>
+                        <p>Free to Join</p>
+                    </div>
+                    <div class="stat-item">
+                        <h3>PWA</h3>
+                        <p>Works Offline</p>
+                    </div>
+                </div>
+            </div>
+            <div class="hero-image reveal-scale">
+                <div class="hero-illustration float-3d">
+                    <i class="fas fa-exchange-alt"></i>
+                </div>
             </div>
         </div>
     </section>
 
     <!-- Features Section -->
     <section class="features">
-        <div class="section-header">
+        <div class="section-header reveal">
             <h2>Why Choose <span class="gradient-text">BorrowBuddy</span>?</h2>
             <p>Everything you need to share and borrow with confidence</p>
         </div>
         
-        <div class="features-grid">
-            <div class="feature-card">
+        <div class="features-grid reveal-group">
+            <div class="feature-card glass-card tilt-3d" data-tilt-max="6">
                 <div class="feature-icon">
                     <i class="fas fa-shield-alt"></i>
                 </div>
@@ -122,7 +138,7 @@
                 <p>Security deposits and verified users ensure your items are protected</p>
             </div>
 
-            <div class="feature-card">
+            <div class="feature-card glass-card tilt-3d" data-tilt-max="6">
                 <div class="feature-icon">
                     <i class="fas fa-comments"></i>
                 </div>
@@ -130,7 +146,7 @@
                 <p>Communicate directly with borrowers and lenders through our messaging system</p>
             </div>
 
-            <div class="feature-card">
+            <div class="feature-card glass-card tilt-3d" data-tilt-max="6">
                 <div class="feature-icon">
                     <i class="fas fa-calendar-check"></i>
                 </div>
@@ -138,7 +154,7 @@
                 <p>Set flexible borrow dates and manage your items effortlessly</p>
             </div>
 
-            <div class="feature-card">
+            <div class="feature-card glass-card tilt-3d" data-tilt-max="6">
                 <div class="feature-icon">
                     <i class="fas fa-star"></i>
                 </div>
@@ -146,7 +162,7 @@
                 <p>Build trust with ratings and reviews from the community</p>
             </div>
 
-            <div class="feature-card">
+            <div class="feature-card glass-card tilt-3d" data-tilt-max="6">
                 <div class="feature-icon">
                     <i class="fas fa-rupee-sign"></i>
                 </div>
@@ -154,7 +170,7 @@
                 <p>Borrow instead of buying and earn by lending your unused items</p>
             </div>
 
-            <div class="feature-card">
+            <div class="feature-card glass-card tilt-3d" data-tilt-max="6">
                 <div class="feature-icon">
                     <i class="fas fa-leaf"></i>
                 </div>
@@ -162,8 +178,6 @@
                 <p>Reduce waste and carbon footprint by sharing resources</p>
             </div>
         </div>
-    </section>
-
     </section>
 
     <!-- Screenshots Section -->
@@ -208,13 +222,13 @@
 
     <!-- How It Works -->
     <section class="how-it-works">
-        <div class="section-header">
+        <div class="section-header reveal">
             <h2>How It <span class="gradient-text">Works</span></h2>
             <p>Get started in three simple steps</p>
         </div>
 
-        <div class="steps-container">
-            <div class="step">
+        <div class="steps-container reveal-group">
+            <div class="step glass-card">
                 <div class="step-number">1</div>
                 <div class="step-icon">
                     <i class="fas fa-user-plus"></i>
@@ -227,7 +241,7 @@
                 <i class="fas fa-arrow-right"></i>
             </div>
 
-            <div class="step">
+            <div class="step glass-card">
                 <div class="step-number">2</div>
                 <div class="step-icon">
                     <i class="fas fa-search"></i>
@@ -240,7 +254,7 @@
                 <i class="fas fa-arrow-right"></i>
             </div>
 
-            <div class="step">
+            <div class="step glass-card">
                 <div class="step-number">3</div>
                 <div class="step-icon">
                     <i class="fas fa-handshake"></i>
@@ -253,43 +267,43 @@
 
     <!-- Categories Section -->
     <section class="categories">
-        <div class="section-header">
+        <div class="section-header reveal">
             <h2>Popular <span class="gradient-text">Categories</span></h2>
             <p>Explore items across different categories</p>
         </div>
 
-        <div class="categories-grid">
-            <div class="category-card">
+        <div class="categories-grid reveal-group">
+            <div class="category-card glass-card tilt-3d" data-tilt-max="5">
                 <i class="fas fa-laptop"></i>
                 <h3>Electronics</h3>
                 <p>Cameras, laptops, gadgets</p>
             </div>
 
-            <div class="category-card">
+            <div class="category-card glass-card tilt-3d" data-tilt-max="5">
                 <i class="fas fa-book"></i>
                 <h3>Books</h3>
                 <p>Textbooks, novels, guides</p>
             </div>
 
-            <div class="category-card">
+            <div class="category-card glass-card tilt-3d" data-tilt-max="5">
                 <i class="fas fa-tools"></i>
                 <h3>Tools</h3>
                 <p>Power tools, equipment</p>
             </div>
 
-            <div class="category-card">
+            <div class="category-card glass-card tilt-3d" data-tilt-max="5">
                 <i class="fas fa-football-ball"></i>
                 <h3>Sports</h3>
                 <p>Bikes, gear, equipment</p>
             </div>
 
-            <div class="category-card">
+            <div class="category-card glass-card tilt-3d" data-tilt-max="5">
                 <i class="fas fa-pencil-alt"></i>
                 <h3>Stationery</h3>
                 <p>Art supplies, notebooks</p>
             </div>
 
-            <div class="category-card">
+            <div class="category-card glass-card tilt-3d" data-tilt-max="5">
                 <i class="fas fa-ellipsis-h"></i>
                 <h3>Others</h3>
                 <p>And much more!</p>
@@ -299,10 +313,10 @@
 
     <!-- CTA Section -->
     <section class="cta">
-        <div class="cta-content">
+        <div class="cta-content reveal-scale">
             <h2>Ready to Start Sharing?</h2>
             <p>Be among the first in your community to borrow smarter and earn from what you own</p>
-            <a href="signup.html" class="btn btn-large btn-white">
+            <a href="signup.html" class="btn btn-large btn-white btn-glow">
                 <i class="fas fa-rocket"></i> Get Started Now
             </a>
         </div>
@@ -372,6 +386,7 @@
         }
     </script>
     <script src="storage-sync.js"></script>
+    <script src="premium.js"></script>
     <script src="bottom-nav.js"></script>
     <script src="skeletons.js"></script>
     <script src="empty-states.js"></script>
