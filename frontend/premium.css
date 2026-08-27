@@ -257,3 +257,205 @@ body.has-mesh-bg {
 .btn-glow:hover {
     box-shadow: 0 14px 36px rgba(37, 99, 235, 0.45), 0 4px 14px rgba(124, 58, 237, 0.3);
 }
+
+/* ============================================================
+   Hero orbit component — 3D central card with orbiting category
+   nodes (camera / book / tool / bike). Pure CSS 3D + a small JS
+   controller (see premium.js) for the flip + micro-step swap.
+   ============================================================ */
+.orbit-stage {
+    position: relative;
+    width: 100%;
+    max-width: 440px;
+    aspect-ratio: 1 / 1;
+    margin: 0 auto;
+    perspective: 1400px;
+}
+
+.orbit-orbit-line {
+    position: absolute;
+    inset: 8%;
+    border-radius: 50%;
+    border: 1px dashed rgba(255, 255, 255, 0.18);
+    pointer-events: none;
+}
+
+.orbit-ring {
+    position: absolute;
+    inset: 0;
+    transform-style: preserve-3d;
+    animation: orbitRingSpin 26s linear infinite;
+}
+
+.orbit-stage:hover .orbit-ring,
+.orbit-stage:hover .orbit-node-face {
+    animation-play-state: paused;
+}
+
+@keyframes orbitRingSpin {
+    from { transform: rotateY(0deg); }
+    to   { transform: rotateY(360deg); }
+}
+
+.orbit-node {
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    width: 68px;
+    height: 68px;
+    margin: -34px;
+    transform: rotateY(calc(var(--i) * 90deg)) translateZ(178px);
+    transform-style: preserve-3d;
+    cursor: pointer;
+}
+
+.orbit-node-face {
+    width: 100%;
+    height: 100%;
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 1.4rem;
+    color: white;
+    background:
+        radial-gradient(circle at 32% 28%, rgba(255,255,255,0.85), rgba(255,255,255,0) 24%),
+        hsl(var(--hue), 85%, 55%);
+    box-shadow: 0 10px 24px hsla(var(--hue), 85%, 40%, 0.5), inset 0 1px 0 rgba(255,255,255,0.4);
+    border: 1px solid hsla(var(--hue), 90%, 75%, 0.5);
+    animation: orbitRingSpinReverse 26s linear infinite;
+    transition: transform 0.25s ease;
+}
+
+.orbit-node:hover .orbit-node-face,
+.orbit-node.is-active .orbit-node-face {
+    transform: scale(1.18);
+}
+
+@keyframes orbitRingSpinReverse {
+    from { transform: rotateY(0deg); }
+    to   { transform: rotateY(-360deg); }
+}
+
+.orbit-center {
+    position: absolute;
+    inset: 16%;
+    perspective: 1400px;
+}
+
+.orbit-center-inner {
+    position: relative;
+    width: 100%;
+    height: 100%;
+    transform-style: preserve-3d;
+    transition: transform 0.8s cubic-bezier(.22, 1, .36, 1);
+}
+
+.orbit-center.is-flipped .orbit-center-inner {
+    transform: rotateY(180deg);
+}
+
+.orbit-face {
+    position: absolute;
+    inset: 0;
+    border-radius: 28px;
+    backface-visibility: hidden;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    flex-direction: column;
+    gap: 0.75rem;
+}
+
+.orbit-face-front {
+    background:
+        radial-gradient(circle at 30% 24%, rgba(255,255,255,0.55), rgba(255,255,255,0) 30%),
+        linear-gradient(135deg, #7c3aed 0%, #6366f1 45%, #2563eb 100%);
+    color: white;
+    font-size: 4.5rem;
+    box-shadow: 0 30px 80px rgba(76, 29, 149, 0.45), inset 0 1px 0 rgba(255,255,255,0.3);
+    animation: orbitPulse 4s ease-in-out infinite;
+}
+
+@keyframes orbitPulse {
+    0%, 100% { filter: brightness(1); }
+    50%      { filter: brightness(1.12); }
+}
+
+.orbit-face-back {
+    transform: rotateY(180deg);
+    background:
+        radial-gradient(circle at 30% 24%, rgba(255,255,255,0.12), rgba(255,255,255,0) 30%),
+        linear-gradient(135deg, #1e1b4b 0%, #312e81 100%);
+    color: white;
+    padding: 1.25rem;
+    box-shadow: 0 30px 80px rgba(30, 27, 75, 0.5), inset 0 1px 0 rgba(255,255,255,0.15);
+    text-align: center;
+}
+
+.micro-steps {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 0.6rem;
+}
+
+.micro-step {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 0.35rem;
+    font-size: 0.72rem;
+    font-weight: 600;
+    opacity: 0.35;
+    transform: scale(0.9);
+    transition: opacity 0.4s ease, transform 0.4s ease;
+}
+
+.micro-step i {
+    width: 40px;
+    height: 40px;
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    background: rgba(255, 255, 255, 0.12);
+    font-size: 1.05rem;
+}
+
+.micro-step.is-active {
+    opacity: 1;
+    transform: scale(1);
+}
+
+.micro-step.is-active i {
+    background: linear-gradient(135deg, #a78bfa, #60a5fa);
+    box-shadow: 0 0 18px rgba(167, 139, 250, 0.6);
+}
+
+.micro-arrow {
+    color: rgba(255, 255, 255, 0.4);
+    font-size: 0.9rem;
+}
+
+.micro-caption {
+    margin-top: 0.9rem;
+    font-size: 0.78rem;
+    color: rgba(226, 232, 240, 0.75);
+    max-width: 220px;
+}
+
+@media (max-width: 640px) {
+    .orbit-stage { max-width: 300px; }
+    .orbit-node {
+        width: 52px;
+        height: 52px;
+        margin: -26px;
+        transform: rotateY(calc(var(--i) * 90deg)) translateZ(120px);
+    }
+    .orbit-face-front { font-size: 3rem; }
+}
+
+@media (prefers-reduced-motion: reduce) {
+    .orbit-ring, .orbit-node-face, .orbit-face-front { animation: none; }
+}
