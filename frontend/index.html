@@ -115,8 +115,45 @@
                 </div>
             </div>
             <div class="hero-image reveal-scale">
-                <div class="hero-illustration float-3d">
-                    <i class="fas fa-exchange-alt"></i>
+                <div class="orbit-stage" id="orbitStage">
+                    <div class="orbit-ring" id="orbitRing">
+                        <div class="orbit-node" data-cat="camera" style="--i:0; --hue:32">
+                            <div class="orbit-node-face"><i class="fas fa-camera"></i></div>
+                        </div>
+                        <div class="orbit-node" data-cat="book" style="--i:1; --hue:217">
+                            <div class="orbit-node-face"><i class="fas fa-book"></i></div>
+                        </div>
+                        <div class="orbit-node" data-cat="tool" style="--i:2; --hue:0">
+                            <div class="orbit-node-face"><i class="fas fa-wrench"></i></div>
+                        </div>
+                        <div class="orbit-node" data-cat="bike" style="--i:3; --hue:152">
+                            <div class="orbit-node-face"><i class="fas fa-bicycle"></i></div>
+                        </div>
+                    </div>
+
+                    <div class="orbit-orbit-line"></div>
+
+                    <div class="orbit-center" id="orbitCenter">
+                        <div class="orbit-center-inner" id="orbitCenterInner">
+                            <div class="orbit-face orbit-face-front">
+                                <i class="fas fa-exchange-alt"></i>
+                            </div>
+                            <div class="orbit-face orbit-face-back">
+                                <div class="micro-steps" id="microSteps">
+                                    <div class="micro-step is-active" data-step="1">
+                                        <i class="fas fa-box-open"></i>
+                                        <span>List it</span>
+                                    </div>
+                                    <div class="micro-arrow"><i class="fas fa-arrow-right"></i></div>
+                                    <div class="micro-step" data-step="2">
+                                        <i class="fas fa-hand-holding-usd"></i>
+                                        <span>Get paid</span>
+                                    </div>
+                                </div>
+                                <p class="micro-caption" id="microCaption">Someone wants to borrow your camera</p>
+                            </div>
+                        </div>
+                    </div>
                 </div>
             </div>
         </div>
