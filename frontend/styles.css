@@ -55,8 +55,10 @@ img {
 
 /* Navigation */
 .navbar {
-    background: white;
-    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.08);
+    background: rgba(255, 255, 255, 0.75);
+    backdrop-filter: blur(14px) saturate(160%);
+    -webkit-backdrop-filter: blur(14px) saturate(160%);
+    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.06);
     position: sticky;
     top: 0;
     z-index: 1000;
@@ -177,6 +179,19 @@ img {
     position: relative;
     overflow: hidden;
     background: radial-gradient(130% 100% at 12% -10%, #2c1f5c 0%, #180f3d 40%, #0a0620 78%, #060414 100%);
+}
+
+/* Smooth fade into the light section below instead of a hard cut */
+.hero-premium-wrap::after {
+    content: '';
+    position: absolute;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    height: 260px;
+    background: linear-gradient(to bottom, rgba(10, 6, 20, 0) 0%, rgba(10, 6, 20, 0.5) 55%, #f6f8fc 100%);
+    pointer-events: none;
+    z-index: 0;
 }
 
 .hero-blob-field {
@@ -384,12 +399,13 @@ img {
 .btn-primary {
     background: var(--primary-blue);
     color: white;
+    box-shadow: 0 4px 14px rgba(37, 99, 235, 0.25);
 }
 
 .btn-primary:hover {
     background: #1e40af;
     transform: translateY(-2px);
-    box-shadow: 0 8px 20px rgba(37, 99, 235, 0.3);
+    box-shadow: 0 10px 26px rgba(37, 99, 235, 0.4);
 }
 
 .btn-secondary {
