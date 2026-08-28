@@ -67,15 +67,82 @@
             '<span class="orb orb-4"></span>';
     }
 
+    /* ---- Hero orbit component: flip + micro-step cycling ---- */
+    function initOrbit() {
+        var stage = document.getElementById('orbitStage');
+        if (!stage) return;
+
+        var center = document.getElementById('orbitCenter');
+        var caption = document.getElementById('microCaption');
+        var steps = document.querySelectorAll('#microSteps .micro-step');
+        var nodes = stage.querySelectorAll('.orbit-node');
+
+        var captions = {
+            camera: 'Someone wants to borrow your camera',
+            book: 'A student needs your textbook this week',
+            tool: 'A neighbor needs your power tool for a day',
+            bike: 'Someone nearby wants to borrow your bike'
+        };
+
+        var stepTimer = null;
+        function cycleSteps() {
+            clearInterval(stepTimer);
+            var i = 0;
+            stepTimer = setInterval(function () {
+                i = (i + 1) % steps.length;
+                steps.forEach(function (s, idx) {
+                    s.classList.toggle('is-active', idx === i);
+                });
+            }, 1400);
+        }
+
+        function flipTo(cat) {
+            if (center) center.classList.add('is-flipped');
+            if (caption && captions[cat]) caption.textContent = captions[cat];
+            cycleSteps();
+        }
+
+        function unflip() {
+            if (center) center.classList.remove('is-flipped');
+            clearInterval(stepTimer);
+        }
+
+        nodes.forEach(function (node) {
+            var cat = node.dataset.cat;
+
+            node.addEventListener('mouseenter', function () {
+                node.classList.add('is-active');
+                flipTo(cat);
+            });
+            node.addEventListener('mouseleave', function () {
+                node.classList.remove('is-active');
+                unflip();
+            });
+            node.addEventListener('click', function (e) {
+                e.preventDefault();
+                var wasActive = node.classList.contains('is-active');
+                nodes.forEach(function (n) { n.classList.remove('is-active'); });
+                if (wasActive) {
+                    unflip();
+                } else {
+                    node.classList.add('is-active');
+                    flipTo(cat);
+                }
+            });
+        });
+    }
+
     if (document.readyState === 'loading') {
         document.addEventListener('DOMContentLoaded', function () {
             initMeshBg();
             initTilt();
             initReveal();
+            initOrbit();
         });
     } else {
         initMeshBg();
         initTilt();
         initReveal();
+        initOrbit();
     }
 })();
