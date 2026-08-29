@@ -35,6 +35,8 @@
     <link rel="stylesheet" href="styles.css?v=12">
     <link rel="stylesheet" href="bottom-nav.css?v=10">
     <link rel="stylesheet" href="premium.css">
+    <link rel="stylesheet" href="home-hero-fx.css">
+    <link rel="stylesheet" href="spiral-decor.css">
     <!-- BorrowBuddy UX modules -->
     <link rel="stylesheet" href="skeletons.css">
     <link rel="stylesheet" href="empty-states.css">
@@ -51,7 +53,7 @@
     <nav class="navbar navbar-landing">
         <div class="nav-container">
             <div class="nav-brand">
-                <i class="fas fa-exchange-alt"></i>
+                <span class="brand-mark" aria-hidden="true"><svg viewBox="0 0 48 48" fill="none" xmlns="http://www.w3.org/2000/svg"><path d="M15 19a9 9 0 1 1 8 13" stroke="#fff" stroke-width="4.2" stroke-linecap="round"/><path d="M33 29a9 9 0 1 1-8-13" stroke="#fff" stroke-width="4.2" stroke-linecap="round" opacity="0.65"/><path d="M19 15l-4 4 4 4" stroke="#fff" stroke-width="4.2" stroke-linecap="round" stroke-linejoin="round"/><path d="M29 33l4-4-4-4" stroke="#fff" stroke-width="4.2" stroke-linecap="round" stroke-linejoin="round" opacity="0.65"/></svg></span>
                 <span>BorrowBuddy</span>
             </div>
             <div class="nav-menu" id="navMenu">
@@ -115,6 +117,52 @@
                 </div>
             </div>
             <div class="hero-image reveal-scale">
+                <div class="spiral-decor spiral-decor-hero" aria-hidden="true">
+                    <svg viewBox="0 0 300 420" class="spiral-svg">
+                        <defs>
+                            <linearGradient id="spiralGradHome" x1="0%" y1="0%" x2="100%" y2="100%">
+                                <stop offset="0%" stop-color="#22d3ee"/>
+                                <stop offset="50%" stop-color="#6366f1"/>
+                                <stop offset="100%" stop-color="#c084fc"/>
+                            </linearGradient>
+                        </defs>
+                        <path class="spiral-path" d="M40,380 C160,380 20,270 130,230 C240,190 90,100 180,70 C250,46 220,-10 290,10" stroke="url(#spiralGradHome)" stroke-width="28" stroke-linecap="round" fill="none"/>
+                    </svg>
+                    <span class="spiral-orb orb-x"></span>
+                    <span class="spiral-orb orb-y"></span>
+                </div>
+
+                <div class="hero-float-cards" aria-hidden="true">
+                    <div class="float-card card-toggle">
+                        <div class="float-card-title">Quick Settings</div>
+                        <div class="mini-toggle-row">
+                            <span>Notifications</span>
+                            <button type="button" class="mini-switch is-on"></button>
+                        </div>
+                        <div class="mini-toggle-row">
+                            <span>Auto-match</span>
+                            <button type="button" class="mini-switch"></button>
+                        </div>
+                    </div>
+
+                    <div class="float-card card-play" title="See how it works">
+                        <i class="fas fa-play"></i>
+                    </div>
+
+                    <div class="float-card card-chart">
+                        <div class="float-card-title">Items Shared</div>
+                        <div class="mini-bars">
+                            <span></span><span></span><span></span><span></span><span></span>
+                        </div>
+                        <div class="card-chart-caption">This month, community-wide</div>
+                    </div>
+
+                    <div class="float-card card-gauge">
+                        <div class="gauge-ring" style="--gauge:92%"><span>92%</span></div>
+                        <div class="float-card-title">Trust Score</div>
+                    </div>
+                </div>
+
                 <div class="orbit-stage" id="orbitStage">
                     <div class="orbit-ring" id="orbitRing">
                         <div class="orbit-node" data-cat="camera" style="--i:0; --hue:32">
@@ -154,6 +202,14 @@
                             </div>
                         </div>
                     </div>
+                </div>
+
+                <div class="hero-scrubber">
+                    <div class="hero-scrubber-label">
+                        <span>Drag to see community reach</span>
+                        <strong><span id="heroScrubberValue">560</span> towns</strong>
+                    </div>
+                    <input type="range" id="heroScrubber" min="0" max="100" value="50" step="1" aria-label="Community reach slider">
                 </div>
             </div>
         </div>
@@ -424,6 +480,7 @@
     </script>
     <script src="storage-sync.js"></script>
     <script src="premium.js"></script>
+    <script src="home-hero-fx.js"></script>
     <script src="bottom-nav.js"></script>
     <script src="skeletons.js"></script>
     <script src="empty-states.js"></script>

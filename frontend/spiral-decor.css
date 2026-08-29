@@ -1,0 +1,118 @@
+/* ============================================================
+   BorrowBuddy — Spiral decoration
+   A twisted gradient ribbon + drifting orbs, echoing the
+   glossy 3D-spiral reference. Pure CSS/SVG, no dependencies.
+   Purely decorative (aria-hidden), safe on any page.
+   ============================================================ */
+.spiral-decor {
+    position: absolute;
+    z-index: 0;
+    pointer-events: none;
+    opacity: 0.85;
+}
+
+.spiral-svg {
+    width: 100%;
+    height: 100%;
+    display: block;
+    animation: spiralTwist 24s ease-in-out infinite;
+    transform-origin: 60% 55%;
+    filter: drop-shadow(0 10px 30px rgba(99, 102, 241, 0.35));
+}
+
+.spiral-path {
+    stroke-dasharray: 2 14;
+    animation: spiralFlow 9s linear infinite;
+}
+
+@keyframes spiralTwist {
+    0%, 100% { transform: rotate(0deg) scale(1); }
+    50%      { transform: rotate(8deg) scale(1.04); }
+}
+
+@keyframes spiralFlow {
+    to { stroke-dashoffset: -160; }
+}
+
+.spiral-orb {
+    position: absolute;
+    border-radius: 50%;
+    filter: blur(1px);
+    box-shadow: 0 10px 26px rgba(0, 0, 0, 0.25);
+}
+
+.spiral-orb.orb-x {
+    width: 34px;
+    height: 34px;
+    top: 6%;
+    right: 12%;
+    background: radial-gradient(circle at 32% 28%, rgba(255,255,255,0.9), rgba(255,255,255,0) 18%),
+                radial-gradient(circle at 40% 38%, #67e8f9 0%, #22d3ee 45%, #0891b2 80%);
+    animation: orbDriftX 10s ease-in-out infinite;
+}
+
+.spiral-orb.orb-y {
+    width: 18px;
+    height: 18px;
+    bottom: 10%;
+    left: 8%;
+    background: radial-gradient(circle at 32% 28%, rgba(255,255,255,0.9), rgba(255,255,255,0) 18%),
+                radial-gradient(circle at 40% 38%, #d8b4fe 0%, #a855f7 50%, #6b21a8 82%);
+    animation: orbDriftY 8s ease-in-out infinite;
+}
+
+@keyframes orbDriftX {
+    0%, 100% { transform: translate(0, 0); }
+    50%      { transform: translate(-14px, 16px); }
+}
+
+@keyframes orbDriftY {
+    0%, 100% { transform: translate(0, 0); }
+    50%      { transform: translate(12px, -14px); }
+}
+
+/* ---------- Placement presets ---------- */
+.spiral-decor-corner {
+    top: -8%;
+    right: -6%;
+    width: 210px;
+    height: 300px;
+}
+
+.spiral-decor-hero {
+    top: -10%;
+    right: -14%;
+    width: 220px;
+    height: 320px;
+    z-index: 0;
+}
+
+/* Fixed variant for simple content pages with no positioned hero
+   wrapper of their own — anchors to the viewport corner instead. */
+.spiral-decor-fixed {
+    position: fixed;
+    top: 8%;
+    right: -4%;
+    width: 190px;
+    height: 260px;
+    z-index: -1;
+    opacity: 0.5;
+}
+
+@media (max-width: 900px) {
+    .spiral-decor-corner,
+    .spiral-decor-hero,
+    .spiral-decor-fixed {
+        width: 140px;
+        height: 200px;
+        opacity: 0.4;
+    }
+}
+
+@media (prefers-reduced-motion: reduce) {
+    .spiral-svg,
+    .spiral-path,
+    .spiral-orb {
+        animation: none;
+    }
+}

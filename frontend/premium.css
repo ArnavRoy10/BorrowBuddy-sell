@@ -217,6 +217,56 @@ body.has-mesh-bg {
     }
 }
 
+/* ---------- Brand mark (logo badge) ---------- */
+.nav-brand, .auth-logo, .logo {
+    display: flex;
+    align-items: center;
+    gap: 0.75rem;
+}
+
+.brand-mark {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    width: 2.75rem;
+    height: 2.75rem;
+    flex-shrink: 0;
+    border-radius: 14px;
+    background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+    box-shadow: 0 6px 18px rgba(99, 102, 241, 0.45), inset 0 1px 0 rgba(255, 255, 255, 0.3);
+    transition: transform 0.3s ease, box-shadow 0.3s ease;
+}
+
+.brand-mark svg {
+    width: 60%;
+    height: 60%;
+}
+
+a:hover .brand-mark,
+.nav-brand:hover .brand-mark {
+    transform: scale(1.06) rotate(-4deg);
+    box-shadow: 0 10px 26px rgba(99, 102, 241, 0.55), inset 0 1px 0 rgba(255, 255, 255, 0.35);
+}
+
+.navbar-landing .brand-mark {
+    box-shadow: 0 6px 20px rgba(139, 92, 246, 0.55), inset 0 1px 0 rgba(255, 255, 255, 0.35);
+}
+
+.auth-logo .brand-mark {
+    width: 3.25rem;
+    height: 3.25rem;
+    border-radius: 16px;
+}
+
+.auth-logo, .logo {
+    justify-content: center;
+    margin-bottom: 0.5rem;
+}
+
+@media (max-width: 640px) {
+    .brand-mark { width: 2.35rem; height: 2.35rem; border-radius: 12px; }
+}
+
 /* ---------- Premium display typography ---------- */
 .hero-title,
 .section-header h2,
