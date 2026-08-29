@@ -704,17 +704,26 @@ img {
 
 /* How It Works */
 /* ============================================================
-   "See it in action" showcase — dark section with browser-chrome
-   framed screenshots, glass cards, and 3D tilt on hover.
+   "See it in action" showcase — original compact card size,
+   with a beautiful animated glossy-orb background behind it.
    ============================================================ */
 .showcase {
     position: relative;
     overflow: hidden;
-    padding: 6rem 2rem;
-    background:
-        radial-gradient(90% 140% at 85% 0%, rgba(124, 58, 237, 0.18), transparent 55%),
-        radial-gradient(70% 120% at 10% 100%, rgba(37, 99, 235, 0.16), transparent 55%),
-        var(--bg-dark, #0f172a);
+    padding: 5rem 2rem;
+    background: var(--bg-dark, #0f172a);
+}
+
+.showcase-orbs {
+    position: absolute;
+    inset: 0;
+    overflow: hidden;
+    pointer-events: none;
+    z-index: 0;
+}
+
+.showcase-orbs .liquid-blob {
+    opacity: 0.55;
 }
 
 .showcase-inner {
@@ -726,38 +735,38 @@ img {
 
 .showcase-grid {
     display: grid;
-    grid-template-columns: repeat(auto-fit, minmax(270px, 1fr));
-    gap: 1.75rem;
+    grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+    gap: 1.5rem;
     margin-top: 3rem;
 }
 
 .showcase-card {
-    border-radius: 18px;
+    border-radius: 12px;
     overflow: hidden;
-    background: rgba(255, 255, 255, 0.05);
-    backdrop-filter: blur(16px) saturate(140%);
-    -webkit-backdrop-filter: blur(16px) saturate(140%);
-    border: 1px solid rgba(255, 255, 255, 0.1);
-    box-shadow: 0 20px 50px rgba(0, 0, 0, 0.45);
-    transition: box-shadow 0.4s ease, border-color 0.4s ease;
+    background: rgba(255, 255, 255, 0.06);
+    backdrop-filter: blur(14px) saturate(140%);
+    -webkit-backdrop-filter: blur(14px) saturate(140%);
+    border: 1px solid rgba(255, 255, 255, 0.08);
+    box-shadow: 0 4px 24px rgba(0, 0, 0, 0.4);
+    transition: box-shadow 0.3s ease, border-color 0.3s ease;
 }
 
 .showcase-card:hover {
-    border-color: rgba(167, 139, 250, 0.45);
-    box-shadow: 0 26px 64px rgba(0, 0, 0, 0.55), 0 0 0 1px rgba(167, 139, 250, 0.15), 0 0 40px rgba(124, 58, 237, 0.25);
+    border-color: rgba(167, 139, 250, 0.4);
+    box-shadow: 0 8px 30px rgba(0, 0, 0, 0.5), 0 0 24px rgba(124, 58, 237, 0.2);
 }
 
 .showcase-chrome {
     display: flex;
     gap: 0.4rem;
-    padding: 0.7rem 0.9rem;
-    background: rgba(255, 255, 255, 0.04);
+    padding: 0.6rem 0.8rem;
+    background: rgba(255, 255, 255, 0.03);
     border-bottom: 1px solid rgba(255, 255, 255, 0.06);
 }
 
 .chrome-dot {
-    width: 9px;
-    height: 9px;
+    width: 8px;
+    height: 8px;
     border-radius: 50%;
     display: inline-block;
 }
@@ -774,53 +783,25 @@ img {
 .showcase-media img {
     width: 100%;
     display: block;
-    transition: transform 0.6s cubic-bezier(.22, 1, .36, 1);
-}
-
-.showcase-card:hover .showcase-media img {
-    transform: scale(1.05);
 }
 
 .showcase-body {
-    display: flex;
-    align-items: flex-start;
-    gap: 0.9rem;
-    padding: 1.1rem 1.15rem 1.3rem;
-}
-
-.showcase-icon {
-    flex-shrink: 0;
-    width: 38px;
-    height: 38px;
-    border-radius: 10px;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    color: white;
-    font-size: 0.95rem;
-    background:
-        radial-gradient(circle at 30% 24%, rgba(255,255,255,0.45), rgba(255,255,255,0) 30%),
-        linear-gradient(135deg, #7c3aed, #2563eb);
-    box-shadow: 0 6px 16px rgba(124, 58, 237, 0.4);
+    padding: 0.75rem 1rem;
 }
 
 .showcase-title {
-    color: #f1f5f9;
-    font-weight: 700;
-    margin: 0 0 0.2rem;
-    font-size: 0.95rem;
+    color: #e2e8f0;
+    font-weight: 600;
+    margin: 0;
+    font-size: 0.9rem;
 }
 
 .showcase-desc {
-    color: rgba(226, 232, 240, 0.65);
-    margin: 0;
-    font-size: 0.82rem;
-    line-height: 1.45;
+    color: #94a3b8;
+    margin: 0.25rem 0 0;
+    font-size: 0.8rem;
 }
 
-@media (prefers-reduced-motion: reduce) {
-    .showcase-media img { transition: none; }
-}
 
 .how-it-works {
     max-width: 1400px;
