@@ -476,6 +476,96 @@ img {
 }
 
 /* Features Section */
+/* ============================================================
+   Features section — twisted rope decoration (background ambiance)
+   ============================================================ */
+.features {
+    position: relative;
+}
+
+.features-rope-decor {
+    position: absolute;
+    top: -60px;
+    right: -80px;
+    width: min(720px, 60vw);
+    opacity: 0.5;
+    z-index: 0;
+    pointer-events: none;
+    animation: ropeSway 22s ease-in-out infinite;
+    transform-origin: 70% 40%;
+}
+
+.rope-svg {
+    width: 100%;
+    height: auto;
+    display: block;
+    filter: drop-shadow(0 25px 40px rgba(76, 29, 149, 0.25));
+}
+
+@keyframes ropeSway {
+    0%, 100% { transform: rotate(0deg) scale(1); }
+    50%      { transform: rotate(3deg) scale(1.02); }
+}
+
+.rope-orb {
+    position: absolute;
+    border-radius: 50%;
+    filter: blur(1px);
+    box-shadow: 0 12px 30px rgba(0, 0, 0, 0.2);
+}
+
+.rope-orb.orb-1 {
+    width: 46px;
+    height: 46px;
+    top: 4%;
+    left: 6%;
+    background:
+        radial-gradient(circle at 32% 28%, rgba(255,255,255,0.9), rgba(255,255,255,0) 20%),
+        radial-gradient(circle at 40% 38%, #93c5fd 0%, #3b82f6 45%, #1e40af 82%);
+    animation: ropeOrbDrift1 9s ease-in-out infinite;
+}
+
+.rope-orb.orb-2 {
+    width: 26px;
+    height: 26px;
+    bottom: 8%;
+    right: 4%;
+    background:
+        radial-gradient(circle at 32% 28%, rgba(255,255,255,0.9), rgba(255,255,255,0) 20%),
+        radial-gradient(circle at 40% 38%, #d8b4fe 0%, #a855f7 50%, #6b21a8 85%);
+    animation: ropeOrbDrift2 7.5s ease-in-out infinite;
+}
+
+@keyframes ropeOrbDrift1 {
+    0%, 100% { transform: translate(0, 0); }
+    50%      { transform: translate(-10px, 12px); }
+}
+
+@keyframes ropeOrbDrift2 {
+    0%, 100% { transform: translate(0, 0); }
+    50%      { transform: translate(10px, -10px); }
+}
+
+.section-header,
+.features-grid {
+    position: relative;
+    z-index: 1;
+}
+
+@media (max-width: 900px) {
+    .features-rope-decor {
+        width: min(520px, 85vw);
+        top: -30px;
+        right: -60px;
+        opacity: 0.35;
+    }
+}
+
+@media (prefers-reduced-motion: reduce) {
+    .features-rope-decor { animation: none; }
+    .rope-orb { animation: none; }
+}
+
 .features {
     max-width: 1400px;
     margin: 6rem auto;
