@@ -31,11 +31,99 @@
         }
 
         .dashboard-hero {
-            background: linear-gradient(135deg, #2563eb, #7c3aed);
+            background:
+                radial-gradient(60% 80% at 85% 100%, rgba(249, 115, 22, 0.22), transparent 60%),
+                radial-gradient(120% 140% at 10% -10%, #1e293b 0%, #0f172a 55%, #0a0f1e 100%);
+            border: 1px solid rgba(249, 115, 22, 0.15);
             border-radius: 16px;
             padding: 2rem;
             color: white;
             margin-bottom: 2rem;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .dashboard-hero::after {
+            content: '';
+            position: absolute;
+            left: 8%;
+            right: 8%;
+            bottom: 0;
+            height: 3px;
+            background: linear-gradient(90deg, transparent, #f97316, #ef4444, #f97316, transparent);
+            opacity: 0.8;
+        }
+
+        .hero-decor {
+            position: absolute;
+            inset: 0;
+            pointer-events: none;
+            z-index: 0;
+            overflow: hidden;
+        }
+
+        .hero-decor span {
+            position: absolute;
+            display: block;
+        }
+
+        .hero-decor .decor-circle {
+            width: 90px;
+            height: 90px;
+            border: 1.5px dashed rgba(249, 115, 22, 0.35);
+            border-radius: 50%;
+            top: -20px;
+            right: 14%;
+        }
+
+        .hero-decor .decor-square {
+            width: 16px;
+            height: 16px;
+            border: 1.5px solid rgba(148, 163, 184, 0.4);
+            border-radius: 4px;
+            top: 65%;
+            right: 6%;
+            transform: rotate(18deg);
+        }
+
+        .hero-decor .decor-triangle {
+            width: 0;
+            height: 0;
+            border-left: 7px solid transparent;
+            border-right: 7px solid transparent;
+            border-bottom: 12px solid rgba(249, 115, 22, 0.45);
+            top: 20%;
+            right: 22%;
+        }
+
+        .hero-decor .decor-dot {
+            width: 7px;
+            height: 7px;
+            background: rgba(249, 115, 22, 0.5);
+            border-radius: 50%;
+            bottom: 18%;
+            right: 30%;
+        }
+
+        .hero-eyebrow-badge {
+            display: inline-flex;
+            align-items: center;
+            gap: 0.4rem;
+            font-size: 0.72rem;
+            font-weight: 700;
+            letter-spacing: 0.08em;
+            text-transform: uppercase;
+            color: #fb923c;
+            background: rgba(249, 115, 22, 0.12);
+            border: 1px solid rgba(249, 115, 22, 0.3);
+            padding: 0.3rem 0.75rem;
+            border-radius: 999px;
+            margin-bottom: 0.9rem;
+        }
+
+        .hero-header, .hero-stats-grid, .hero-charts-grid {
+            position: relative;
+            z-index: 1;
         }
 
         .dashboard-hero h1 {
@@ -56,12 +144,18 @@
         }
 
         .hero-stat-card {
-            background: rgba(255, 255, 255, 0.1);
+            background: rgba(255, 255, 255, 0.06);
             backdrop-filter: blur(10px);
-            border: 1px solid rgba(255, 255, 255, 0.2);
+            border: 1px solid rgba(255, 255, 255, 0.12);
             border-radius: 12px;
             padding: 1rem;
             min-width: 0;
+            transition: border-color 0.3s, transform 0.3s;
+        }
+
+        .hero-stat-card:hover {
+            border-color: rgba(249, 115, 22, 0.4);
+            transform: translateY(-3px);
         }
 
         .hero-stat-header {
@@ -74,11 +168,14 @@
         .hero-stat-icon {
             width: 40px;
             height: 40px;
-            background: rgba(255, 255, 255, 0.2);
+            background:
+                radial-gradient(circle at 30% 24%, rgba(255,255,255,0.4), rgba(255,255,255,0) 30%),
+                linear-gradient(135deg, #f97316, #ef4444);
             border-radius: 8px;
             display: flex;
             align-items: center;
             justify-content: center;
+            box-shadow: 0 6px 16px rgba(249, 115, 22, 0.35);
         }
 
         .hero-stat-value {
@@ -106,11 +203,13 @@
         }
 
         .hero-chart-card {
-            background: rgba(255, 255, 255, 0.1);
+            background: rgba(255, 255, 255, 0.06);
             backdrop-filter: blur(10px);
-            border: 1px solid rgba(255, 255, 255, 0.2);
+            border: 1px solid rgba(255, 255, 255, 0.12);
             border-radius: 12px;
             padding: 1.5rem;
+            position: relative;
+            z-index: 1;
         }
 
         .hero-chart-card h3 {
@@ -271,19 +370,16 @@
         }
 
         .user-stat-card {
-            background: var(--glass-bg-strong, rgba(255,255,255,0.85));
-            backdrop-filter: blur(20px) saturate(160%);
-            -webkit-backdrop-filter: blur(20px) saturate(160%);
-            border-radius: 14px;
+            background: white;
+            border-radius: 12px;
             padding: 1.5rem;
-            border: 1px solid rgba(255,255,255,0.6);
-            box-shadow: 0 8px 28px rgba(31,41,55,0.08);
-            transition: box-shadow 0.3s, transform 0.4s cubic-bezier(.22,1,.36,1);
+            border: 1px solid #e5e7eb;
+            transition: box-shadow 0.2s;
             min-width: 0;
         }
 
         .user-stat-card:hover {
-            box-shadow: 0 16px 36px rgba(31, 41, 55, 0.14);
+            box-shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.1);
         }
 
         .user-stat-header {
@@ -366,7 +462,7 @@
         <nav class="navbar">
             <div class="nav-container">
                 <div class="nav-brand">
-                    <i class="fas fa-exchange-alt"></i>
+                    <span class="brand-mark" aria-hidden="true"><svg viewBox="0 0 48 48" fill="none" xmlns="http://www.w3.org/2000/svg"><path d="M15 19a9 9 0 1 1 8 13" stroke="#fff" stroke-width="4.2" stroke-linecap="round"/><path d="M33 29a9 9 0 1 1-8-13" stroke="#fff" stroke-width="4.2" stroke-linecap="round" opacity="0.65"/><path d="M19 15l-4 4 4 4" stroke="#fff" stroke-width="4.2" stroke-linecap="round" stroke-linejoin="round"/><path d="M29 33l4-4-4-4" stroke="#fff" stroke-width="4.2" stroke-linecap="round" stroke-linejoin="round" opacity="0.65"/></svg></span>
                     <span>BorrowBuddy</span>
                 </div>
                 <div class="nav-menu" id="navMenu">
@@ -406,7 +502,14 @@
         <div class="dashboard-container" style="max-width: 1280px; margin: 0 auto; padding: 2rem 1.5rem;">
             <!-- Hero Panel -->
             <div class="dashboard-hero">
+                <div class="hero-decor" aria-hidden="true">
+                    <span class="decor-circle"></span>
+                    <span class="decor-triangle"></span>
+                    <span class="decor-square"></span>
+                    <span class="decor-dot"></span>
+                </div>
                 <div class="hero-header">
+                    <span class="hero-eyebrow-badge"><i class="fas fa-bolt"></i> Dashboard Overview</span>
                     <h1>Welcome back, <span id="userName">User</span>!</h1>
                     <p>Here's what's happening with your account today.</p>
                 </div>
@@ -466,8 +569,8 @@
             </div>
             
             <!-- User Statistics Cards -->
-            <div class="user-stats-grid reveal-group">
-                <div class="user-stat-card tilt-3d" data-tilt-max="4">
+            <div class="user-stats-grid">
+                <div class="user-stat-card">
                     <div class="user-stat-header">
                         <div class="user-stat-icon green">
                             <i class="fas fa-box"></i>
@@ -478,7 +581,7 @@
                     <div class="user-stat-value" id="totalBorrowed">0</div>
                 </div>
                 
-                <div class="user-stat-card tilt-3d" data-tilt-max="4">
+                <div class="user-stat-card">
                     <div class="user-stat-header">
                         <div class="user-stat-icon blue">
                             <i class="fas fa-hand-holding"></i>
@@ -489,7 +592,7 @@
                     <div class="user-stat-value" id="totalLent">0</div>
                 </div>
                 
-                <div class="user-stat-card tilt-3d" data-tilt-max="4">
+                <div class="user-stat-card">
                     <div class="user-stat-header">
                         <div class="user-stat-icon purple">
                             <i class="fas fa-clock"></i>
@@ -500,7 +603,7 @@
                     <div class="user-stat-value" id="pendingRequests">0</div>
                 </div>
                 
-                <div class="user-stat-card tilt-3d" data-tilt-max="4">
+                <div class="user-stat-card">
                     <div class="user-stat-header">
                         <div class="user-stat-icon orange">
                             <i class="fas fa-star"></i>
@@ -634,6 +737,7 @@
 
     <!-- JavaScript Files -->
     <script src="auth.js"></script>
+    <script src="premium.js"></script>
     <script src="dashboard.js"></script>
     <script src="ai-assistant.js"></script>
     
@@ -909,7 +1013,6 @@
         }
     </script>
     <script src="storage-sync.js"></script>
-    <script src="premium.js"></script>
     <script src="notifications.js"></script>
     <script src="referral-system.js"></script>
     <script src="dark-mode.js"></script>
