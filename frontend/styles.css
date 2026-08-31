@@ -173,25 +173,46 @@ img {
 }
 
 /* ============================================================
+   One continuous dark 3D canvas for the whole homepage (hero
+   through CTA) so sections blend instead of alternating
+   light/dark blocks with hard seams.
+   ============================================================ */
+.page-3d-wrap {
+    position: relative;
+    overflow: hidden;
+    background: radial-gradient(120% 60% at 15% 0%, #2c1f5c 0%, #180f3d 30%, #0a0620 60%, #060414 100%);
+}
+
+.page-3d-orbs {
+    position: absolute;
+    inset: 0;
+    overflow: hidden;
+    pointer-events: none;
+    z-index: 0;
+}
+
+.page-3d-orbs .liquid-blob {
+    opacity: 0.4;
+}
+
+/* Every section inside the wrap sits on the shared background */
+.page-3d-wrap .hero-premium-wrap,
+.page-3d-wrap .features,
+.page-3d-wrap .showcase,
+.page-3d-wrap .how-it-works,
+.page-3d-wrap .categories,
+.page-3d-wrap .cta {
+    position: relative;
+    z-index: 1;
+}
+
+/* ============================================================
    Premium dark hero — glossy liquid-blob background
    ============================================================ */
 .hero-premium-wrap {
     position: relative;
-    overflow: hidden;
-    background: radial-gradient(130% 100% at 12% -10%, #2c1f5c 0%, #180f3d 40%, #0a0620 78%, #060414 100%);
-}
-
-/* Smooth fade into the light section below instead of a hard cut */
-.hero-premium-wrap::after {
-    content: '';
-    position: absolute;
-    left: 0;
-    right: 0;
-    bottom: 0;
-    height: 260px;
-    background: linear-gradient(to bottom, rgba(10, 6, 20, 0) 0%, rgba(10, 6, 20, 0.5) 55%, #f6f8fc 100%);
-    pointer-events: none;
-    z-index: 0;
+    overflow: visible;
+    background: transparent;
 }
 
 .hero-blob-field {
@@ -582,11 +603,18 @@ img {
 .section-header h2 {
     font-size: 3rem;
     margin-bottom: 1rem;
+    color: #fff;
+}
+
+.section-header h2 .gradient-text {
+    background: linear-gradient(100deg, #c4b5fd, #f0abfc, #93c5fd);
+    -webkit-background-clip: text;
+    background-clip: text;
 }
 
 .section-header p {
     font-size: 1.25rem;
-    color: var(--text-gray);
+    color: rgba(226, 232, 240, 0.7);
 }
 
 .features-grid {
@@ -709,9 +737,9 @@ img {
    ============================================================ */
 .showcase {
     position: relative;
-    overflow: hidden;
+    overflow: visible;
     padding: 5rem 2rem;
-    background: var(--bg-dark, #0f172a);
+    background: transparent;
 }
 
 .showcase-orbs {
