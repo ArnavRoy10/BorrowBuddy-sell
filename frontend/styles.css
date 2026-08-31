@@ -1037,7 +1037,7 @@ img {
     background: var(--text-dark);
     color: white;
     padding: 4rem 2rem 2rem;
-    margin-top: 6rem;
+    margin-top: 0;
 }
 
 .footer-content {
