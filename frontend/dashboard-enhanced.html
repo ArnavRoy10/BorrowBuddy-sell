@@ -36,8 +36,6 @@
             padding: 2rem;
             color: white;
             margin-bottom: 2rem;
-            position: relative;
-            overflow: hidden;
         }
 
         .dashboard-hero h1 {
@@ -273,16 +271,19 @@
         }
 
         .user-stat-card {
-            background: white;
-            border-radius: 12px;
+            background: var(--glass-bg-strong, rgba(255,255,255,0.85));
+            backdrop-filter: blur(20px) saturate(160%);
+            -webkit-backdrop-filter: blur(20px) saturate(160%);
+            border-radius: 14px;
             padding: 1.5rem;
-            border: 1px solid #e5e7eb;
-            transition: box-shadow 0.2s;
+            border: 1px solid rgba(255,255,255,0.6);
+            box-shadow: 0 8px 28px rgba(31,41,55,0.08);
+            transition: box-shadow 0.3s, transform 0.4s cubic-bezier(.22,1,.36,1);
             min-width: 0;
         }
 
         .user-stat-card:hover {
-            box-shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.1);
+            box-shadow: 0 16px 36px rgba(31, 41, 55, 0.14);
         }
 
         .user-stat-header {
@@ -365,7 +366,7 @@
         <nav class="navbar">
             <div class="nav-container">
                 <div class="nav-brand">
-                    <span class="brand-mark" aria-hidden="true"><svg viewBox="0 0 48 48" fill="none" xmlns="http://www.w3.org/2000/svg"><path d="M15 19a9 9 0 1 1 8 13" stroke="#fff" stroke-width="4.2" stroke-linecap="round"/><path d="M33 29a9 9 0 1 1-8-13" stroke="#fff" stroke-width="4.2" stroke-linecap="round" opacity="0.65"/><path d="M19 15l-4 4 4 4" stroke="#fff" stroke-width="4.2" stroke-linecap="round" stroke-linejoin="round"/><path d="M29 33l4-4-4-4" stroke="#fff" stroke-width="4.2" stroke-linecap="round" stroke-linejoin="round" opacity="0.65"/></svg></span>
+                    <i class="fas fa-exchange-alt"></i>
                     <span>BorrowBuddy</span>
                 </div>
                 <div class="nav-menu" id="navMenu">
@@ -465,8 +466,8 @@
             </div>
             
             <!-- User Statistics Cards -->
-            <div class="user-stats-grid">
-                <div class="user-stat-card">
+            <div class="user-stats-grid reveal-group">
+                <div class="user-stat-card tilt-3d" data-tilt-max="4">
                     <div class="user-stat-header">
                         <div class="user-stat-icon green">
                             <i class="fas fa-box"></i>
@@ -477,7 +478,7 @@
                     <div class="user-stat-value" id="totalBorrowed">0</div>
                 </div>
                 
-                <div class="user-stat-card">
+                <div class="user-stat-card tilt-3d" data-tilt-max="4">
                     <div class="user-stat-header">
                         <div class="user-stat-icon blue">
                             <i class="fas fa-hand-holding"></i>
@@ -488,7 +489,7 @@
                     <div class="user-stat-value" id="totalLent">0</div>
                 </div>
                 
-                <div class="user-stat-card">
+                <div class="user-stat-card tilt-3d" data-tilt-max="4">
                     <div class="user-stat-header">
                         <div class="user-stat-icon purple">
                             <i class="fas fa-clock"></i>
@@ -499,7 +500,7 @@
                     <div class="user-stat-value" id="pendingRequests">0</div>
                 </div>
                 
-                <div class="user-stat-card">
+                <div class="user-stat-card tilt-3d" data-tilt-max="4">
                     <div class="user-stat-header">
                         <div class="user-stat-icon orange">
                             <i class="fas fa-star"></i>
@@ -633,7 +634,6 @@
 
     <!-- JavaScript Files -->
     <script src="auth.js"></script>
-    <script src="premium.js"></script>
     <script src="dashboard.js"></script>
     <script src="ai-assistant.js"></script>
     
@@ -909,6 +909,7 @@
         }
     </script>
     <script src="storage-sync.js"></script>
+    <script src="premium.js"></script>
     <script src="notifications.js"></script>
     <script src="referral-system.js"></script>
     <script src="dark-mode.js"></script>
