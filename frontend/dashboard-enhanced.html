@@ -126,6 +126,258 @@
             z-index: 1;
         }
 
+        /* ============================================================
+           Floating widget-cluster illustration (right side of hero)
+           ============================================================ */
+        .hero-top-row {
+            display: grid;
+            grid-template-columns: 1fr 340px;
+            gap: 2rem;
+            align-items: center;
+            position: relative;
+            z-index: 1;
+        }
+
+        .hero-illustration-cluster {
+            position: relative;
+            height: 260px;
+            display: block;
+        }
+
+        .hero-illustration-cluster .deco-dotgrid {
+            position: absolute;
+            width: 70px;
+            height: 70px;
+            top: -6px;
+            right: 4px;
+            background-image: radial-gradient(rgba(148, 163, 184, 0.45) 1.4px, transparent 1.4px);
+            background-size: 10px 10px;
+            opacity: 0.7;
+        }
+
+        .hero-illustration-cluster .deco-triangle-lg {
+            position: absolute;
+            width: 0;
+            height: 0;
+            bottom: 18px;
+            left: 0;
+            border-left: 8px solid transparent;
+            border-right: 8px solid transparent;
+            border-bottom: 14px solid rgba(249, 115, 22, 0.5);
+        }
+
+        .hero-illustration-cluster .deco-sq {
+            position: absolute;
+            border: 1.5px solid rgba(148, 163, 184, 0.4);
+            border-radius: 4px;
+        }
+
+        .hero-illustration-cluster .deco-sq-1 {
+            width: 14px;
+            height: 14px;
+            bottom: 40px;
+            right: 18px;
+            transform: rotate(12deg);
+        }
+
+        .hero-illustration-cluster .deco-sq-2 {
+            width: 10px;
+            height: 10px;
+            top: 4px;
+            left: 60px;
+            transform: rotate(-10deg);
+            border-color: rgba(249, 115, 22, 0.4);
+        }
+
+        .connector-lines {
+            position: absolute;
+            inset: 0;
+            width: 100%;
+            height: 100%;
+            overflow: visible;
+        }
+
+        .float-badge {
+            position: absolute;
+            width: 38px;
+            height: 38px;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: white;
+            font-size: 0.9rem;
+            box-shadow: 0 8px 20px rgba(0, 0, 0, 0.35);
+            animation: badgeFloat 5s ease-in-out infinite;
+        }
+
+        .badge-camera {
+            top: 6px;
+            left: 148px;
+            background: rgba(51, 65, 85, 0.9);
+            animation-delay: -1s;
+        }
+
+        .badge-play {
+            bottom: 88px;
+            left: 118px;
+            background: linear-gradient(135deg, #f97316, #ef4444);
+            width: 44px;
+            height: 44px;
+            font-size: 1rem;
+            animation-delay: -2.4s;
+        }
+
+        .badge-chat {
+            bottom: 30px;
+            left: 172px;
+            background: rgba(51, 65, 85, 0.9);
+            animation-delay: -3.6s;
+        }
+
+        @keyframes badgeFloat {
+            0%, 100% { transform: translateY(0); }
+            50%      { transform: translateY(-8px); }
+        }
+
+        .float-card {
+            position: absolute;
+            background: rgba(30, 41, 59, 0.85);
+            backdrop-filter: blur(12px);
+            border: 1px solid rgba(255, 255, 255, 0.12);
+            border-radius: 14px;
+            box-shadow: 0 20px 45px rgba(0, 0, 0, 0.4);
+        }
+
+        .menu-card {
+            width: 130px;
+            top: -14px;
+            right: 130px;
+            padding: 0.9rem 0.85rem;
+            transform: rotate(-5deg);
+        }
+
+        .menu-card-header {
+            color: rgba(255, 255, 255, 0.5);
+            font-size: 0.8rem;
+            margin-bottom: 0.6rem;
+        }
+
+        .menu-row {
+            height: 8px;
+            border: 1.5px dashed rgba(255, 255, 255, 0.25);
+            border-radius: 4px;
+            margin-bottom: 0.5rem;
+        }
+
+        .earnings-card {
+            width: 200px;
+            top: 26px;
+            right: 0;
+            padding: 1rem 1.1rem;
+            transform: rotate(2deg);
+            z-index: 2;
+        }
+
+        .earnings-label {
+            font-size: 0.68rem;
+            color: rgba(255, 255, 255, 0.55);
+            margin: 0 0 0.15rem;
+            text-transform: uppercase;
+            letter-spacing: 0.05em;
+        }
+
+        .earnings-value {
+            font-size: 1.4rem;
+            font-weight: 700;
+            color: #fff;
+            margin: 0 0 0.6rem;
+        }
+
+        .earnings-value .up {
+            font-size: 0.7rem;
+            font-weight: 700;
+            color: #4ade80;
+            vertical-align: middle;
+            margin-left: 0.3rem;
+        }
+
+        .earnings-row {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            gap: 0.6rem;
+        }
+
+        .earnings-spark {
+            flex: 1;
+            height: 30px;
+        }
+
+        .earnings-donut {
+            position: relative;
+            width: 46px;
+            height: 46px;
+            flex-shrink: 0;
+        }
+
+        .earnings-donut svg { transform: rotate(-90deg); }
+
+        .earnings-donut-label {
+            position: absolute;
+            inset: 0;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 0.62rem;
+            font-weight: 700;
+            color: #fff;
+        }
+
+        .bar-card {
+            width: 128px;
+            bottom: 0;
+            right: 96px;
+            padding: 0.85rem 0.9rem;
+            transform: rotate(-3deg);
+        }
+
+        .bar-card-label {
+            font-size: 0.65rem;
+            color: rgba(255, 255, 255, 0.55);
+            margin: 0 0 0.5rem;
+        }
+
+        .bar-card-bars {
+            display: flex;
+            align-items: flex-end;
+            gap: 4px;
+            height: 28px;
+            margin-bottom: 0.4rem;
+        }
+
+        .bar-card-bars span {
+            flex: 1;
+            border-radius: 2px;
+            background: linear-gradient(180deg, #fb923c, #ef4444);
+        }
+
+        .bar-card-value {
+            font-size: 1rem;
+            font-weight: 700;
+            color: #fff;
+            margin: 0;
+        }
+
+        @media (max-width: 900px) {
+            .hero-top-row {
+                grid-template-columns: 1fr;
+            }
+            .hero-illustration-cluster {
+                display: none;
+            }
+        }
+
         .dashboard-hero h1 {
             font-size: 1.875rem;
             margin-bottom: 0.5rem;
@@ -508,12 +760,75 @@
                     <span class="decor-square"></span>
                     <span class="decor-dot"></span>
                 </div>
-                <div class="hero-header">
-                    <span class="hero-eyebrow-badge"><i class="fas fa-bolt"></i> Dashboard Overview</span>
-                    <h1>Welcome back, <span id="userName">User</span>!</h1>
-                    <p>Here's what's happening with your account today.</p>
+                <div class="hero-top-row">
+                    <div class="hero-header">
+                        <span class="hero-eyebrow-badge"><i class="fas fa-bolt"></i> Dashboard Overview</span>
+                        <h1>Welcome back, <span id="userName">User</span>!</h1>
+                        <p>Here's what's happening with your account today.</p>
+                    </div>
+
+                    <div class="hero-illustration-cluster" aria-hidden="true">
+                        <span class="deco-dotgrid"></span>
+                        <span class="deco-triangle-lg"></span>
+                        <span class="deco-sq deco-sq-1"></span>
+                        <span class="deco-sq deco-sq-2"></span>
+
+                        <svg class="connector-lines" viewBox="0 0 340 260">
+                            <path d="M136,148 C110,130 110,105 137,85 C150,75 160,68 168,60"
+                                  fill="none" stroke="rgba(249,115,22,0.4)" stroke-width="1.5"
+                                  stroke-dasharray="3 5" stroke-linecap="round"/>
+                        </svg>
+
+                        <div class="float-badge badge-camera"><i class="fas fa-camera"></i></div>
+                        <div class="float-badge badge-play"><i class="fas fa-play"></i></div>
+                        <div class="float-badge badge-chat"><i class="fas fa-comment-dots"></i></div>
+
+                        <div class="float-card menu-card">
+                            <div class="menu-card-header"><i class="fas fa-bars"></i></div>
+                            <div class="menu-row"></div>
+                            <div class="menu-row"></div>
+                            <div class="menu-row" style="width:60%"></div>
+                        </div>
+
+                        <div class="float-card earnings-card">
+                            <p class="earnings-label">Total Earnings</p>
+                            <h3 class="earnings-value">₹<span id="heroEarningsFloat">0</span><span class="up">↑ 25%</span></h3>
+                            <div class="earnings-row">
+                                <svg class="earnings-spark" viewBox="0 0 100 30" preserveAspectRatio="none">
+                                    <polyline points="0,24 15,20 30,26 45,10 60,16 75,6 100,4"
+                                              fill="none" stroke="#fb923c" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+                                </svg>
+                                <div class="earnings-donut">
+                                    <svg viewBox="0 0 46 46">
+                                        <circle cx="23" cy="23" r="19" fill="none" stroke="rgba(255,255,255,0.15)" stroke-width="5"/>
+                                        <circle cx="23" cy="23" r="19" fill="none" stroke="url(#donutGrad)" stroke-width="5"
+                                                stroke-dasharray="119.4" stroke-dashoffset="89.5" stroke-linecap="round"/>
+                                        <defs>
+                                            <linearGradient id="donutGrad" x1="0%" y1="0%" x2="100%" y2="100%">
+                                                <stop offset="0%" stop-color="#fb923c"/>
+                                                <stop offset="100%" stop-color="#ef4444"/>
+                                            </linearGradient>
+                                        </defs>
+                                    </svg>
+                                    <span class="earnings-donut-label">25%</span>
+                                </div>
+                            </div>
+                        </div>
+
+                        <div class="float-card bar-card">
+                            <p class="bar-card-label">Avg. Points</p>
+                            <div class="bar-card-bars">
+                                <span style="height:40%"></span>
+                                <span style="height:65%"></span>
+                                <span style="height:45%"></span>
+                                <span style="height:85%"></span>
+                                <span style="height:55%"></span>
+                            </div>
+                            <p class="bar-card-value">8.6</p>
+                        </div>
+                    </div>
                 </div>
-                
+
                 <!-- Stats Grid in Hero -->
                 <div class="hero-stats-grid">
                     <div class="hero-stat-card">
