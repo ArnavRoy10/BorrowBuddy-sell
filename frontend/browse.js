@@ -9,7 +9,7 @@ function createSlideshow(images, altText) {
   const img = document.createElement('img');
   img.src = imgs[0];
   img.alt = altText || '';
-  img.style.cssText = 'width:100%;height:100%;object-fit:cover;transition:opacity 0.3s';
+  img.style.cssText = 'width:100%;height:100%;object-fit:contain;background:rgba(255,255,255,0.06);transition:opacity 0.3s';
   img.onerror = () => { img.src = defaultImg; };
   wrapper.appendChild(img);
 
