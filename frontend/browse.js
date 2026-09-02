@@ -444,7 +444,7 @@ document.addEventListener('DOMContentLoaded', () => {
 
         const card = document.createElement('div');
         card.className = 'item-card';
-        card.style.cssText = 'background:white;border-radius:16px;overflow:hidden;box-shadow:0 2px 12px rgba(0,0,0,.08);transition:all .3s;border:1px solid #f0f0f0';
+        card.style.cssText = 'background:white;border-radius:12px;overflow:hidden;box-shadow:0 1px 3px rgba(0,0,0,.08);transition:box-shadow .2s,transform .2s;border:1px solid #e5e7eb;display:flex;flex-direction:column;height:100%';
 
         const slideshow = createSlideshow(item.images && item.images.length > 0 ? item.images : [img], name);
 
@@ -466,73 +466,69 @@ document.addEventListener('DOMContentLoaded', () => {
 
         const msgBtn = !isOwner ? `
             <button class="msg-seller-btn"
-                style="width:100%;margin-top:.5rem;padding:.6rem;background:#f0f7ff;color:#2563eb;border:1px solid #bfdbfe;border-radius:10px;font-weight:600;cursor:pointer;font-size:.85rem;transition:all .15s">
+                style="width:100%;margin-top:.5rem;padding:.55rem;background:#f0f7ff;color:#2563eb;border:1px solid #bfdbfe;border-radius:8px;font-weight:600;cursor:pointer;font-size:.82rem;transition:all .15s">
                 <i class="fas fa-comment-dots"></i> Message Owner
             </button>` : '';
 
         const tempDiv = document.createElement('div');
         tempDiv.innerHTML = `
-            <div style="padding:1.25rem">
-                <h3 style="margin:0 0 .35rem;font-size:1rem;font-weight:700;color:#1f2937;line-height:1.3">${name}</h3>
+            <div style="padding:.9rem 1rem 1rem;display:flex;flex-direction:column;flex:1 1 auto">
 
-                <!-- Owner row with rating -->
-                <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:.6rem">
-                    <div style="display:flex;align-items:center;gap:.4rem;color:#6b7280;font-size:.8rem">
-                        <div style="width:22px;height:22px;border-radius:50%;background:linear-gradient(135deg,#667eea,#764ba2);display:flex;align-items:center;justify-content:center;color:white;font-size:.6rem;font-weight:700;flex-shrink:0">
-                            ${(item.owner||'U')[0].toUpperCase()}
-                        </div>
-                        <span style="font-weight:600;color:#374151">${owner}</span>
-                    </div>
-                    ${ownerRating ? `
-                    <div style="display:flex;align-items:center;gap:.3rem;background:#fffbeb;border:1px solid #fde68a;border-radius:20px;padding:.15rem .5rem">
-                        ${renderStars(ownerRating.avg)}
-                        <span style="font-size:.72rem;font-weight:700;color:#92400e;margin-left:.15rem">${ownerRating.avg.toFixed(1)}</span>
-                        <span style="font-size:.65rem;color:#b45309">(${ownerRating.count})</span>
-                    </div>` : ''}
+                <!-- Title: fixed 2-line height so every card's title block matches -->
+                <h3 style="margin:0 0 .3rem;font-size:.95rem;font-weight:600;color:#1f2937;line-height:1.35;
+                    display:-webkit-box;-webkit-line-clamp:2;-webkit-box-orient:vertical;overflow:hidden;min-height:2.6em">
+                    ${name}
+                </h3>
+
+                <!-- Rating row: directly under title, Amazon-style -->
+                <div style="display:flex;align-items:center;gap:.35rem;margin-bottom:.4rem;min-height:1.1rem">
+                    ${rating > 0 ? `
+                    ${renderStars(rating)}
+                    <span style="font-size:.78rem;color:#2563eb;font-weight:600">${rating.toFixed(1)}</span>
+                    <span style="font-size:.75rem;color:#6b7280">(${borrows} borrow${borrows === 1 ? '' : 's'})</span>` : `
+                    <span style="font-size:.78rem;color:#9ca3af">No reviews yet</span>`}
                 </div>
 
-                <p style="color:#6b7280;font-size:.82rem;margin:.5rem 0 .75rem;line-height:1.4">
-                    ${desc.substring(0, 65)}${desc.length > 65 ? '…' : ''}
-                </p>
+                <!-- Price: large and prominent, Amazon-style -->
+                <div style="display:flex;align-items:baseline;gap:.4rem;margin-bottom:.15rem">
+                    <span style="color:#0f766e;font-weight:700;font-size:1.15rem">${price}</span>
+                </div>
+                <div style="display:flex;align-items:center;gap:.35rem;font-size:.75rem;color:#6b7280;margin-bottom:.55rem">
+                    <i class="fas fa-shield-alt" style="color:#f59e0b"></i> ₹${deposit} refundable deposit
+                </div>
 
-                <!-- Price & deposit row -->
-                <div style="display:flex;align-items:center;gap:.5rem;padding:.6rem 0;border-top:1px solid #f3f4f6;border-bottom:1px solid #f3f4f6;margin-bottom:.75rem">
-                    <span style="color:#10b981;font-weight:700;font-size:.95rem">${price}</span>
-                    <span style="color:#e5e7eb">|</span>
-                    <span style="color:#6b7280;font-size:.8rem"><i class="fas fa-shield-alt" style="color:#f59e0b"></i> ₹${deposit} deposit</span>
+                <!-- Owner row -->
+                <div style="display:flex;align-items:center;justify-content:space-between;padding-top:.5rem;border-top:1px solid #f3f4f6;margin-bottom:.5rem">
+                    <div style="display:flex;align-items:center;gap:.4rem;color:#6b7280;font-size:.78rem;min-width:0">
+                        <div style="width:20px;height:20px;border-radius:50%;background:linear-gradient(135deg,#667eea,#764ba2);display:flex;align-items:center;justify-content:center;color:white;font-size:.58rem;font-weight:700;flex-shrink:0">
+                            ${(item.owner||'U')[0].toUpperCase()}
+                        </div>
+                        <span style="font-weight:600;color:#374151;overflow:hidden;text-overflow:ellipsis;white-space:nowrap">${owner}</span>
+                    </div>
                     ${item.locationPrimary || item.location ? `
-                    <span style="color:#e5e7eb">|</span>
-                    <span style="color:#6b7280;font-size:.75rem;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;max-width:80px">
+                    <span style="color:#6b7280;font-size:.72rem;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;max-width:90px;flex-shrink:0">
                         <i class="fas fa-map-marker-alt" style="color:#ef4444"></i>
                         ${safe((item.locationPrimary || item.location || '').split(',')[0])}
                     </span>` : ''}
                 </div>
 
-                <!-- Stats row: item rating + borrows -->
-                <div style="display:grid;grid-template-columns:1fr 1fr;gap:.5rem;margin-bottom:.875rem;text-align:center">
-                    <div style="background:#f9fafb;border-radius:8px;padding:.4rem">
-                        <div style="font-size:.72rem;color:#6b7280;margin-bottom:.1rem">Item Rating</div>
-                        <div style="display:flex;align-items:center;justify-content:center;gap:.25rem">
-                            ${rating > 0 ? `
-                            <span style="font-weight:700;font-size:.9rem;color:#1f2937">${rating.toFixed(1)}</span>
-                            <i class="fas fa-star" style="color:#f59e0b;font-size:.75rem"></i>` : `
-                            <span style="font-size:.8rem;color:#9ca3af">No reviews</span>`}
-                        </div>
-                    </div>
-                    <div style="background:#f9fafb;border-radius:8px;padding:.4rem">
-                        <div style="font-size:.72rem;color:#6b7280;margin-bottom:.1rem">Borrows</div>
-                        <div style="font-weight:700;font-size:.9rem;color:#1f2937">${borrows}</div>
-                    </div>
-                </div>
+                <!-- Description: single line, consistent height -->
+                <p style="color:#6b7280;font-size:.78rem;margin:0 0 .75rem;line-height:1.4;
+                    overflow:hidden;text-overflow:ellipsis;white-space:nowrap">
+                    ${desc}
+                </p>
 
-                <!-- Action buttons -->
+                <!-- Spacer pushes everything below to the bottom of the card -->
+                <div style="flex:1 1 auto"></div>
+
+                <!-- Action buttons: always aligned to the bottom edge of the card -->
                 <div style="display:flex;gap:.5rem">
                     <button class="add-to-cart-btn"
-                        style="flex:1;padding:.65rem;background:#FFD814;border:1px solid #FCD200;color:#111;border-radius:10px;font-weight:700;cursor:pointer;font-size:.82rem;transition:all .15s">
+                        style="flex:1;padding:.6rem;background:#FFD814;border:1px solid #FCD200;color:#111;border-radius:8px;font-weight:700;cursor:pointer;font-size:.8rem;transition:all .15s">
                         <i class="fas fa-shopping-cart"></i> Cart
                     </button>
                     <button class="view-details-btn"
-                        style="flex:1;padding:.65rem;background:linear-gradient(135deg,#2563eb,#7c3aed);color:white;border:none;border-radius:10px;font-weight:700;cursor:pointer;font-size:.82rem;transition:all .15s">
+                        style="flex:1;padding:.6rem;background:linear-gradient(135deg,#2563eb,#7c3aed);color:white;border:none;border-radius:8px;font-weight:700;cursor:pointer;font-size:.8rem;transition:all .15s">
                         <i class="fas fa-eye"></i> Details
                     </button>
                 </div>
@@ -542,8 +538,8 @@ document.addEventListener('DOMContentLoaded', () => {
         card.appendChild(tempDiv.firstElementChild);
 
         // Hover effect
-        card.addEventListener('mouseenter', () => card.style.transform = 'translateY(-4px)');
-        card.addEventListener('mouseleave', () => card.style.transform = '');
+        card.addEventListener('mouseenter', () => { card.style.transform = 'translateY(-4px)'; card.style.boxShadow = '0 8px 20px rgba(0,0,0,.12)'; });
+        card.addEventListener('mouseleave', () => { card.style.transform = 'translateY(0)'; card.style.boxShadow = '0 1px 3px rgba(0,0,0,.08)'; });
 
         card.querySelector('.add-to-cart-btn').addEventListener('click', e => { e.stopPropagation(); addToCart(item); });
         card.querySelector('.view-details-btn').addEventListener('click', e => { e.stopPropagation(); viewDetails(item); });
