@@ -357,25 +357,30 @@ select.filter-select-block {
 }
 
 #itemsGrid {
-    display: grid;
-    grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
-    gap: 1.5rem;
+    display: flex;
+    flex-direction: column;
+    gap: 0.85rem;
 }
 
-/* Item Card */
+/* Item Card — compact horizontal row (Amazon list style) */
 .item-card {
     background: white;
-    border-radius: 16px;
+    border-radius: 12px;
     overflow: hidden;
-    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.08);
-    transition: all 0.3s ease;
+    box-shadow: 0 1px 3px rgba(0, 0, 0, 0.08);
+    transition: box-shadow 0.2s ease, transform 0.2s ease;
     cursor: pointer;
     min-width: 0;
 }
 
 .item-card:hover {
-    transform: translateY(-8px);
-    box-shadow: 0 12px 24px rgba(0, 0, 0, 0.15);
+    transform: translateY(-2px);
+    box-shadow: 0 6px 18px rgba(0, 0, 0, 0.1);
+}
+
+.item-thumb {
+    width: 120px;
+    height: 120px;
 }
 
 .item-image {
@@ -397,17 +402,11 @@ select.filter-select-block {
     transform: scale(1.1);
 }
 
-/* Real slideshow wrapper used by browse.js item cards */
-.item-slideshow {
-    width: 100%;
-    height: 200px;
-}
-
-.item-slideshow img {
+.item-thumb img {
     transition: transform 0.3s ease;
 }
 
-.item-card:hover .item-slideshow img {
+.item-card:hover .item-thumb img {
     transform: scale(1.05);
 }
 
@@ -557,7 +556,6 @@ select.filter-select-block {
 .empty-state {
     text-align: center;
     padding: 4rem 2rem;
-    grid-column: 1 / -1;
 }
 
 .empty-state i {
@@ -646,7 +644,7 @@ select.filter-select-block {
     }
 
     #itemsGrid {
-        grid-template-columns: repeat(auto-fill, minmax(240px, 1fr));
+        gap: 1rem;
     }
 }
 
@@ -697,24 +695,12 @@ select.filter-select-block {
     }
 
     #itemsGrid {
-        grid-template-columns: minmax(0, 1fr) minmax(0, 1fr);
-        gap: 0.75rem;
+        gap: 0.65rem;
     }
 
-    .item-slideshow {
-        height: 140px;
-    }
-
-    .item-card-body {
-        padding: 0.7rem 0.75rem 0.75rem !important;
-    }
-
-    .item-card-title {
-        font-size: 0.82rem !important;
-    }
-
-    .item-card-price {
-        font-size: 0.95rem !important;
+    .item-thumb {
+        width: 100px;
+        height: 100px;
     }
 }
 
@@ -728,24 +714,20 @@ select.filter-select-block {
     }
 
     #itemsGrid {
-        grid-template-columns: minmax(0, 1fr) minmax(0, 1fr);
-        gap: 0.75rem;
+        gap: 0.6rem;
     }
 
-    .item-slideshow {
-        height: 120px;
+    .item-thumb {
+        width: 88px;
+        height: 88px;
     }
 
     .item-card-title {
-        font-size: 0.78rem !important;
+        font-size: 0.8rem !important;
     }
 
     .item-card-price {
-        font-size: 0.88rem !important;
-    }
-
-    .item-card {
-        max-width: 100%;
+        font-size: 0.92rem !important;
     }
 
     .category-btn {
