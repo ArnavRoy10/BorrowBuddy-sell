@@ -1,48 +1,3 @@
-function createSlideshow(images, altText) {
-  const defaultImg = 'https://images.unsplash.com/photo-1572365992253-3cb3e56dd362?w=400';
-  const imgs = (images && images.filter(Boolean).length > 0) ? images.filter(Boolean) : [defaultImg];
-  let current = 0;
-
-  const wrapper = document.createElement('div');
-  wrapper.className = 'item-slideshow';
-  wrapper.style.cssText = 'position:relative;overflow:hidden;background:linear-gradient(135deg,#667eea,#764ba2)';
-
-  const img = document.createElement('img');
-  img.src = imgs[0];
-  img.alt = altText || '';
-  img.style.cssText = 'width:100%;height:100%;object-fit:contain;background:rgba(255,255,255,0.06);transition:opacity 0.3s';
-  img.onerror = () => { img.src = defaultImg; };
-  wrapper.appendChild(img);
-
-  if (imgs.length > 1) {
-    const counter = document.createElement('div');
-    counter.style.cssText = 'position:absolute;bottom:8px;left:50%;transform:translateX(-50%);background:rgba(0,0,0,0.5);color:white;padding:2px 10px;border-radius:10px;font-size:0.75rem;z-index:5';
-    counter.textContent = '1 / ' + imgs.length;
-    wrapper.appendChild(counter);
-
-    const btnStyle = 'position:absolute;top:50%;transform:translateY(-50%);background:rgba(0,0,0,0.5);color:white;border:none;width:30px;height:30px;border-radius:50%;cursor:pointer;font-size:18px;display:flex;align-items:center;justify-content:center;z-index:5;line-height:1';
-    const prev = document.createElement('button');
-    prev.innerHTML = '&#8249;';
-    prev.setAttribute('style', btnStyle + ';left:8px');
-    const next = document.createElement('button');
-    next.innerHTML = '&#8250;';
-    next.setAttribute('style', btnStyle + ';right:8px');
-
-    const goTo = (index) => {
-      current = (index + imgs.length) % imgs.length;
-      img.style.opacity = '0';
-      setTimeout(() => { img.src = imgs[current]; img.style.opacity = '1'; counter.textContent = (current + 1) + ' / ' + imgs.length; }, 150);
-    };
-
-    prev.addEventListener('click', (e) => { e.stopPropagation(); goTo(current - 1); });
-    next.addEventListener('click', (e) => { e.stopPropagation(); goTo(current + 1); });
-    wrapper.appendChild(prev);
-    wrapper.appendChild(next);
-  }
-
-  return wrapper;
-}
-
 const API_BASE = self.BORROWBUDDY_CONFIG.API_BASE_URL + '/api';
 
 document.addEventListener('DOMContentLoaded', () => {
@@ -445,95 +400,91 @@ document.addEventListener('DOMContentLoaded', () => {
 
         const card = document.createElement('div');
         card.className = 'item-card';
-        card.style.cssText = 'background:white;border-radius:12px;overflow:hidden;box-shadow:0 1px 3px rgba(0,0,0,.08);transition:box-shadow .2s,transform .2s;border:1px solid #e5e7eb;display:flex;flex-direction:column;height:100%';
+        card.style.cssText = 'background:white;border-radius:10px;overflow:hidden;box-shadow:0 1px 3px rgba(0,0,0,.08);transition:box-shadow .2s,transform .2s;border:1px solid #e5e7eb;display:flex;min-width:0';
 
-        const slideshow = createSlideshow(item.images && item.images.length > 0 ? item.images : [img], name);
+        // ── Compact thumbnail (fixed square, first photo only — no
+        //    slideshow controls needed at this size) ──────────────
+        const imgs = (item.images && item.images.filter(Boolean).length > 0) ? item.images.filter(Boolean) : [img];
+        const thumb = document.createElement('div');
+        thumb.className = 'item-thumb';
+        thumb.style.cssText = 'position:relative;flex-shrink:0;overflow:hidden;background:linear-gradient(135deg,#667eea,#764ba2)';
 
-        // Category badge
-        const badge = document.createElement('div');
-        badge.style.cssText = 'position:absolute;top:.75rem;right:.75rem;background:rgba(255,255,255,.95);padding:.25rem .65rem;border-radius:50px;font-size:.72rem;font-weight:700;color:#2563eb;backdrop-filter:blur(4px);box-shadow:0 2px 8px rgba(0,0,0,.1)';
-        badge.textContent = category;
-        slideshow.appendChild(badge);
+        const thumbImg = document.createElement('img');
+        thumbImg.src = imgs[0];
+        thumbImg.alt = name;
+        thumbImg.style.cssText = 'width:100%;height:100%;object-fit:contain;background:rgba(255,255,255,0.06)';
+        thumbImg.onerror = () => { thumbImg.src = 'https://images.unsplash.com/photo-1572365992253-3cb3e56dd362?w=400'; };
+        thumb.appendChild(thumbImg);
 
-        // Distance badge (only if available)
-        if (distanceStr) {
-            const distBadge = document.createElement('div');
-            distBadge.style.cssText = 'position:absolute;top:.75rem;left:.75rem;background:rgba(16,185,129,.9);color:white;padding:.25rem .65rem;border-radius:50px;font-size:.72rem;font-weight:700;backdrop-filter:blur(4px)';
-            distBadge.innerHTML = `<i class="fas fa-map-marker-alt"></i> ${distanceStr}`;
-            slideshow.appendChild(distBadge);
+        if (imgs.length > 1) {
+            const countBadge = document.createElement('div');
+            countBadge.style.cssText = 'position:absolute;bottom:4px;right:4px;background:rgba(0,0,0,.55);color:#fff;font-size:.62rem;font-weight:600;padding:1px 6px;border-radius:8px';
+            countBadge.innerHTML = `<i class="fas fa-images"></i> ${imgs.length}`;
+            thumb.appendChild(countBadge);
         }
 
-        card.appendChild(slideshow);
+        card.appendChild(thumb);
 
         const msgBtn = !isOwner ? `
             <button class="msg-seller-btn"
-                style="width:100%;margin-top:.5rem;padding:.55rem;background:#f0f7ff;color:#2563eb;border:1px solid #bfdbfe;border-radius:8px;font-weight:600;cursor:pointer;font-size:.82rem;transition:all .15s">
-                <i class="fas fa-comment-dots"></i> Message Owner
+                style="padding:.5rem .7rem;background:#f0f7ff;color:#2563eb;border:1px solid #bfdbfe;border-radius:8px;font-weight:600;cursor:pointer;font-size:.75rem;transition:all .15s;white-space:nowrap">
+                <i class="fas fa-comment-dots"></i>
             </button>` : '';
 
         const tempDiv = document.createElement('div');
         tempDiv.innerHTML = `
-            <div class="item-card-body" style="padding:.9rem 1rem 1rem;display:flex;flex-direction:column;flex:1 1 auto;min-width:0">
+            <div class="item-card-body" style="padding:.6rem .75rem;display:flex;flex-direction:column;flex:1 1 auto;min-width:0">
 
-                <!-- Title: fixed 2-line height so every card's title block matches -->
-                <h3 class="item-card-title" style="margin:0 0 .3rem;font-size:.95rem;font-weight:600;color:#1f2937;line-height:1.35;
-                    display:-webkit-box;-webkit-line-clamp:2;-webkit-box-orient:vertical;overflow:hidden;min-height:2.6em">
+                <!-- Top row: category + distance, small and unobtrusive -->
+                <div style="display:flex;align-items:center;gap:.4rem;margin-bottom:.2rem;min-width:0">
+                    <span style="font-size:.66rem;font-weight:700;color:#2563eb;background:#eff6ff;padding:1px 7px;border-radius:8px;flex-shrink:0">${category}</span>
+                    ${distanceStr ? `<span style="font-size:.68rem;color:#10b981;font-weight:600;white-space:nowrap"><i class="fas fa-map-marker-alt"></i> ${distanceStr}</span>` : ''}
+                </div>
+
+                <!-- Title: clamped to 2 lines -->
+                <h3 class="item-card-title" style="margin:0 0 .2rem;font-size:.88rem;font-weight:600;color:#1f2937;line-height:1.3;
+                    display:-webkit-box;-webkit-line-clamp:2;-webkit-box-orient:vertical;overflow:hidden">
                     ${name}
                 </h3>
 
-                <!-- Rating row: directly under title, Amazon-style -->
-                <div style="display:flex;align-items:center;gap:.35rem;margin-bottom:.4rem;min-height:1.1rem">
+                <!-- Rating row -->
+                <div style="display:flex;align-items:center;gap:.3rem;margin-bottom:.3rem;min-height:1rem">
                     ${rating > 0 ? `
                     ${renderStars(rating)}
-                    <span style="font-size:.78rem;color:#2563eb;font-weight:600">${rating.toFixed(1)}</span>
-                    <span style="font-size:.75rem;color:#6b7280">(${borrows} borrow${borrows === 1 ? '' : 's'})</span>` : `
-                    <span style="font-size:.78rem;color:#9ca3af">No reviews yet</span>`}
+                    <span style="font-size:.72rem;color:#2563eb;font-weight:600">${rating.toFixed(1)}</span>
+                    <span style="font-size:.7rem;color:#6b7280">(${borrows})</span>` : `
+                    <span style="font-size:.72rem;color:#9ca3af">No reviews yet</span>`}
                 </div>
 
-                <!-- Price: large and prominent, Amazon-style -->
-                <div style="display:flex;align-items:baseline;gap:.4rem;margin-bottom:.15rem">
-                    <span class="item-card-price" style="color:#0f766e;font-weight:700;font-size:1.15rem">${price}</span>
+                <!-- Price -->
+                <div style="display:flex;align-items:baseline;gap:.4rem;flex-wrap:wrap">
+                    <span class="item-card-price" style="color:#0f766e;font-weight:700;font-size:1.05rem">${price}</span>
+                    <span style="font-size:.68rem;color:#6b7280"><i class="fas fa-shield-alt" style="color:#f59e0b"></i> ₹${deposit} deposit</span>
                 </div>
-                <div style="display:flex;align-items:center;gap:.35rem;font-size:.75rem;color:#6b7280;margin-bottom:.55rem">
-                    <i class="fas fa-shield-alt" style="color:#f59e0b"></i> ₹${deposit} refundable deposit
-                </div>
+
+                <!-- Spacer pushes owner row + buttons to the bottom -->
+                <div style="flex:1 1 auto;min-height:.4rem"></div>
 
                 <!-- Owner row -->
-                <div style="display:flex;align-items:center;justify-content:space-between;padding-top:.5rem;border-top:1px solid #f3f4f6;margin-bottom:.5rem;min-width:0">
-                    <div style="display:flex;align-items:center;gap:.4rem;color:#6b7280;font-size:.78rem;min-width:0">
-                        <div style="width:20px;height:20px;border-radius:50%;background:linear-gradient(135deg,#667eea,#764ba2);display:flex;align-items:center;justify-content:center;color:white;font-size:.58rem;font-weight:700;flex-shrink:0">
-                            ${(item.owner||'U')[0].toUpperCase()}
-                        </div>
-                        <span style="font-weight:600;color:#374151;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;min-width:0">${owner}</span>
+                <div style="display:flex;align-items:center;gap:.35rem;color:#6b7280;font-size:.72rem;margin-bottom:.4rem;min-width:0">
+                    <div style="width:16px;height:16px;border-radius:50%;background:linear-gradient(135deg,#667eea,#764ba2);display:flex;align-items:center;justify-content:center;color:white;font-size:.52rem;font-weight:700;flex-shrink:0">
+                        ${(item.owner||'U')[0].toUpperCase()}
                     </div>
-                    ${item.locationPrimary || item.location ? `
-                    <span style="color:#6b7280;font-size:.72rem;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;max-width:90px;flex-shrink:0">
-                        <i class="fas fa-map-marker-alt" style="color:#ef4444"></i>
-                        ${safe((item.locationPrimary || item.location || '').split(',')[0])}
-                    </span>` : ''}
+                    <span style="overflow:hidden;text-overflow:ellipsis;white-space:nowrap;min-width:0">${owner}</span>
                 </div>
 
-                <!-- Description: single line, consistent height -->
-                <p style="color:#6b7280;font-size:.78rem;margin:0 0 .75rem;line-height:1.4;min-width:0;
-                    overflow:hidden;text-overflow:ellipsis;white-space:nowrap">
-                    ${desc}
-                </p>
-
-                <!-- Spacer pushes everything below to the bottom of the card -->
-                <div style="flex:1 1 auto"></div>
-
-                <!-- Action buttons: always aligned to the bottom edge of the card -->
-                <div style="display:flex;gap:.5rem">
+                <!-- Action buttons -->
+                <div style="display:flex;gap:.4rem">
                     <button class="add-to-cart-btn"
-                        style="flex:1;padding:.6rem;background:#FFD814;border:1px solid #FCD200;color:#111;border-radius:8px;font-weight:700;cursor:pointer;font-size:.8rem;transition:all .15s">
+                        style="flex:1;padding:.45rem;background:#FFD814;border:1px solid #FCD200;color:#111;border-radius:7px;font-weight:700;cursor:pointer;font-size:.72rem;transition:all .15s;white-space:nowrap">
                         <i class="fas fa-shopping-cart"></i> Cart
                     </button>
                     <button class="view-details-btn"
-                        style="flex:1;padding:.6rem;background:linear-gradient(135deg,#2563eb,#7c3aed);color:white;border:none;border-radius:8px;font-weight:700;cursor:pointer;font-size:.8rem;transition:all .15s">
+                        style="flex:1;padding:.45rem;background:linear-gradient(135deg,#2563eb,#7c3aed);color:white;border:none;border-radius:7px;font-weight:700;cursor:pointer;font-size:.72rem;transition:all .15s;white-space:nowrap">
                         <i class="fas fa-eye"></i> Details
                     </button>
+                    ${msgBtn}
                 </div>
-                ${msgBtn}
             </div>`;
 
         card.appendChild(tempDiv.firstElementChild);
