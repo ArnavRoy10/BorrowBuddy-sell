@@ -46,8 +46,9 @@
         <div class="product-layout">
             <!-- Left: Image Gallery -->
             <div class="image-section">
-                <div class="main-image">
+                <div class="main-image" id="mainImageWrap">
                     <img id="mainImage" src="" alt="Item Image">
+                    <span class="zoom-hint" aria-hidden="true"><i class="fas fa-search-plus"></i> Click to zoom</span>
                 </div>
                 <div class="thumbnail-list" id="thumbnails">
                     <!-- Thumbnails will be added here -->
@@ -273,6 +274,25 @@
                 </form>
             </div>
         </div>
+    </div>
+
+    <!-- Image Zoom Lightbox -->
+    <div id="zoomLightbox" class="zoom-lightbox">
+        <div class="zoom-lightbox-overlay" onclick="closeZoomLightbox()"></div>
+        <div class="zoom-lightbox-stage" id="zoomStage">
+            <img id="zoomImage" class="zoom-lightbox-img" src="" alt="Zoomed item image">
+        </div>
+        <button type="button" class="zoom-lightbox-close" onclick="closeZoomLightbox()" aria-label="Close">
+            <i class="fas fa-times"></i>
+        </button>
+        <button type="button" class="zoom-lightbox-nav prev" id="zoomPrev" aria-label="Previous image">
+            <i class="fas fa-chevron-left"></i>
+        </button>
+        <button type="button" class="zoom-lightbox-nav next" id="zoomNext" aria-label="Next image">
+            <i class="fas fa-chevron-right"></i>
+        </button>
+        <div class="zoom-lightbox-counter" id="zoomCounter">1 / 1</div>
+        <div class="zoom-lightbox-hint">Scroll or pinch to zoom · Drag to pan</div>
     </div>
 
     <script src="config.js"></script>
