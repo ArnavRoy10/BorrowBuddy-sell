@@ -4,7 +4,8 @@ function createSlideshow(images, altText) {
   let current = 0;
 
   const wrapper = document.createElement('div');
-  wrapper.style.cssText = 'position:relative;height:200px;overflow:hidden;background:linear-gradient(135deg,#667eea,#764ba2)';
+  wrapper.className = 'item-slideshow';
+  wrapper.style.cssText = 'position:relative;overflow:hidden;background:linear-gradient(135deg,#667eea,#764ba2)';
 
   const img = document.createElement('img');
   img.src = imgs[0];
@@ -472,10 +473,10 @@ document.addEventListener('DOMContentLoaded', () => {
 
         const tempDiv = document.createElement('div');
         tempDiv.innerHTML = `
-            <div style="padding:.9rem 1rem 1rem;display:flex;flex-direction:column;flex:1 1 auto">
+            <div class="item-card-body" style="padding:.9rem 1rem 1rem;display:flex;flex-direction:column;flex:1 1 auto;min-width:0">
 
                 <!-- Title: fixed 2-line height so every card's title block matches -->
-                <h3 style="margin:0 0 .3rem;font-size:.95rem;font-weight:600;color:#1f2937;line-height:1.35;
+                <h3 class="item-card-title" style="margin:0 0 .3rem;font-size:.95rem;font-weight:600;color:#1f2937;line-height:1.35;
                     display:-webkit-box;-webkit-line-clamp:2;-webkit-box-orient:vertical;overflow:hidden;min-height:2.6em">
                     ${name}
                 </h3>
@@ -491,19 +492,19 @@ document.addEventListener('DOMContentLoaded', () => {
 
                 <!-- Price: large and prominent, Amazon-style -->
                 <div style="display:flex;align-items:baseline;gap:.4rem;margin-bottom:.15rem">
-                    <span style="color:#0f766e;font-weight:700;font-size:1.15rem">${price}</span>
+                    <span class="item-card-price" style="color:#0f766e;font-weight:700;font-size:1.15rem">${price}</span>
                 </div>
                 <div style="display:flex;align-items:center;gap:.35rem;font-size:.75rem;color:#6b7280;margin-bottom:.55rem">
                     <i class="fas fa-shield-alt" style="color:#f59e0b"></i> ₹${deposit} refundable deposit
                 </div>
 
                 <!-- Owner row -->
-                <div style="display:flex;align-items:center;justify-content:space-between;padding-top:.5rem;border-top:1px solid #f3f4f6;margin-bottom:.5rem">
+                <div style="display:flex;align-items:center;justify-content:space-between;padding-top:.5rem;border-top:1px solid #f3f4f6;margin-bottom:.5rem;min-width:0">
                     <div style="display:flex;align-items:center;gap:.4rem;color:#6b7280;font-size:.78rem;min-width:0">
                         <div style="width:20px;height:20px;border-radius:50%;background:linear-gradient(135deg,#667eea,#764ba2);display:flex;align-items:center;justify-content:center;color:white;font-size:.58rem;font-weight:700;flex-shrink:0">
                             ${(item.owner||'U')[0].toUpperCase()}
                         </div>
-                        <span style="font-weight:600;color:#374151;overflow:hidden;text-overflow:ellipsis;white-space:nowrap">${owner}</span>
+                        <span style="font-weight:600;color:#374151;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;min-width:0">${owner}</span>
                     </div>
                     ${item.locationPrimary || item.location ? `
                     <span style="color:#6b7280;font-size:.72rem;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;max-width:90px;flex-shrink:0">
@@ -513,7 +514,7 @@ document.addEventListener('DOMContentLoaded', () => {
                 </div>
 
                 <!-- Description: single line, consistent height -->
-                <p style="color:#6b7280;font-size:.78rem;margin:0 0 .75rem;line-height:1.4;
+                <p style="color:#6b7280;font-size:.78rem;margin:0 0 .75rem;line-height:1.4;min-width:0;
                     overflow:hidden;text-overflow:ellipsis;white-space:nowrap">
                     ${desc}
                 </p>
