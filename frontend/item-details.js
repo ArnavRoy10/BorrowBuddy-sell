@@ -125,6 +125,10 @@ function displayItemDetails(item) {
     mainImage.style.transition = 'opacity 0.2s';
     mainImage.onerror = () => mainImage.src = 'https://images.unsplash.com/photo-1572365992253-3cb3e56dd362?w=400';
 
+    // Click the main image to open the zoom lightbox at the current slide
+    mainImage.style.cursor = 'zoom-in';
+    mainImage.addEventListener('click', () => openZoomLightbox(images, currentIndex));
+
     const mainImageContainer = mainImage.parentElement;
     mainImageContainer.style.position = 'relative';
     mainImageContainer.querySelectorAll('.img-arrow').forEach(a => a.remove());
@@ -230,7 +234,185 @@ function displayItemDetails(item) {
     renderBorrowButton(item, isOwner);
 }
 
-// ── Render contact section ────────────────────────────────────────
+// ── Image zoom lightbox ─────────────────────────────────────────────
+let zoomImages   = [];
+let zoomIndex    = 0;
+let zoomScale    = 1;
+let zoomPanX     = 0;
+let zoomPanY     = 0;
+let zoomDragging = false;
+let zoomDragStart = { x: 0, y: 0 };
+let zoomPanStart   = { x: 0, y: 0 };
+let zoomPinchDist  = null;
+
+function openZoomLightbox(images, startIndex) {
+    zoomImages = images;
+    zoomIndex  = startIndex || 0;
+    renderZoomImage();
+    document.getElementById('zoomLightbox').classList.add('open');
+    document.body.style.overflow = 'hidden';
+}
+
+function closeZoomLightbox() {
+    document.getElementById('zoomLightbox').classList.remove('open');
+    document.body.style.overflow = '';
+    resetZoomTransform();
+}
+
+function renderZoomImage() {
+    const img     = document.getElementById('zoomImage');
+    const counter = document.getElementById('zoomCounter');
+    const prevBtn = document.getElementById('zoomPrev');
+    const nextBtn = document.getElementById('zoomNext');
+
+    img.src = zoomImages[zoomIndex];
+    img.onerror = () => { img.src = 'https://images.unsplash.com/photo-1572365992253-3cb3e56dd362?w=400'; };
+    counter.textContent = `${zoomIndex + 1} / ${zoomImages.length}`;
+
+    const multi = zoomImages.length > 1;
+    prevBtn.style.display = multi ? 'flex' : 'none';
+    nextBtn.style.display = multi ? 'flex' : 'none';
+    counter.style.display = multi ? 'block' : 'none';
+
+    resetZoomTransform();
+}
+
+function zoomNext() {
+    zoomIndex = (zoomIndex + 1) % zoomImages.length;
+    renderZoomImage();
+}
+
+function zoomPrev() {
+    zoomIndex = (zoomIndex - 1 + zoomImages.length) % zoomImages.length;
+    renderZoomImage();
+}
+
+function resetZoomTransform() {
+    zoomScale = 1;
+    zoomPanX = 0;
+    zoomPanY = 0;
+    applyZoomTransform();
+    document.getElementById('zoomStage').classList.remove('zoomed');
+}
+
+function applyZoomTransform() {
+    const img = document.getElementById('zoomImage');
+    img.style.transform = `translate(${zoomPanX}px, ${zoomPanY}px) scale(${zoomScale})`;
+}
+
+function toggleZoomAt(clientX, clientY) {
+    const stage = document.getElementById('zoomStage');
+    if (zoomScale === 1) {
+        const rect = stage.getBoundingClientRect();
+        const offsetX = clientX - (rect.left + rect.width / 2);
+        const offsetY = clientY - (rect.top + rect.height / 2);
+        zoomScale = 2.5;
+        zoomPanX = -offsetX * (zoomScale - 1) / zoomScale;
+        zoomPanY = -offsetY * (zoomScale - 1) / zoomScale;
+        stage.classList.add('zoomed');
+    } else {
+        resetZoomTransform();
+    }
+    applyZoomTransform();
+}
+
+(function initZoomLightbox() {
+    document.addEventListener('DOMContentLoaded', () => {
+        const stage   = document.getElementById('zoomStage');
+        const img     = document.getElementById('zoomImage');
+        const prevBtn = document.getElementById('zoomPrev');
+        const nextBtn = document.getElementById('zoomNext');
+        if (!stage || !img) return;
+
+        // Click image: toggle zoom in/out at the clicked point
+        img.addEventListener('click', (e) => {
+            e.stopPropagation();
+            toggleZoomAt(e.clientX, e.clientY);
+        });
+
+        // Mouse wheel: zoom in/out, clamped
+        stage.addEventListener('wheel', (e) => {
+            e.preventDefault();
+            const prevScale = zoomScale;
+            zoomScale = Math.min(4, Math.max(1, zoomScale - e.deltaY * 0.0025));
+            if (zoomScale === 1) { zoomPanX = 0; zoomPanY = 0; stage.classList.remove('zoomed'); }
+            else stage.classList.add('zoomed');
+            applyZoomTransform();
+        }, { passive: false });
+
+        // Drag to pan when zoomed in
+        img.addEventListener('mousedown', (e) => {
+            if (zoomScale === 1) return;
+            zoomDragging = true;
+            zoomDragStart = { x: e.clientX, y: e.clientY };
+            zoomPanStart  = { x: zoomPanX, y: zoomPanY };
+        });
+        window.addEventListener('mousemove', (e) => {
+            if (!zoomDragging) return;
+            zoomPanX = zoomPanStart.x + (e.clientX - zoomDragStart.x);
+            zoomPanY = zoomPanStart.y + (e.clientY - zoomDragStart.y);
+            applyZoomTransform();
+        });
+        window.addEventListener('mouseup', () => { zoomDragging = false; });
+
+        // Touch: drag to pan, pinch to zoom, double-tap to toggle
+        let lastTap = 0;
+        img.addEventListener('touchstart', (e) => {
+            if (e.touches.length === 1) {
+                const now = Date.now();
+                if (now - lastTap < 300) {
+                    toggleZoomAt(e.touches[0].clientX, e.touches[0].clientY);
+                }
+                lastTap = now;
+                if (zoomScale > 1) {
+                    zoomDragging = true;
+                    zoomDragStart = { x: e.touches[0].clientX, y: e.touches[0].clientY };
+                    zoomPanStart  = { x: zoomPanX, y: zoomPanY };
+                }
+            } else if (e.touches.length === 2) {
+                zoomPinchDist = Math.hypot(
+                    e.touches[0].clientX - e.touches[1].clientX,
+                    e.touches[0].clientY - e.touches[1].clientY
+                );
+            }
+        }, { passive: true });
+
+        img.addEventListener('touchmove', (e) => {
+            if (e.touches.length === 1 && zoomDragging) {
+                zoomPanX = zoomPanStart.x + (e.touches[0].clientX - zoomDragStart.x);
+                zoomPanY = zoomPanStart.y + (e.touches[0].clientY - zoomDragStart.y);
+                applyZoomTransform();
+            } else if (e.touches.length === 2 && zoomPinchDist != null) {
+                const dist = Math.hypot(
+                    e.touches[0].clientX - e.touches[1].clientX,
+                    e.touches[0].clientY - e.touches[1].clientY
+                );
+                zoomScale = Math.min(4, Math.max(1, zoomScale * (dist / zoomPinchDist)));
+                zoomPinchDist = dist;
+                stage.classList.toggle('zoomed', zoomScale > 1);
+                applyZoomTransform();
+            }
+        }, { passive: true });
+
+        img.addEventListener('touchend', (e) => {
+            if (e.touches.length === 0) { zoomDragging = false; zoomPinchDist = null; }
+        });
+
+        prevBtn.addEventListener('click', (e) => { e.stopPropagation(); zoomPrev(); });
+        nextBtn.addEventListener('click', (e) => { e.stopPropagation(); zoomNext(); });
+
+        // Keyboard: Esc to close, arrows to navigate
+        document.addEventListener('keydown', (e) => {
+            const lightbox = document.getElementById('zoomLightbox');
+            if (!lightbox.classList.contains('open')) return;
+            if (e.key === 'Escape') closeZoomLightbox();
+            else if (e.key === 'ArrowRight') zoomNext();
+            else if (e.key === 'ArrowLeft') zoomPrev();
+        });
+    });
+})();
+
+
 function renderContactSection(item, unlocked, isOwner) {
     const contactInfo = document.getElementById('contactInfo');
     if (!contactInfo) return;
