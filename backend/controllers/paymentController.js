@@ -1,6 +1,7 @@
 const Razorpay = require('razorpay');
 const crypto   = require('crypto');
 const Payment  = require('../models/Payment');
+const User     = require('../models/User');
 
 // Init Razorpay with keys from .env
 const razorpay = new Razorpay({
@@ -81,7 +82,10 @@ exports.createOrder = async (req, res) => {
 // ─────────────────────────────────────────────────────────────────────────────
 exports.verifyPayment = async (req, res) => {
     try {
-        const { razorpay_order_id, razorpay_payment_id, razorpay_signature, itemId } = req.body;
+        const {
+            razorpay_order_id, razorpay_payment_id, razorpay_signature, itemId,
+            ownerUsername, itemName, itemImage, fromDate, toDate
+        } = req.body;
 
         // Verify signature using HMAC SHA256
         const body      = razorpay_order_id + '|' + razorpay_payment_id;
@@ -94,13 +98,31 @@ exports.verifyPayment = async (req, res) => {
             return res.status(400).json({ success: false, message: 'Invalid payment signature' });
         }
 
-        // Update payment in MongoDB to succeeded
+        // Look up the owner so we can notify/attribute the loan to their real account,
+        // not just a username string that only means something in one browser.
+        let ownerId = null;
+        if (ownerUsername) {
+            const ownerUser = await User.findOne({
+                $or: [{ username: ownerUsername }, { email: ownerUsername }]
+            });
+            ownerId = ownerUser?._id || null;
+        }
+
+        // Update payment in MongoDB to succeeded, and record the loan lifecycle info
         const payment = await Payment.findOneAndUpdate(
             { orderId: razorpay_order_id, userId: req.user._id },
             {
                 status:        'succeeded',
                 transactionId: razorpay_payment_id,
-                paidAt:        new Date()
+                paidAt:        new Date(),
+                ownerId:       ownerId,
+                fromDate:      fromDate || undefined,
+                toDate:        toDate   || undefined,
+                loanStatus:    'active',
+                'metadata.itemName':     itemName  || undefined,
+                'metadata.itemImage':    itemImage || undefined,
+                'metadata.lenderName':   ownerUsername || undefined,
+                'metadata.borrowerName': req.user.username || req.user.email
             },
             { new: true }
         );
@@ -113,12 +135,89 @@ exports.verifyPayment = async (req, res) => {
             success:   true,
             message:   'Payment verified — item unlocked',
             paymentId: razorpay_payment_id,
-            itemId:    itemId || payment.itemId
+            itemId:    itemId || payment.itemId,
+            payment
         });
 
     } catch (error) {
         console.error('Verify Payment Error:', error);
         res.status(500).json({ success: false, message: 'Verification failed', error: error.message });
+    }
+};
+
+// ─────────────────────────────────────────────────────────────────────────────
+// GET /api/payments/borrowed — items the current user has borrowed (paid for)
+// ─────────────────────────────────────────────────────────────────────────────
+exports.getBorrowed = async (req, res) => {
+    try {
+        const payments = await Payment.find({ userId: req.user._id, status: 'succeeded' })
+            .sort({ createdAt: -1 });
+        res.status(200).json({ success: true, payments });
+    } catch (error) {
+        res.status(500).json({ success: false, message: 'Failed to get borrowed items', error: error.message });
+    }
+};
+
+// ─────────────────────────────────────────────────────────────────────────────
+// GET /api/payments/lent — items the current user has lent out (owner side)
+// ─────────────────────────────────────────────────────────────────────────────
+exports.getLent = async (req, res) => {
+    try {
+        const payments = await Payment.find({ ownerId: req.user._id, status: 'succeeded' })
+            .sort({ createdAt: -1 });
+        res.status(200).json({ success: true, payments });
+    } catch (error) {
+        res.status(500).json({ success: false, message: 'Failed to get lent items', error: error.message });
+    }
+};
+
+// ─────────────────────────────────────────────────────────────────────────────
+// PUT /api/payments/:id/request-return — borrower requests to return the item
+// ─────────────────────────────────────────────────────────────────────────────
+exports.requestReturn = async (req, res) => {
+    try {
+        const payment = await Payment.findById(req.params.id);
+        if (!payment) return res.status(404).json({ success: false, message: 'Loan not found.' });
+
+        if (payment.userId.toString() !== req.user._id.toString()) {
+            return res.status(403).json({ success: false, message: 'Not authorized.' });
+        }
+        if (payment.loanStatus !== 'active') {
+            return res.status(400).json({ success: false, message: 'This item is not currently active.' });
+        }
+
+        payment.loanStatus        = 'pending_return';
+        payment.returnRequestedAt = new Date();
+        await payment.save();
+
+        res.status(200).json({ success: true, payment });
+    } catch (error) {
+        res.status(500).json({ success: false, message: 'Failed to request return', error: error.message });
+    }
+};
+
+// ─────────────────────────────────────────────────────────────────────────────
+// PUT /api/payments/:id/confirm-return — owner confirms the item was returned
+// ─────────────────────────────────────────────────────────────────────────────
+exports.confirmReturn = async (req, res) => {
+    try {
+        const payment = await Payment.findById(req.params.id);
+        if (!payment) return res.status(404).json({ success: false, message: 'Loan not found.' });
+
+        if (!payment.ownerId || payment.ownerId.toString() !== req.user._id.toString()) {
+            return res.status(403).json({ success: false, message: 'Not authorized.' });
+        }
+        if (payment.loanStatus !== 'pending_return') {
+            return res.status(400).json({ success: false, message: 'No pending return to confirm.' });
+        }
+
+        payment.loanStatus        = 'returned';
+        payment.returnConfirmedAt = new Date();
+        await payment.save();
+
+        res.status(200).json({ success: true, payment });
+    } catch (error) {
+        res.status(500).json({ success: false, message: 'Failed to confirm return', error: error.message });
     }
 };
 
