@@ -1,23 +1,26 @@
 // My Lent Items — with two-step Return confirmation flow
+const LENT_API = self.BORROWBUDDY_CONFIG.API_BASE_URL;
 
 class MyLentItems {
     constructor() {
         this.username = localStorage.getItem('username') || 'User';
-        this.lentItems = this.loadLentItems();
+        this.token    = localStorage.getItem('authToken') || localStorage.getItem('token');
+        this.lentItems = this.loadLocalCache();
         this.currentFilter = 'all';
         this.init();
     }
 
-    init() {
+    async init() {
         this.renderItems();
         this.updateStats();
         this.attachEventListeners();
         this.updateCartBadge();
+        await this.fetchLent();
         this.startPolling();
         this.notifyPendingReturns();
     }
 
-    loadLentItems() {
+    loadLocalCache() {
         return JSON.parse(localStorage.getItem(`lent_${this.username}`) || '[]');
     }
 
@@ -25,15 +28,49 @@ class MyLentItems {
         localStorage.setItem(`lent_${this.username}`, JSON.stringify(this.lentItems));
     }
 
-    startPolling() {
-        setInterval(() => {
-            const fresh = this.loadLentItems();
-            if (JSON.stringify(fresh) !== JSON.stringify(this.lentItems)) {
-                this.lentItems = fresh;
+    // Backend Payment record -> the shape this UI already knows how to render
+    mapPaymentToItem(p) {
+        return {
+            transactionId:     p._id,
+            itemName:          p.metadata?.itemName || 'Item',
+            itemImage:         p.metadata?.itemImage,
+            borrower:          p.metadata?.borrowerName || 'Unknown',
+            status:            p.loanStatus === 'returned' ? 'returned' : (p.loanStatus || 'active'),
+            borrowFrom:        p.fromDate,
+            borrowTo:          p.toDate,
+            totalEarned:       `₹${Number(p.amount || 0).toFixed(2)}`,
+            returnRequestedAt: p.returnRequestedAt
+        };
+    }
+
+    // ── Real source of truth: fetch from the server, not just this browser's localStorage.
+    // This is what makes return requests from the borrower's device actually show up here.
+    async fetchLent(silent = false) {
+        if (!this.token) return;
+        try {
+            const res  = await fetch(`${LENT_API}/api/payments/lent`, {
+                headers: { 'Authorization': `Bearer ${this.token}` }
+            });
+            const data = await res.json();
+            if (data.success) {
+                const hadPending = this.lentItems.filter(i => i.status === 'pending_return').length;
+                this.lentItems = data.payments.map(p => this.mapPaymentToItem(p));
+                localStorage.setItem(`lent_${this.username}`, JSON.stringify(this.lentItems));
                 this.renderItems();
                 this.updateStats();
+
+                const nowPending = this.lentItems.filter(i => i.status === 'pending_return').length;
+                if (silent && nowPending > hadPending) {
+                    this.showNotification('A borrower just requested to return an item', 'info');
+                }
             }
-        }, 4000);
+        } catch (err) {
+            console.warn('Could not refresh lent items from server:', err.message);
+        }
+    }
+
+    startPolling() {
+        setInterval(() => this.fetchLent(true), 4000);
     }
 
     // One-time toast if there are pending returns to confirm when page loads
@@ -260,9 +297,14 @@ class MyLentItems {
     }
 
     // ── Step 2: Owner confirms the return — flags deposit for refund ──
-    confirmReturn(txId) {
+    // This now hits the backend, so the borrower's own device (via GET /api/payments/borrowed)
+    // sees the confirmation — previously this only wrote to the owner's own
+    // localStorage under a key named for the borrower, which the borrower's browser
+    // never reads.
+    async confirmReturn(txId) {
         const item = this.lentItems.find(i => (i.transactionId || i.requestId || i.paymentId || i.id) === txId);
         if (!item) return;
+        if (!this.token) { this.showNotification('Please log in again.', 'info'); return; }
 
         const deposit = parseFloat(item.securityDeposit || 0);
         const msg = deposit > 0
@@ -270,51 +312,25 @@ class MyLentItems {
             : 'Confirm the item was returned in good condition?';
         if (!confirm(msg)) return;
 
-        item.status = 'returned';
-        item.returnConfirmedAt = new Date().toISOString();
-        if (deposit > 0) item.depositFlaggedForRefund = true;
-        this.saveLentItems();
-
-        // Sync to borrower's borrowed_ entry — mark completed + deposit refunded
-        this.syncToBorrower(item);
-
-        this.renderItems();
-        this.updateStats();
-        this.showNotification(
-            deposit > 0 ? `Return confirmed! ₹${deposit.toFixed(2)} deposit flagged for refund.` : 'Return confirmed!',
-            'success'
-        );
-    }
-
-    syncToBorrower(item) {
-        const borrowerKey = `borrowed_${item.borrower}`;
-        const borrowedList = JSON.parse(localStorage.getItem(borrowerKey) || '[]');
-        const txId = item.transactionId || item.requestId || item.paymentId || item.id;
-
-        const match = borrowedList.find(b => (b.transactionId || b.requestId || b.paymentId || b.id) === txId);
-        if (match) {
-            match.status = 'completed';
-            match.returnConfirmedAt = item.returnConfirmedAt;
-            if (parseFloat(item.securityDeposit || 0) > 0) {
-                match.depositRefunded = true;
-                match.depositRefundedAt = new Date().toISOString();
-            }
-            localStorage.setItem(borrowerKey, JSON.stringify(borrowedList));
-        }
-
-        // Also flag in a global "pending refunds" ledger for admin panel / future payout processing
-        if (parseFloat(item.securityDeposit || 0) > 0) {
-            const refundLedger = JSON.parse(localStorage.getItem('pending_deposit_refunds') || '[]');
-            refundLedger.push({
-                transactionId: txId,
-                borrower:      item.borrower,
-                owner:         this.username,
-                itemName:      item.itemName,
-                amount:        parseFloat(item.securityDeposit || 0),
-                flaggedAt:     new Date().toISOString(),
-                status:        'pending'
+        try {
+            const res  = await fetch(`${LENT_API}/api/payments/${txId}/confirm-return`, {
+                method:  'PUT',
+                headers: { 'Authorization': `Bearer ${this.token}` }
             });
-            localStorage.setItem('pending_deposit_refunds', JSON.stringify(refundLedger));
+            const data = await res.json();
+
+            if (!data.success) {
+                this.showNotification(data.message || 'Could not confirm return.', 'info');
+                return;
+            }
+
+            await this.fetchLent();
+            this.showNotification(
+                deposit > 0 ? `Return confirmed! ₹${deposit.toFixed(2)} deposit flagged for refund.` : 'Return confirmed!',
+                'success'
+            );
+        } catch (err) {
+            this.showNotification('Network error — please try again.', 'info');
         }
     }
 
