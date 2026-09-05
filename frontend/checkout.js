@@ -118,6 +118,10 @@ async function openRazorpay(amount) {
                 // Step 3 — Verify on backend
                 showLoading();
                 try {
+                    const ownerUsername = new URLSearchParams(window.location.search).get('owner') || itemData.owner || '';
+                    const fromDate      = new Date().toISOString();
+                    const toDate        = new Date(Date.now() + itemData.rentalDays * 86400000).toISOString();
+
                     const verifyRes = await fetch(`${API_URL}/api/payments/verify`, {
                         method:  'POST',
                         headers: {
@@ -128,7 +132,12 @@ async function openRazorpay(amount) {
                             razorpay_order_id:   response.razorpay_order_id,
                             razorpay_payment_id: response.razorpay_payment_id,
                             razorpay_signature:  response.razorpay_signature,
-                            itemId:              itemData.itemId
+                            itemId:              itemData.itemId,
+                            ownerUsername,
+                            itemName:            itemData.itemName,
+                            itemImage:           itemData.itemImage,
+                            fromDate,
+                            toDate
                         })
                     });
 
@@ -140,7 +149,10 @@ async function openRazorpay(amount) {
                         return;
                     }
 
-                    showSuccess(response.razorpay_payment_id);
+                    // Use the real backend Payment _id as the transaction id everywhere,
+                    // instead of only the Razorpay payment id, so the return flow can
+                    // reliably reach the server record (and therefore the owner).
+                    showSuccess(response.razorpay_payment_id, verifyData.payment?._id, ownerUsername, fromDate, toDate);
                     resolve();
                 } catch (err) {
                     hideLoading();
@@ -186,52 +198,36 @@ function hideLoading() {
     document.getElementById('loadingOverlay').classList.add('hidden');
 }
 
-function showSuccess(paymentId) {
+function showSuccess(paymentId, dbId, ownerUsername, fromDateIso, toDateIso) {
     document.getElementById('bookingId').textContent = paymentId;
     document.getElementById('successModal').classList.remove('hidden');
 
-    // ── Record transaction in localStorage ───────────────────
+    // ── Record transaction locally too, for instant UI feedback ───────────
+    // NOTE: the source of truth is now the backend Payment record (dbId).
+    // my-borrowed.js / my-lent.js fetch from /api/payments/borrowed and
+    // /api/payments/lent so both sides see the same data across devices —
+    // this local copy is just a fast local cache, not what the owner reads.
     const borrowerUsername = localStorage.getItem('username');
-    const ownerUsername    = new URLSearchParams(window.location.search).get('owner') || itemData.owner || '';
-    const now              = new Date().toISOString().split('T')[0];
-    const borrowTo         = new Date(Date.now() + itemData.rentalDays * 86400000).toISOString().split('T')[0];
+    const now              = (fromDateIso || new Date().toISOString()).split('T')[0];
+    const borrowTo         = (toDateIso   || new Date(Date.now() + itemData.rentalDays * 86400000).toISOString()).split('T')[0];
 
-    // Save to borrower's borrowed_ list
     if (borrowerUsername) {
         const borrowedKey  = `borrowed_${borrowerUsername}`;
         const borrowedList = JSON.parse(localStorage.getItem(borrowedKey) || '[]');
         borrowedList.push({
-            id:          itemData.itemId,
-            itemName:    itemData.itemName,
-            image:       itemData.itemImage,
-            owner:       ownerUsername,
-            status:      'active',
-            borrowFrom:  now,
-            borrowTo:    borrowTo,
-            totalPaid:   itemData.deposit + itemData.serviceFee,
-            paymentId:   paymentId,
-            rentalDays:  itemData.rentalDays
+            id:            itemData.itemId,
+            transactionId: dbId || paymentId,
+            itemName:      itemData.itemName,
+            image:         itemData.itemImage,
+            owner:         ownerUsername,
+            status:        'active',
+            borrowFrom:    now,
+            borrowTo:      borrowTo,
+            totalPaid:     itemData.deposit + itemData.serviceFee,
+            paymentId:     paymentId,
+            rentalDays:    itemData.rentalDays
         });
         localStorage.setItem(borrowedKey, JSON.stringify(borrowedList));
-    }
-
-    // Save to owner's lent_ list
-    if (ownerUsername && ownerUsername !== borrowerUsername) {
-        const lentKey  = `lent_${ownerUsername}`;
-        const lentList = JSON.parse(localStorage.getItem(lentKey) || '[]');
-        lentList.push({
-            id:          itemData.itemId,
-            itemName:    itemData.itemName,
-            image:       itemData.itemImage,
-            borrower:    borrowerUsername,
-            status:      'active',
-            borrowFrom:  now,
-            borrowTo:    borrowTo,
-            totalEarned: itemData.deposit,
-            paymentId:   paymentId,
-            rentalDays:  itemData.rentalDays
-        });
-        localStorage.setItem(lentKey, JSON.stringify(lentList));
     }
 }
 
