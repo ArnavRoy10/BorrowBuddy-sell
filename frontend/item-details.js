@@ -54,12 +54,135 @@ async function loadItemDetails() {
         // If arriving from "Use Points Instead", unlock immediately — no payment needed
         if (instantPay && usedPoints) {
             unlockWithPoints();
+        } else if (instantPay) {
+            // Paid Instant Access path — this was previously a dead end
+            processInstantPayment(parseFloat(urlParams.get('fee')) || 0);
+        } else {
+            // Normal visit — restore unlock state if this user already paid before
+            checkAlreadyUnlocked(currentItem.id || currentItem._id);
         }
     } catch (err) {
         console.error('Failed to load item:', err);
         alert('Item not found. Returning to browse.');
         window.location.href = 'browse.html';
     }
+}
+
+// ── Restore unlock state on normal page visits (previously never checked,
+// so contact details showed as locked again even after a successful payment) ──
+async function checkAlreadyUnlocked(itemId) {
+    if (!itemId) return;
+    const token = getToken();
+    if (!token) return;
+    try {
+        const res  = await fetch(`${ITEMDETAILS_API_URL}/api/payments/unlocked/${itemId}`, {
+            headers: { 'Authorization': `Bearer ${token}` }
+        });
+        const data = await res.json();
+        if (data.success && data.unlocked && currentItem) {
+            currentItem.unlocked = true;
+            renderContactSection(currentItem, true, false);
+        }
+    } catch (err) {
+        console.warn('Could not check unlock status:', err.message);
+    }
+}
+
+// ── Paid Instant Access — this was the missing piece: the redirect from
+// borrow-request.js landed here but nothing ever opened the payment popup ──
+async function processInstantPayment(fee) {
+    const token = getToken();
+    if (!token) { alert('Please log in again.'); window.location.href = 'login.html'; return; }
+    if (!currentItem) { alert('Item not loaded yet, please try again.'); return; }
+
+    const pending = JSON.parse(localStorage.getItem('pendingBorrow') || '{}');
+    const itemId  = currentItem.id || currentItem._id;
+
+    try {
+        // Step 1 — create order
+        const orderRes = await fetch(`${ITEMDETAILS_API_URL}/api/payments/create-order`, {
+            method:  'POST',
+            headers: { 'Content-Type': 'application/json', 'Authorization': `Bearer ${token}` },
+            body:    JSON.stringify({ amount: fee, itemId, itemName: currentItem.name })
+        });
+        const orderData = await orderRes.json();
+        if (!orderData.success) throw new Error(orderData.message || 'Could not start payment');
+
+        if (fee <= 0 || typeof Razorpay === 'undefined') {
+            // Free unlock (₹0 fee) or Razorpay script unavailable — skip straight to verify-less unlock
+            return finishInstantUnlock({ razorpay_payment_id: 'free_' + Date.now() }, pending);
+        }
+
+        // Step 2 — open Razorpay popup
+        const options = {
+            key:         orderData.keyId,
+            amount:      orderData.amount,
+            currency:    'INR',
+            name:        'BorrowBuddy',
+            description: `Instant unlock: ${currentItem.name}`,
+            order_id:    orderData.orderId,
+            prefill: {
+                name:  localStorage.getItem('username') || '',
+                email: localStorage.getItem('email')    || ''
+            },
+            theme:  { color: '#7c3aed' },
+            handler: async function (response) {
+                await verifyInstantPayment(response, pending);
+            },
+            modal: {
+                ondismiss: function () {
+                    console.log('Instant unlock payment cancelled by user');
+                }
+            }
+        };
+        const rzp = new Razorpay(options);
+        rzp.open();
+
+    } catch (err) {
+        console.error('Instant payment error:', err);
+        alert(err.message || 'Payment could not be started. Please try again.');
+    }
+}
+
+async function verifyInstantPayment(response, pending) {
+    const token = getToken();
+    try {
+        const verifyRes = await fetch(`${ITEMDETAILS_API_URL}/api/payments/verify`, {
+            method:  'POST',
+            headers: { 'Content-Type': 'application/json', 'Authorization': `Bearer ${token}` },
+            body: JSON.stringify({
+                razorpay_order_id:   response.razorpay_order_id,
+                razorpay_payment_id: response.razorpay_payment_id,
+                razorpay_signature:  response.razorpay_signature,
+                itemId:              currentItem.id || currentItem._id,
+                ownerUsername:       currentItem.owner,
+                itemName:            currentItem.name,
+                itemImage:           (currentItem.images && currentItem.images[0]) || currentItem.image || '',
+                fromDate:            pending.fromDate,
+                toDate:              pending.toDate
+            })
+        });
+        const verifyData = await verifyRes.json();
+        if (!verifyData.success) {
+            alert(verifyData.message || 'Payment verification failed.');
+            return;
+        }
+        finishInstantUnlock(response, pending);
+    } catch (err) {
+        console.error('Verify instant payment error:', err);
+        alert('Payment succeeded but verification failed — please contact support with your payment ID: ' + response.razorpay_payment_id);
+    }
+}
+
+function finishInstantUnlock(response, pending) {
+    localStorage.removeItem('pendingBorrow');
+    currentItem.unlocked = true;
+    renderContactSection(currentItem, true, false);
+    showUnlockSuccess();
+
+    // Clean the query params so a refresh doesn't try to pay again
+    const cleanUrl = `${window.location.pathname}?id=${currentItem.id || currentItem._id}`;
+    window.history.replaceState({}, '', cleanUrl);
 }
 
 // ── Unlock contact details after points redemption (no payment step) ──
@@ -1010,5 +1133,4 @@ window.showReviewModal  = showReviewModal;
 window.hideReviewModal  = hideReviewModal;
 window.deleteReview     = deleteReview;
 window.openMessageOwner = openMessageOwner;
-window.processInstantPayment  = typeof processInstantPayment  !== 'undefined' ? processInstantPayment  : null;
-window.simulateInstantSuccess = typeof simulateInstantSuccess !== 'undefined' ? simulateInstantSuccess : null;
+window.processInstantPayment  = processInstantPayment;
