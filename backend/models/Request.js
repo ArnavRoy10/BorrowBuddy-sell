@@ -17,9 +17,11 @@ const requestSchema = new mongoose.Schema({
     message:         { type: String, default: '' },
     status: {
         type:    String,
-        enum:    ['pending', 'approved', 'rejected', 'completed', 'cancelled'],
+        enum:    ['pending', 'approved', 'pending_return', 'rejected', 'completed', 'cancelled'],
         default: 'pending'
-    }
+    },
+    returnRequestedAt: Date,
+    returnConfirmedAt: Date
 }, { timestamps: true });
 
 module.exports = mongoose.model('Request', requestSchema);
