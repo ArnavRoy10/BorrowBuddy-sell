@@ -1,21 +1,24 @@
 // My Borrowed Items — with two-step Return flow
+const BORROWED_API = self.BORROWBUDDY_CONFIG.API_BASE_URL;
 
 class MyBorrowedItems {
     constructor() {
         this.username = localStorage.getItem('username') || 'User';
-        this.borrowedItems = this.loadBorrowedItems();
+        this.token    = localStorage.getItem('authToken') || localStorage.getItem('token');
+        this.borrowedItems = this.loadLocalCache(); // instant paint from cache while backend loads
         this.currentFilter = 'all';
         this.init();
     }
 
-    init() {
+    async init() {
         this.renderItems();
         this.attachEventListeners();
         this.updateCartBadge();
+        await this.fetchBorrowed();
         this.startPolling();
     }
 
-    loadBorrowedItems() {
+    loadLocalCache() {
         return JSON.parse(localStorage.getItem(`borrowed_${this.username}`) || '[]');
     }
 
@@ -23,15 +26,42 @@ class MyBorrowedItems {
         localStorage.setItem(`borrowed_${this.username}`, JSON.stringify(this.borrowedItems));
     }
 
-    // Poll every 4s to pick up owner confirmations from the other side
-    startPolling() {
-        setInterval(() => {
-            const fresh = this.loadBorrowedItems();
-            if (JSON.stringify(fresh) !== JSON.stringify(this.borrowedItems)) {
-                this.borrowedItems = fresh;
+    // Backend Payment record -> the shape this UI already knows how to render
+    mapPaymentToItem(p) {
+        return {
+            transactionId:   p._id,
+            itemName:        p.metadata?.itemName || 'Item',
+            itemImage:       p.metadata?.itemImage,
+            owner:           p.metadata?.lenderName || 'Unknown',
+            status:          p.loanStatus === 'returned' ? 'completed' : (p.loanStatus || 'active'),
+            borrowFrom:      p.fromDate,
+            borrowTo:        p.toDate,
+            totalPaid:       `₹${Number(p.amount || 0).toFixed(2)}`,
+            returnRequestedAt: p.returnRequestedAt
+        };
+    }
+
+    // ── Real source of truth: fetch from the server, not just this browser's localStorage
+    async fetchBorrowed() {
+        if (!this.token) return;
+        try {
+            const res  = await fetch(`${BORROWED_API}/api/payments/borrowed`, {
+                headers: { 'Authorization': `Bearer ${this.token}` }
+            });
+            const data = await res.json();
+            if (data.success) {
+                this.borrowedItems = data.payments.map(p => this.mapPaymentToItem(p));
+                localStorage.setItem(`borrowed_${this.username}`, JSON.stringify(this.borrowedItems));
                 this.renderItems();
             }
-        }, 4000);
+        } catch (err) {
+            console.warn('Could not refresh borrowed items from server:', err.message);
+        }
+    }
+
+    // Poll every 4s to pick up owner confirmations from the other side
+    startPolling() {
+        setInterval(() => this.fetchBorrowed(), 4000);
     }
 
     renderItems() {
@@ -249,34 +279,30 @@ class MyBorrowedItems {
     }
 
     // ── Step 1: Borrower requests return ──────────────────────────
-    requestReturn(txId) {
+    // This now hits the backend, so the owner's own device (via GET /api/payments/lent)
+    // actually receives it — previously this only wrote to the borrower's own
+    // localStorage under a key named for the owner, which the owner's browser
+    // never reads.
+    async requestReturn(txId) {
         if (!confirm('Request to return this item? The owner will need to confirm before your deposit is released.')) return;
+        if (!this.token) { this.showNotification('Please log in again.', 'info'); return; }
 
-        const item = this.borrowedItems.find(i => (i.transactionId || i.requestId || i.paymentId || i.id) === txId);
-        if (!item) return;
+        try {
+            const res  = await fetch(`${BORROWED_API}/api/payments/${txId}/request-return`, {
+                method:  'PUT',
+                headers: { 'Authorization': `Bearer ${this.token}` }
+            });
+            const data = await res.json();
 
-        item.status = 'pending_return';
-        item.returnRequestedAt = new Date().toISOString();
-        this.saveBorrowedItems();
+            if (!data.success) {
+                this.showNotification(data.message || 'Could not request return.', 'info');
+                return;
+            }
 
-        // Mirror onto the owner's lent_ entry so they see the pending request
-        this.syncToOwner(item, 'pending_return');
-
-        this.renderItems();
-        this.showNotification('Return requested! Waiting for owner to confirm.', 'success');
-    }
-
-    // Push status across to owner's lent_<owner> entry with the same transaction
-    syncToOwner(item, status) {
-        const ownerKey  = `lent_${item.owner}`;
-        const lentList  = JSON.parse(localStorage.getItem(ownerKey) || '[]');
-        const txId      = item.transactionId || item.requestId || item.paymentId || item.id;
-
-        const match = lentList.find(l => (l.transactionId || l.requestId || l.paymentId || l.id) === txId);
-        if (match) {
-            match.status = status;
-            if (status === 'pending_return') match.returnRequestedAt = item.returnRequestedAt;
-            localStorage.setItem(ownerKey, JSON.stringify(lentList));
+            await this.fetchBorrowed();
+            this.showNotification('Return requested! Waiting for owner to confirm.', 'success');
+        } catch (err) {
+            this.showNotification('Network error — please try again.', 'info');
         }
     }
 
