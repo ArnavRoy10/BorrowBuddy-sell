@@ -214,4 +214,52 @@ router.put('/:id/cancel', protect, async (req, res) => {
     }
 });
 
+// ── PUT /api/requests/:id/request-return — borrower returns a free/standard borrow
+router.put('/:id/request-return', protect, async (req, res) => {
+    try {
+        const request = await Request.findById(req.params.id);
+        if (!request) return res.status(404).json({ success: false, message: 'Request not found.' });
+
+        const isRequester = request.requestedById?.toString() === req.user._id.toString()
+                         || request.requestedBy === req.user.username
+                         || request.requestedBy === req.user.email;
+        if (!isRequester) return res.status(403).json({ success: false, message: 'Not authorized.' });
+        if (request.status !== 'approved') {
+            return res.status(400).json({ success: false, message: 'Only active (approved) borrows can be returned.' });
+        }
+
+        request.status = 'pending_return';
+        request.returnRequestedAt = new Date();
+        await request.save();
+
+        res.json({ success: true, request });
+    } catch (err) {
+        res.status(500).json({ success: false, message: err.message });
+    }
+});
+
+// ── PUT /api/requests/:id/confirm-return — owner confirms a free/standard borrow was returned
+router.put('/:id/confirm-return', protect, async (req, res) => {
+    try {
+        const request = await Request.findById(req.params.id);
+        if (!request) return res.status(404).json({ success: false, message: 'Request not found.' });
+
+        const isOwner = request.itemOwnerId?.toString() === req.user._id.toString()
+                     || request.itemOwner === req.user.username
+                     || request.itemOwner === req.user.email;
+        if (!isOwner) return res.status(403).json({ success: false, message: 'Not authorized.' });
+        if (request.status !== 'pending_return') {
+            return res.status(400).json({ success: false, message: 'No pending return to confirm.' });
+        }
+
+        request.status = 'completed';
+        request.returnConfirmedAt = new Date();
+        await request.save();
+
+        res.json({ success: true, request });
+    } catch (err) {
+        res.status(500).json({ success: false, message: err.message });
+    }
+});
+
 module.exports = router;
