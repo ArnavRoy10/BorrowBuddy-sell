@@ -29,7 +29,7 @@ class MyBorrowedItems {
     // Backend Payment record -> the shape this UI already knows how to render
     mapPaymentToItem(p) {
         return {
-            transactionId:   p._id,
+            transactionId:   `pay_${p._id}`,
             itemName:        p.metadata?.itemName || 'Item',
             itemImage:       p.metadata?.itemImage,
             owner:           p.metadata?.lenderName || 'Unknown',
@@ -41,19 +41,46 @@ class MyBorrowedItems {
         };
     }
 
-    // ── Real source of truth: fetch from the server, not just this browser's localStorage
+    // Backend Request record (a "Send Request" / free borrow that got approved) -> same shape.
+    // Previously these never appeared here at all — approval only unlocked contact info.
+    mapRequestToItem(r) {
+        return {
+            transactionId:   `req_${r._id}`,
+            itemName:        r.itemName || 'Item',
+            itemImage:       r.itemImage,
+            owner:           r.itemOwner || 'Unknown',
+            status:          r.status === 'completed' ? 'completed' : (r.status === 'pending_return' ? 'pending_return' : 'active'),
+            borrowFrom:      r.fromDate,
+            borrowTo:        r.toDate,
+            totalPaid:       r.totalPrice || 'Free',
+            returnRequestedAt: r.returnRequestedAt
+        };
+    }
+
+    // ── Real source of truth: fetch from the server, not just this browser's localStorage.
+    // Both borrow paths are merged: paid "Instant Access" loans (Payment records) AND
+    // approved free "Send Request" borrows (Request records) — previously only the
+    // paid path ever showed up here.
     async fetchBorrowed() {
         if (!this.token) return;
         try {
-            const res  = await fetch(`${BORROWED_API}/api/payments/borrowed`, {
-                headers: { 'Authorization': `Bearer ${this.token}` }
-            });
-            const data = await res.json();
-            if (data.success) {
-                this.borrowedItems = data.payments.map(p => this.mapPaymentToItem(p));
-                localStorage.setItem(`borrowed_${this.username}`, JSON.stringify(this.borrowedItems));
-                this.renderItems();
-            }
+            const [payRes, reqRes] = await Promise.all([
+                fetch(`${BORROWED_API}/api/payments/borrowed`,  { headers: { 'Authorization': `Bearer ${this.token}` } }),
+                fetch(`${BORROWED_API}/api/requests/outgoing`,  { headers: { 'Authorization': `Bearer ${this.token}` } })
+            ]);
+            const payData = await payRes.json();
+            const reqData = await reqRes.json();
+
+            const payments = payData.success ? payData.payments.map(p => this.mapPaymentToItem(p)) : [];
+            const requests = reqData.success
+                ? reqData.requests
+                    .filter(r => ['approved', 'pending_return', 'completed'].includes(r.status))
+                    .map(r => this.mapRequestToItem(r))
+                : [];
+
+            this.borrowedItems = [...payments, ...requests];
+            localStorage.setItem(`borrowed_${this.username}`, JSON.stringify(this.borrowedItems));
+            this.renderItems();
         } catch (err) {
             console.warn('Could not refresh borrowed items from server:', err.message);
         }
@@ -279,16 +306,22 @@ class MyBorrowedItems {
     }
 
     // ── Step 1: Borrower requests return ──────────────────────────
-    // This now hits the backend, so the owner's own device (via GET /api/payments/lent)
-    // actually receives it — previously this only wrote to the borrower's own
-    // localStorage under a key named for the owner, which the owner's browser
-    // never reads.
+    // This now hits the backend, so the owner's own device actually receives it —
+    // previously this only wrote to the borrower's own localStorage under a key
+    // named for the owner, which the owner's browser never reads.
+    // txId is prefixed (pay_/req_) so we know which backend record to update.
     async requestReturn(txId) {
         if (!confirm('Request to return this item? The owner will need to confirm before your deposit is released.')) return;
         if (!this.token) { this.showNotification('Please log in again.', 'info'); return; }
 
+        const isRequest = txId.startsWith('req_');
+        const id         = txId.replace(/^(pay_|req_)/, '');
+        const endpoint   = isRequest
+            ? `${BORROWED_API}/api/requests/${id}/request-return`
+            : `${BORROWED_API}/api/payments/${id}/request-return`;
+
         try {
-            const res  = await fetch(`${BORROWED_API}/api/payments/${txId}/request-return`, {
+            const res  = await fetch(endpoint, {
                 method:  'PUT',
                 headers: { 'Authorization': `Bearer ${this.token}` }
             });
