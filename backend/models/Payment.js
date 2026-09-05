@@ -41,10 +41,23 @@ const paymentSchema = new mongoose.Schema({
 
     metadata: {
         itemName:     String,
+        itemImage:    String,
         borrowerName: String,
         lenderName:   String,
         description:  String
     },
+
+    // ── Loan lifecycle (who owns the item + the borrow window + return status)
+    ownerId:   { type: mongoose.Schema.Types.ObjectId, ref: 'User' },
+    fromDate:  Date,
+    toDate:    Date,
+    loanStatus: {
+        type:    String,
+        enum:    ['active', 'pending_return', 'returned'],
+        default: 'active'
+    },
+    returnRequestedAt: Date,
+    returnConfirmedAt: Date,
 
     refundAmount: Number,
     refundReason: String,
@@ -54,6 +67,8 @@ const paymentSchema = new mongoose.Schema({
     paidAt:       Date
 
 }, { timestamps: true });
+
+paymentSchema.index({ ownerId: 1, loanStatus: 1 });
 
 paymentSchema.index({ userId: 1, createdAt: -1 });
 paymentSchema.index({ status: 1 });
