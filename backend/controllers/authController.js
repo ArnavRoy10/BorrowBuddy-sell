@@ -16,7 +16,11 @@ const sendTokenResponse = (user, statusCode, res) => {
         expires: new Date(Date.now() + 7 * 24 * 60 * 60 * 1000), // 7 days
         httpOnly: true,
         secure: process.env.NODE_ENV === 'production', // HTTPS in production
-        sameSite: 'lax'
+        // 'none' is required for the cookie to be sent on cross-origin requests
+        // (frontend on Vercel, backend on Render are different domains). Browsers
+        // require 'secure: true' whenever sameSite is 'none', which is already the
+        // case in production since Render serves over HTTPS.
+        sameSite: process.env.NODE_ENV === 'production' ? 'none' : 'lax'
     };
 
     res
@@ -236,7 +240,9 @@ exports.updateProfile = async (req, res) => {
 exports.logout = (req, res) => {
     res.cookie('token', 'none', {
         expires: new Date(Date.now() + 10 * 1000),
-        httpOnly: true
+        httpOnly: true,
+        secure: process.env.NODE_ENV === 'production',
+        sameSite: process.env.NODE_ENV === 'production' ? 'none' : 'lax'
     });
 
     res.status(200).json({
@@ -263,7 +269,9 @@ exports.deleteAccount = async (req, res) => {
 
         res.cookie('token', 'none', {
             expires: new Date(Date.now() + 10 * 1000),
-            httpOnly: true
+            httpOnly: true,
+            secure: process.env.NODE_ENV === 'production',
+            sameSite: process.env.NODE_ENV === 'production' ? 'none' : 'lax'
         });
 
         res.status(200).json({
