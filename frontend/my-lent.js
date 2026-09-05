@@ -31,7 +31,7 @@ class MyLentItems {
     // Backend Payment record -> the shape this UI already knows how to render
     mapPaymentToItem(p) {
         return {
-            transactionId:     p._id,
+            transactionId:     `pay_${p._id}`,
             itemName:          p.metadata?.itemName || 'Item',
             itemImage:         p.metadata?.itemImage,
             borrower:          p.metadata?.borrowerName || 'Unknown',
@@ -43,26 +43,53 @@ class MyLentItems {
         };
     }
 
+    // Backend Request record (an approved "Send Request" / free borrow) -> same shape.
+    // Previously these never appeared here — approval only revealed contact info.
+    mapRequestToItem(r) {
+        return {
+            transactionId:     `req_${r._id}`,
+            itemName:          r.itemName || 'Item',
+            itemImage:         r.itemImage,
+            borrower:          r.requestedBy || 'Unknown',
+            status:            r.status === 'completed' ? 'returned' : (r.status === 'pending_return' ? 'pending_return' : 'active'),
+            borrowFrom:        r.fromDate,
+            borrowTo:          r.toDate,
+            totalEarned:       r.totalPrice || 'Free',
+            returnRequestedAt: r.returnRequestedAt
+        };
+    }
+
     // ── Real source of truth: fetch from the server, not just this browser's localStorage.
-    // This is what makes return requests from the borrower's device actually show up here.
+    // Merges paid loans (Payments) with approved free borrows (Requests) — this is what
+    // makes return requests from the borrower's device actually show up here, for BOTH
+    // borrow pathways.
     async fetchLent(silent = false) {
         if (!this.token) return;
         try {
-            const res  = await fetch(`${LENT_API}/api/payments/lent`, {
-                headers: { 'Authorization': `Bearer ${this.token}` }
-            });
-            const data = await res.json();
-            if (data.success) {
-                const hadPending = this.lentItems.filter(i => i.status === 'pending_return').length;
-                this.lentItems = data.payments.map(p => this.mapPaymentToItem(p));
-                localStorage.setItem(`lent_${this.username}`, JSON.stringify(this.lentItems));
-                this.renderItems();
-                this.updateStats();
+            const [payRes, reqRes] = await Promise.all([
+                fetch(`${LENT_API}/api/payments/lent`,     { headers: { 'Authorization': `Bearer ${this.token}` } }),
+                fetch(`${LENT_API}/api/requests/incoming`, { headers: { 'Authorization': `Bearer ${this.token}` } })
+            ]);
+            const payData = await payRes.json();
+            const reqData = await reqRes.json();
 
-                const nowPending = this.lentItems.filter(i => i.status === 'pending_return').length;
-                if (silent && nowPending > hadPending) {
-                    this.showNotification('A borrower just requested to return an item', 'info');
-                }
+            const hadPending = this.lentItems.filter(i => i.status === 'pending_return').length;
+
+            const payments = payData.success ? payData.payments.map(p => this.mapPaymentToItem(p)) : [];
+            const requests = reqData.success
+                ? reqData.requests
+                    .filter(r => ['approved', 'pending_return', 'completed'].includes(r.status))
+                    .map(r => this.mapRequestToItem(r))
+                : [];
+
+            this.lentItems = [...payments, ...requests];
+            localStorage.setItem(`lent_${this.username}`, JSON.stringify(this.lentItems));
+            this.renderItems();
+            this.updateStats();
+
+            const nowPending = this.lentItems.filter(i => i.status === 'pending_return').length;
+            if (silent && nowPending > hadPending) {
+                this.showNotification('A borrower just requested to return an item', 'info');
             }
         } catch (err) {
             console.warn('Could not refresh lent items from server:', err.message);
@@ -297,10 +324,8 @@ class MyLentItems {
     }
 
     // ── Step 2: Owner confirms the return — flags deposit for refund ──
-    // This now hits the backend, so the borrower's own device (via GET /api/payments/borrowed)
-    // sees the confirmation — previously this only wrote to the owner's own
-    // localStorage under a key named for the borrower, which the borrower's browser
-    // never reads.
+    // Routes to the payments or requests API depending on which borrow pathway
+    // created this loan (txId is prefixed pay_/req_).
     async confirmReturn(txId) {
         const item = this.lentItems.find(i => (i.transactionId || i.requestId || i.paymentId || i.id) === txId);
         if (!item) return;
@@ -312,8 +337,14 @@ class MyLentItems {
             : 'Confirm the item was returned in good condition?';
         if (!confirm(msg)) return;
 
+        const isRequest = txId.startsWith('req_');
+        const id         = txId.replace(/^(pay_|req_)/, '');
+        const endpoint   = isRequest
+            ? `${LENT_API}/api/requests/${id}/confirm-return`
+            : `${LENT_API}/api/payments/${id}/confirm-return`;
+
         try {
-            const res  = await fetch(`${LENT_API}/api/payments/${txId}/confirm-return`, {
+            const res  = await fetch(endpoint, {
                 method:  'PUT',
                 headers: { 'Authorization': `Bearer ${this.token}` }
             });
