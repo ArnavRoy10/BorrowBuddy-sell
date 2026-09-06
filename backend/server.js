@@ -9,6 +9,10 @@ const { connectDB } = require('./config/database');
 // Initialize Express
 const app = express();
 
+// Render sits behind a reverse proxy — without this, req.ip is always the
+// proxy's IP, which would make the AI chat rate limiter useless.
+app.set('trust proxy', 1);
+
 // Connect to database
 connectDB();
 
@@ -78,6 +82,7 @@ app.use('/api/messages', require('./routes/messages'));
 app.use('/api/admin',    require('./routes/admin'));
 app.use('/api/upload',   require('./routes/upload'));
 app.use('/api/disputes', require('./routes/disputes'));
+app.use('/api/ai',       require('./routes/ai'));
 
 // Health check endpoints
 app.get('/', (req, res) => {
