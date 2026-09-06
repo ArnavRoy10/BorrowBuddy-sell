@@ -21,21 +21,23 @@ class AIAssistant {
             <button class="ai-toggle-btn" id="aiToggleBtn" title="AI Assistant">
                 <i class="fas fa-robot"></i>
             </button>
-            <div class="ai-chat-window" id="aiChatWindow" style="display:none">
+            <div class="ai-chat-window" id="aiChatWindow">
                 <div class="ai-chat-header">
-                    <div class="ai-header-info">
+                    <div class="ai-header-content">
                         <div class="ai-avatar"><i class="fas fa-robot"></i></div>
-                        <div>
+                        <div class="ai-header-text">
                             <h3>BorrowBuddy Assistant</h3>
-                            <p>Here to help you!</p>
+                            <p><span class="ai-status-dot"></span> Powered by Gemini</p>
                         </div>
                     </div>
                     <button class="ai-close-btn" id="aiCloseBtn">✕</button>
                 </div>
                 <div class="ai-chat-messages" id="aiChatMessages"></div>
-                <div class="ai-chat-input-area">
-                    <input type="text" id="aiMessageInput" placeholder="Ask me anything...">
-                    <button id="aiSendBtn"><i class="fas fa-paper-plane"></i></button>
+                <div class="ai-chat-input">
+                    <div class="input-wrapper">
+                        <input type="text" id="aiMessageInput" placeholder="Ask me anything..." maxlength="2000">
+                        <button class="ai-send-btn" id="aiSendBtn"><i class="fas fa-paper-plane"></i></button>
+                    </div>
                 </div>
             </div>
         `;
@@ -44,12 +46,10 @@ class AIAssistant {
 
     attachEventListeners() {
         document.getElementById('aiToggleBtn')?.addEventListener('click', () => {
-            const win = document.getElementById('aiChatWindow');
-            if (win) win.style.display = win.style.display === 'none' ? 'flex' : 'none';
+            document.getElementById('aiChatWindow')?.classList.toggle('active');
         });
         document.getElementById('aiCloseBtn')?.addEventListener('click', () => {
-            const win = document.getElementById('aiChatWindow');
-            if (win) win.style.display = 'none';
+            document.getElementById('aiChatWindow')?.classList.remove('active');
         });
         document.getElementById('aiSendBtn')?.addEventListener('click', () => this.sendMessage());
         document.getElementById('aiMessageInput')?.addEventListener('keypress', (e) => {
@@ -94,6 +94,7 @@ class AIAssistant {
 
     sendMessage() {
         const input = document.getElementById('aiMessageInput');
+        const sendBtn = document.getElementById('aiSendBtn');
         if (!input) return;
 
         const message = input.value.trim();
@@ -101,9 +102,15 @@ class AIAssistant {
 
         this.addMessage(message, 'user');
         input.value = '';
+        input.disabled = true;
+        if (sendBtn) sendBtn.disabled = true;
 
         this.showTypingIndicator();
-        this.fetchAIResponse(message);
+        this.fetchAIResponse(message).finally(() => {
+            input.disabled = false;
+            if (sendBtn) sendBtn.disabled = false;
+            input.focus();
+        });
     }
 
     async fetchAIResponse(message) {
@@ -177,9 +184,40 @@ class AIAssistant {
     }
 
     formatMessage(text) {
-        text = text.replace(/(https?:\/\/[^\s]+)/g, '<a href="$1" target="_blank">$1</a>');
-        text = text.replace(/\n/g, '<br>');
-        return text;
+        // Escape HTML first so the model's own text can't inject markup, then
+        // layer real markdown rendering on top — Gemini replies routinely use
+        // **bold**, bullet lists, and numbered lists, which used to show up
+        // as literal asterisks before this.
+        const div = document.createElement('div');
+        div.textContent = text;
+        let escaped = div.innerHTML;
+
+        escaped = escaped.replace(/(https?:\/\/[^\s]+)/g, '<a href="$1" target="_blank" rel="noopener">$1</a>');
+        escaped = escaped.replace(/\*\*(.+?)\*\*/g, '<strong>$1</strong>');
+        escaped = escaped.replace(/`([^`]+)`/g, '<code>$1</code>');
+
+        // Turn consecutive "* item" / "- item" lines into a real <ul>
+        const lines = escaped.split('\n');
+        const out = [];
+        let listBuffer = [];
+        const flushList = () => {
+            if (listBuffer.length) {
+                out.push(`<ul>${listBuffer.map(li => `<li>${li}</li>`).join('')}</ul>`);
+                listBuffer = [];
+            }
+        };
+        for (const line of lines) {
+            const bulletMatch = line.match(/^\s*[*-]\s+(.*)$/);
+            if (bulletMatch) {
+                listBuffer.push(bulletMatch[1]);
+            } else {
+                flushList();
+                out.push(line);
+            }
+        }
+        flushList();
+
+        return out.join('<br>').replace(/<\/ul><br>/g, '</ul>').replace(/<br><ul>/g, '<ul>');
     }
 
     showTypingIndicator() {
