@@ -1,4 +1,4 @@
-// BorrowBuddy — AI Assistant Widget (rule-based chat helper)
+// BorrowBuddy — AI Assistant Widget (Gemini-powered, with local keyword-matching fallback)
 
 class AIAssistant {
     constructor() {
@@ -103,12 +103,35 @@ class AIAssistant {
         input.value = '';
 
         this.showTypingIndicator();
+        this.fetchAIResponse(message);
+    }
 
-        setTimeout(() => {
+    async fetchAIResponse(message) {
+        const API_URL = self.BORROWBUDDY_CONFIG?.API_BASE_URL;
+        try {
+            const res = await fetch(`${API_URL}/api/ai/chat`, {
+                method:  'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({
+                    message,
+                    // last 10 turns, so the assistant keeps context across the chat
+                    history: this.messages.slice(-10).map(m => ({ sender: m.sender, text: m.text }))
+                })
+            });
+            const data = await res.json();
             this.hideTypingIndicator();
-            const response = this.generateResponse(message);
-            this.addMessage(response, 'assistant');
-        }, 1000 + Math.random() * 1000);
+
+            if (data.success && data.reply) {
+                this.addMessage(data.reply, 'assistant');
+            } else {
+                // Fall back to the old local responder if the AI backend is
+                // unreachable/misconfigured, so the widget still works.
+                this.addMessage(this.generateResponse(message), 'assistant');
+            }
+        } catch (err) {
+            this.hideTypingIndicator();
+            this.addMessage(this.generateResponse(message), 'assistant');
+        }
     }
 
     askQuestion(question) {
