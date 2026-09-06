@@ -119,6 +119,18 @@
     margin: 0;
     font-size: 0.85rem;
     opacity: 0.9;
+    display: flex;
+    align-items: center;
+    gap: 0.4rem;
+}
+
+.ai-status-dot {
+    width: 7px;
+    height: 7px;
+    border-radius: 50%;
+    background: #4ade80;
+    box-shadow: 0 0 0 2px rgba(74, 222, 128, 0.3);
+    flex-shrink: 0;
 }
 
 .ai-close-btn {
@@ -544,6 +556,25 @@
     background: none;
     color: #e2e8f0;
     padding: 0;
+}
+
+.message-bubble ul {
+    margin: 0.4rem 0;
+    padding-left: 1.25rem;
+}
+
+.message-bubble li {
+    margin-bottom: 0.25rem;
+}
+
+.message-bubble li:last-child {
+    margin-bottom: 0;
+}
+
+.ai-send-btn:disabled,
+#aiMessageInput:disabled {
+    opacity: 0.6;
+    cursor: not-allowed;
 }
 
 /* Links in Messages */
