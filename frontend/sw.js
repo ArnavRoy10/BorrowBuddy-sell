@@ -5,7 +5,7 @@
 // is loaded directly here to get BORROWBUDDY_CONFIG.API_BASE_URL.
 importScripts('./config.js');
 
-const VERSION    = 'bb-v10';
+const VERSION    = 'bb-v11';
 const SHELL      = `${VERSION}-shell`;
 const RUNTIME    = `${VERSION}-runtime`;
 const OFFLINE_URL = 'offline.html';
@@ -251,7 +251,26 @@ self.addEventListener('fetch', (event) => {
         return;
     }
 
-    // Static same-origin assets: cache first, refresh in background
+    // Code/markup (.js/.css/.html) — network first, so a new deploy is visible
+    // immediately instead of showing whatever was cached from the previous
+    // version. Falls back to cache only when actually offline.
+    if (url.origin === self.location.origin && /\.(js|css|html)$/.test(url.pathname)) {
+        event.respondWith((async () => {
+            try {
+                const fresh = await fetch(request);
+                if (fresh && fresh.status === 200) {
+                    const resToCache = fresh.clone();
+                    caches.open(RUNTIME).then(c => c.put(request, resToCache)).catch(() => {});
+                }
+                return fresh;
+            } catch {
+                return (await caches.match(request)) || new Response('Offline', { status: 503 });
+            }
+        })());
+        return;
+    }
+
+    // Other static same-origin assets (images, fonts, etc.): cache first, refresh in background
     if (url.origin === self.location.origin) {
         event.respondWith((async () => {
             const cached = await caches.match(request);
