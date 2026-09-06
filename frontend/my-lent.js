@@ -132,6 +132,10 @@ class MyLentItems {
         const grid = document.getElementById('lentItemsGrid');
         if (!grid) return;
 
+        // Match browse.css's #itemsGrid layout (flex column list, same gap) since this
+        // container has a different id and wouldn't otherwise pick up that rule.
+        grid.style.cssText = 'display:flex;flex-direction:column;gap:0.85rem';
+
         const filteredItems = this.filterItems();
 
         if (filteredItems.length === 0) {
@@ -158,51 +162,45 @@ class MyLentItems {
         const deposit       = parseFloat(item.securityDeposit || 0);
 
         return `
-        <div class="item-card" style="background:white;border-radius:16px;overflow:hidden;box-shadow:0 2px 12px rgba(0,0,0,.08);border:1px solid #e5e7eb">
-            <div class="item-image" style="height:180px;overflow:hidden;background:#f3f4f6">
+        <div class="item-card" style="background:white;border-radius:10px;overflow:hidden;box-shadow:0 1px 3px rgba(0,0,0,.08);transition:box-shadow .2s,transform .2s;border:1px solid #e5e7eb;display:flex;min-width:0">
+            <div class="item-thumb" style="position:relative;flex-shrink:0;overflow:hidden;background:linear-gradient(135deg,#667eea,#764ba2)">
                 <img src="${img}" alt="${item.itemName||''}" style="width:100%;height:100%;object-fit:cover" onerror="this.src='https://via.placeholder.com/200'">
             </div>
-            <div class="item-content" style="padding:1.25rem">
-                <h3 style="font-size:1rem;font-weight:700;color:#1f2937;margin-bottom:.75rem">${item.itemName||'Unknown Item'}</h3>
+            <div class="item-card-body" style="padding:.6rem .75rem;display:flex;flex-direction:column;flex:1 1 auto;min-width:0">
 
-                <div style="display:flex;align-items:center;gap:.75rem;padding:.875rem;background:#f9fafb;border-radius:10px;margin-bottom:.875rem">
-                    <div style="width:38px;height:38px;border-radius:50%;background:linear-gradient(135deg,#667eea,#764ba2);display:flex;align-items:center;justify-content:center;color:white;font-weight:700;font-size:.875rem;flex-shrink:0">
-                        ${this.getInitials(item.borrower)}
-                    </div>
-                    <div style="flex:1;min-width:0">
-                        <div style="font-weight:700;font-size:.875rem;color:#1f2937">${item.borrower||'Unknown'}</div>
-                        <div style="font-size:.75rem;color:#6b7280">${this.formatDate(item.borrowFrom)} → ${this.formatDate(item.borrowTo)}</div>
-                    </div>
-                    <span style="padding:.2rem .6rem;border-radius:20px;font-size:.72rem;font-weight:700;white-space:nowrap;background:${returnStatus.bg};color:${returnStatus.color}">
+                <!-- Top row: title + status pill -->
+                <div style="display:flex;align-items:flex-start;justify-content:space-between;gap:.4rem;margin-bottom:.2rem;min-width:0">
+                    <h3 class="item-card-title" style="margin:0;font-size:.88rem;font-weight:600;color:#1f2937;line-height:1.3;
+                        display:-webkit-box;-webkit-line-clamp:1;-webkit-box-orient:vertical;overflow:hidden;min-width:0">
+                        ${item.itemName || 'Unknown Item'}
+                    </h3>
+                    <span style="padding:.15rem .5rem;border-radius:20px;font-size:.62rem;font-weight:700;white-space:nowrap;flex-shrink:0;background:${returnStatus.bg};color:${returnStatus.color}">
                         <i class="fas fa-${returnStatus.icon}"></i> ${returnStatus.text}
                     </span>
                 </div>
 
-                ${daysRemaining !== null && item.status === 'active' ? `
-                <div style="padding:.6rem .875rem;border-radius:8px;margin-bottom:.875rem;font-size:.82rem;font-weight:600;
-                            background:${daysRemaining < 0 ? '#fee2e2' : '#d1fae5'};color:${daysRemaining < 0 ? '#ef4444' : '#059669'}">
-                    ${daysRemaining < 0
-                        ? `<i class="fas fa-exclamation-circle"></i> Overdue by ${Math.abs(daysRemaining)} day${Math.abs(daysRemaining)!==1?'s':''}`
-                        : `<i class="fas fa-clock"></i> ${daysRemaining} day${daysRemaining!==1?'s':''} remaining`}
-                </div>` : ''}
+                <div style="font-size:.72rem;color:#6b7280;margin-bottom:.3rem"><i class="fas fa-user"></i> ${item.borrower || 'Unknown'}</div>
 
-                <div style="display:flex;justify-content:space-between;align-items:center;background:linear-gradient(135deg,#10b981,#059669);color:white;border-radius:10px;padding:.75rem 1rem;margin-bottom:.875rem">
-                    <span style="font-size:.82rem"><i class="fas fa-rupee-sign"></i> Earned</span>
-                    <strong style="font-size:1.1rem">${earned}</strong>
+                <div style="font-size:.7rem;color:#6b7280;margin-bottom:.3rem">
+                    <i class="fas fa-calendar"></i> ${this.formatDate(item.borrowFrom)} → ${this.formatDate(item.borrowTo)}
+                    ${daysRemaining !== null && item.status === 'active' ? `
+                    <span style="font-weight:700;color:${daysRemaining < 0 ? '#ef4444' : '#10b981'};margin-left:.4rem">
+                        ${daysRemaining < 0
+                            ? `<i class="fas fa-exclamation-circle"></i> Overdue ${Math.abs(daysRemaining)}d`
+                            : `<i class="fas fa-clock"></i> ${daysRemaining}d left`}
+                    </span>` : ''}
                 </div>
 
-                ${deposit > 0 ? `
-                <div style="
-                    display:flex;align-items:center;gap:.5rem;padding:.6rem .75rem;border-radius:10px;margin-bottom:.875rem;
-                    background:${item.depositRefunded ? '#d1fae5' : '#fffbeb'};
-                    border:1px solid ${item.depositRefunded ? '#6ee7b7' : '#fde68a'};
-                ">
-                    <i class="fas fa-shield-alt" style="color:${item.depositRefunded ? '#059669' : '#f59e0b'}"></i>
-                    <div style="flex:1;font-size:.78rem;color:${item.depositRefunded ? '#065f46' : '#92400e'}">
-                        <strong>₹${deposit.toFixed(2)} deposit held</strong>
-                        ${item.depositRefunded ? ' — Refunded to borrower ✓' : ' — Held until return confirmed'}
-                    </div>
-                </div>` : ''}
+                <div style="display:flex;align-items:baseline;gap:.5rem;flex-wrap:wrap;margin-bottom:.3rem">
+                    <span class="item-card-price" style="color:#059669;font-weight:700;font-size:1.0rem"><i class="fas fa-rupee-sign" style="font-size:.8rem"></i> ${earned}</span>
+                    ${deposit > 0 ? `
+                    <span style="font-size:.68rem;color:${item.depositRefunded ? '#059669' : '#92400e'}">
+                        <i class="fas fa-shield-alt" style="color:${item.depositRefunded ? '#059669' : '#f59e0b'}"></i>
+                        ₹${deposit.toFixed(2)}${item.depositRefunded ? ' refunded' : ' held'}
+                    </span>` : ''}
+                </div>
+
+                <div style="flex:1 1 auto;min-height:.3rem"></div>
 
                 ${this.renderActionArea(item, txId)}
             </div>
@@ -214,56 +212,52 @@ class MyLentItems {
 
         const reportBtn = `
             <a class="report-issue-btn" href="disputes.html?report=1&item=${encodeURIComponent(item.itemName||'')}&against=${encodeURIComponent(item.borrower||'')}&requestId=${encodeURIComponent(txId||'')}" style="
-                width:100%;padding:.5rem;background:#fff7ed;color:#c2410c;border:1px solid #fed7aa;border-radius:8px;
-                font-weight:600;cursor:pointer;font-size:.78rem;display:flex;align-items:center;justify-content:center;gap:.35rem;text-decoration:none;
-            "><i class="fas fa-flag"></i> Report damage / issue</a>`;
+                padding:.35rem .6rem;background:#fff7ed;color:#c2410c;border:1px solid #fed7aa;border-radius:7px;
+                font-weight:600;cursor:pointer;font-size:.68rem;display:inline-flex;align-items:center;justify-content:center;gap:.3rem;text-decoration:none;
+            "><i class="fas fa-flag"></i> Report</a>`;
 
         const contactBtn = `
             <button class="btn-contact" data-borrower="${item.borrower||''}" style="
-                flex:1;padding:.55rem;background:#eff6ff;color:#2563eb;border:1px solid #bfdbfe;border-radius:8px;
-                font-weight:600;cursor:pointer;font-size:.82rem;display:flex;align-items:center;justify-content:center;gap:.35rem;
+                padding:.4rem .65rem;background:#eff6ff;color:#2563eb;border:1px solid #bfdbfe;border-radius:7px;
+                font-weight:600;cursor:pointer;font-size:.72rem;display:inline-flex;align-items:center;justify-content:center;gap:.3rem;
             "><i class="fas fa-comment"></i> Contact</button>`;
 
         if (status === 'pending_return') {
             return `
-            <div style="display:flex;flex-direction:column;gap:.5rem">
-                <div style="
-                    background:linear-gradient(135deg,#dbeafe,#eff6ff);border:1px solid #93c5fd;border-radius:10px;
-                    padding:.75rem;font-size:.8rem;color:#1d4ed8;text-align:center;font-weight:600;
-                "><i class="fas fa-undo"></i> Borrower requested a return</div>
-                <div style="display:flex;gap:.5rem">
-                    ${contactBtn}
-                    <button class="btn-confirm-return" data-tx="${txId}" style="
-                        flex:1;padding:.55rem;background:#10b981;color:white;border:none;border-radius:8px;
-                        font-weight:700;cursor:pointer;font-size:.82rem;display:flex;align-items:center;justify-content:center;gap:.35rem;
-                    "><i class="fas fa-check-double"></i> Confirm Return</button>
-                </div>
+            <div style="display:flex;flex-wrap:wrap;gap:.4rem;align-items:center">
+                <span style="
+                    background:#dbeafe;border-radius:7px;padding:.3rem .55rem;font-size:.68rem;color:#1d4ed8;
+                    display:inline-flex;align-items:center;gap:.3rem;font-weight:600;
+                "><i class="fas fa-undo"></i> Return requested</span>
+                ${contactBtn}
+                <button class="btn-confirm-return" data-tx="${txId}" style="
+                    padding:.4rem .65rem;background:#10b981;color:white;border:none;border-radius:7px;
+                    font-weight:700;cursor:pointer;font-size:.72rem;display:inline-flex;align-items:center;justify-content:center;gap:.3rem;
+                "><i class="fas fa-check-double"></i> Confirm Return</button>
                 ${reportBtn}
             </div>`;
         }
 
         if (status === 'returned') {
             return `
-            <div style="display:flex;flex-direction:column;gap:.5rem">
-                <div style="
-                    background:#d1fae5;border-radius:8px;padding:.5rem .75rem;font-size:.78rem;color:#065f46;
-                    display:flex;align-items:center;gap:.4rem;justify-content:center;font-weight:600;
-                "><i class="fas fa-check-circle"></i> Return confirmed</div>
-                <div style="display:flex;gap:.5rem">
-                    ${contactBtn}
-                    <button class="btn-remove-item" data-tx="${txId}" style="
-                        flex:1;padding:.55rem;background:#fee2e2;color:#ef4444;border:1px solid #fca5a5;border-radius:8px;
-                        font-weight:600;cursor:pointer;font-size:.82rem;display:flex;align-items:center;justify-content:center;gap:.35rem;
-                    "><i class="fas fa-times"></i> Remove</button>
-                </div>
+            <div style="display:flex;flex-wrap:wrap;gap:.4rem;align-items:center">
+                <span style="
+                    background:#d1fae5;border-radius:7px;padding:.3rem .55rem;font-size:.68rem;color:#065f46;
+                    display:inline-flex;align-items:center;gap:.3rem;font-weight:600;
+                "><i class="fas fa-check-circle"></i> Returned</span>
+                ${contactBtn}
+                <button class="btn-remove-item" data-tx="${txId}" style="
+                    padding:.4rem .55rem;background:#fee2e2;color:#ef4444;border:1px solid #fca5a5;border-radius:7px;
+                    font-weight:600;cursor:pointer;font-size:.68rem;
+                "><i class="fas fa-times"></i></button>
                 ${reportBtn}
             </div>`;
         }
 
         // active
         return `
-            <div style="display:flex;flex-direction:column;gap:.5rem">
-                <div style="display:flex;gap:.5rem">${contactBtn}</div>
+            <div style="display:flex;flex-wrap:wrap;gap:.4rem;align-items:center">
+                ${contactBtn}
                 ${reportBtn}
             </div>`;
     }
