@@ -95,6 +95,10 @@ class MyBorrowedItems {
         const grid = document.getElementById('borrowedItemsGrid');
         if (!grid) return;
 
+        // Match browse.css's #itemsGrid layout (flex column list, same gap) since this
+        // container has a different id and wouldn't otherwise pick up that rule.
+        grid.style.cssText = 'display:flex;flex-direction:column;gap:0.85rem';
+
         const filteredItems = this.filterItems();
 
         if (filteredItems.length === 0) {
@@ -121,53 +125,43 @@ class MyBorrowedItems {
         const deposit       = parseFloat(item.securityDeposit || 0);
 
         return `
-        <div class="item-card" style="position:relative;background:white;border-radius:16px;overflow:hidden;box-shadow:0 2px 12px rgba(0,0,0,.08);border:1px solid #e5e7eb">
-            ${statusInfo.badge}
-            <div class="item-image" style="position:relative;height:180px;overflow:hidden;background:#f3f4f6">
+        <div class="item-card" style="background:white;border-radius:10px;overflow:hidden;box-shadow:0 1px 3px rgba(0,0,0,.08);transition:box-shadow .2s,transform .2s;border:1px solid #e5e7eb;display:flex;min-width:0">
+            <div class="item-thumb" style="position:relative;flex-shrink:0;overflow:hidden;background:linear-gradient(135deg,#667eea,#764ba2)">
                 <img src="${img}" alt="${item.itemName||''}" style="width:100%;height:100%;object-fit:cover" onerror="this.src='https://via.placeholder.com/200'">
             </div>
-            <div class="item-content" style="padding:1.25rem">
-                <h3 style="font-size:1rem;font-weight:700;color:#1f2937;margin-bottom:.4rem">${item.itemName||'Unknown Item'}</h3>
-                <div style="font-size:.82rem;color:#6b7280;margin-bottom:.75rem"><i class="fas fa-user"></i> ${item.owner||'Unknown'}</div>
+            <div class="item-card-body" style="padding:.6rem .75rem;display:flex;flex-direction:column;flex:1 1 auto;min-width:0">
 
-                <div style="background:#f9fafb;padding:.875rem;border-radius:10px;margin-bottom:.875rem">
-                    <div style="display:flex;justify-content:space-between;margin-bottom:.4rem;font-size:.82rem">
-                        <span style="color:#6b7280"><i class="fas fa-calendar"></i> From</span>
-                        <strong>${this.formatDate(item.borrowFrom)}</strong>
-                    </div>
-                    <div style="display:flex;justify-content:space-between;font-size:.82rem">
-                        <span style="color:#6b7280"><i class="fas fa-calendar"></i> To</span>
-                        <strong>${this.formatDate(item.borrowTo)}</strong>
-                    </div>
+                <!-- Top row: title + status pill -->
+                <div style="display:flex;align-items:flex-start;justify-content:space-between;gap:.4rem;margin-bottom:.2rem;min-width:0">
+                    <h3 class="item-card-title" style="margin:0;font-size:.88rem;font-weight:600;color:#1f2937;line-height:1.3;
+                        display:-webkit-box;-webkit-line-clamp:1;-webkit-box-orient:vertical;overflow:hidden;min-width:0">
+                        ${item.itemName || 'Unknown Item'}
+                    </h3>
+                    ${statusInfo.pill}
+                </div>
+
+                <div style="font-size:.72rem;color:#6b7280;margin-bottom:.3rem"><i class="fas fa-user"></i> ${item.owner || 'Unknown'}</div>
+
+                <div style="font-size:.7rem;color:#6b7280;margin-bottom:.3rem">
+                    <i class="fas fa-calendar"></i> ${this.formatDate(item.borrowFrom)} → ${this.formatDate(item.borrowTo)}
                     ${daysRemaining !== null && item.status === 'active' ? `
-                    <div style="margin-top:.6rem;padding-top:.6rem;border-top:1px solid #e5e7eb;font-size:.82rem;font-weight:600;color:${daysRemaining < 0 ? '#ef4444' : '#10b981'}">
+                    <span style="font-weight:700;color:${daysRemaining < 0 ? '#ef4444' : '#10b981'};margin-left:.4rem">
                         ${daysRemaining < 0
-                            ? `<i class="fas fa-exclamation-circle"></i> Overdue by ${Math.abs(daysRemaining)} day${Math.abs(daysRemaining)!==1?'s':''}`
-                            : `<i class="fas fa-clock"></i> ${daysRemaining} day${daysRemaining!==1?'s':''} remaining`}
-                    </div>` : ''}
+                            ? `<i class="fas fa-exclamation-circle"></i> Overdue ${Math.abs(daysRemaining)}d`
+                            : `<i class="fas fa-clock"></i> ${daysRemaining}d left`}
+                    </span>` : ''}
                 </div>
 
-                <div style="display:flex;justify-content:space-between;align-items:center;background:linear-gradient(135deg,#667eea,#764ba2);color:white;border-radius:10px;padding:.75rem 1rem;margin-bottom:.875rem">
-                    <span style="font-size:.82rem">Total Paid</span>
-                    <strong style="font-size:1.1rem">${item.totalPaid||'Free'}</strong>
+                <div style="display:flex;align-items:baseline;gap:.5rem;flex-wrap:wrap;margin-bottom:.3rem">
+                    <span class="item-card-price" style="color:#0f766e;font-weight:700;font-size:1.0rem">${item.totalPaid || 'Free'}</span>
+                    ${deposit > 0 ? `
+                    <span style="font-size:.68rem;color:${item.depositRefunded ? '#059669' : '#92400e'}">
+                        <i class="fas fa-shield-alt" style="color:${item.depositRefunded ? '#059669' : '#f59e0b'}"></i>
+                        ₹${deposit.toFixed(2)}${item.depositRefunded ? ' refunded' : item.status === 'completed' ? ' pending refund' : ' deposit'}
+                    </span>` : ''}
                 </div>
 
-                ${deposit > 0 ? `
-                <div style="
-                    display:flex;align-items:center;gap:.5rem;padding:.6rem .75rem;border-radius:10px;margin-bottom:.875rem;
-                    background:${item.depositRefunded ? '#d1fae5' : item.status === 'completed' ? '#fef3c7' : '#fffbeb'};
-                    border:1px solid ${item.depositRefunded ? '#6ee7b7' : '#fde68a'};
-                ">
-                    <i class="fas fa-shield-alt" style="color:${item.depositRefunded ? '#059669' : '#f59e0b'}"></i>
-                    <div style="flex:1;font-size:.78rem;color:${item.depositRefunded ? '#065f46' : '#92400e'}">
-                        <strong>₹${deposit.toFixed(2)} deposit</strong>
-                        ${item.depositRefunded
-                            ? ' — Refunded ✓'
-                            : item.status === 'completed'
-                                ? ' — Pending refund'
-                                : ' — Refundable on return'}
-                    </div>
-                </div>` : ''}
+                <div style="flex:1 1 auto;min-height:.3rem"></div>
 
                 ${this.renderActionArea(item, txId)}
             </div>
@@ -179,78 +173,75 @@ class MyBorrowedItems {
 
         const reportBtn = `
             <a class="report-issue-btn" href="disputes.html?report=1&item=${encodeURIComponent(item.itemName||'')}&against=${encodeURIComponent(item.owner||'')}&requestId=${encodeURIComponent(txId||'')}" style="
-                width:100%;padding:.5rem;background:#fff7ed;color:#c2410c;border:1px solid #fed7aa;border-radius:8px;
-                font-weight:600;cursor:pointer;font-size:.78rem;display:flex;align-items:center;justify-content:center;gap:.35rem;text-decoration:none;
-            "><i class="fas fa-flag"></i> Report an issue</a>`;
+                padding:.35rem .6rem;background:#fff7ed;color:#c2410c;border:1px solid #fed7aa;border-radius:7px;
+                font-weight:600;cursor:pointer;font-size:.68rem;display:inline-flex;align-items:center;justify-content:center;gap:.3rem;text-decoration:none;
+            "><i class="fas fa-flag"></i> Report</a>`;
 
-        // Message button always available except after fully completed+removed
         const msgBtn = `
             <button class="message-owner-btn" data-owner="${item.owner||''}" style="
-                flex:1;padding:.55rem;background:#eff6ff;color:#2563eb;border:1px solid #bfdbfe;border-radius:8px;
-                font-weight:600;cursor:pointer;font-size:.82rem;display:flex;align-items:center;justify-content:center;gap:.35rem;
+                padding:.4rem .65rem;background:#eff6ff;color:#2563eb;border:1px solid #bfdbfe;border-radius:7px;
+                font-weight:600;cursor:pointer;font-size:.72rem;display:inline-flex;align-items:center;justify-content:center;gap:.3rem;
             "><i class="fas fa-comment"></i> Message</button>`;
 
         if (status === 'active') {
             return `
-            <div style="display:flex;flex-direction:column;gap:.5rem">
-            <div style="display:flex;gap:.5rem">
+            <div style="display:flex;flex-wrap:wrap;gap:.4rem;align-items:center">
                 ${msgBtn}
                 <button class="return-item-btn" data-tx="${txId}" style="
-                    flex:1;padding:.55rem;background:#fef3c7;color:#92400e;border:1px solid #fcd34d;border-radius:8px;
-                    font-weight:600;cursor:pointer;font-size:.82rem;display:flex;align-items:center;justify-content:center;gap:.35rem;
+                    padding:.4rem .65rem;background:#fef3c7;color:#92400e;border:1px solid #fcd34d;border-radius:7px;
+                    font-weight:600;cursor:pointer;font-size:.72rem;display:inline-flex;align-items:center;justify-content:center;gap:.3rem;
                 "><i class="fas fa-undo"></i> Return</button>
-            </div>
-            ${reportBtn}
+                ${reportBtn}
             </div>`;
         }
 
         if (status === 'pending_return') {
             return `
             <div style="
-                background:#eff6ff;border:1px dashed #93c5fd;border-radius:10px;padding:.75rem;
-                font-size:.8rem;color:#1d4ed8;text-align:center;display:flex;align-items:center;justify-content:center;gap:.5rem;
-            "><i class="fas fa-hourglass-half fa-spin"></i> Waiting for owner to confirm return…</div>`;
+                background:#eff6ff;border:1px dashed #93c5fd;border-radius:8px;padding:.4rem .6rem;
+                font-size:.72rem;color:#1d4ed8;display:flex;align-items:center;gap:.4rem;width:fit-content;
+            "><i class="fas fa-hourglass-half fa-spin"></i> Waiting for owner to confirm…</div>`;
         }
 
         if (status === 'completed') {
             return `
-            <div style="display:flex;flex-direction:column;gap:.5rem">
-                <div style="
-                    background:#d1fae5;border-radius:8px;padding:.5rem .75rem;font-size:.78rem;color:#065f46;
-                    display:flex;align-items:center;gap:.4rem;justify-content:center;font-weight:600;
-                "><i class="fas fa-check-circle"></i> Return confirmed by owner</div>
-                <div style="display:flex;gap:.5rem">
-                    ${msgBtn}
-                    <button class="leave-review-btn" data-item-id="${item.id}" style="
-                        flex:1;padding:.55rem;background:#fffbeb;color:#92400e;border:1px solid #fde68a;border-radius:8px;
-                        font-weight:600;cursor:pointer;font-size:.82rem;display:flex;align-items:center;justify-content:center;gap:.35rem;
-                    "><i class="fas fa-star"></i> Review</button>
-                </div>
+            <div style="display:flex;flex-wrap:wrap;gap:.4rem;align-items:center">
+                <span style="
+                    background:#d1fae5;border-radius:7px;padding:.3rem .55rem;font-size:.68rem;color:#065f46;
+                    display:inline-flex;align-items:center;gap:.3rem;font-weight:600;
+                "><i class="fas fa-check-circle"></i> Returned</span>
+                ${msgBtn}
+                <button class="leave-review-btn" data-item-id="${item.id}" style="
+                    padding:.4rem .65rem;background:#fffbeb;color:#92400e;border:1px solid #fde68a;border-radius:7px;
+                    font-weight:600;cursor:pointer;font-size:.72rem;display:inline-flex;align-items:center;justify-content:center;gap:.3rem;
+                "><i class="fas fa-star"></i> Review</button>
                 <button class="remove-item-btn" data-tx="${txId}" style="
-                    width:100%;padding:.5rem;background:#fee2e2;color:#ef4444;border:1px solid #fca5a5;border-radius:8px;
-                    font-weight:600;cursor:pointer;font-size:.78rem;
-                "><i class="fas fa-times"></i> Remove from list</button>
+                    padding:.4rem .55rem;background:#fee2e2;color:#ef4444;border:1px solid #fca5a5;border-radius:7px;
+                    font-weight:600;cursor:pointer;font-size:.68rem;
+                "><i class="fas fa-times"></i></button>
                 ${reportBtn}
             </div>`;
         }
 
-        return msgBtn ? `<div style="display:flex;gap:.5rem">${msgBtn}</div>` : '';
+        return msgBtn ? `<div style="display:flex;gap:.4rem">${msgBtn}</div>` : '';
     }
 
     getStatusInfo(item) {
         const daysRemaining = this.getDaysRemaining(item.borrowTo);
         const status = item.status || 'active';
 
+        const pillStyle = 'padding:.15rem .5rem;border-radius:20px;font-size:.62rem;font-weight:700;white-space:nowrap;flex-shrink:0';
+
         if (status === 'completed') {
-            return { badge: '<div style="position:absolute;top:.75rem;left:.75rem;background:#d1fae5;color:#059669;padding:.25rem .65rem;border-radius:20px;font-size:.75rem;font-weight:700;z-index:5"><i class="fas fa-check-circle"></i> Returned</div>' };
+            return { pill: `<span style="${pillStyle};background:#d1fae5;color:#059669"><i class="fas fa-check-circle"></i> Returned</span>` };
         }
         if (status === 'pending_return') {
-            return { badge: '<div style="position:absolute;top:.75rem;left:.75rem;background:#dbeafe;color:#1d4ed8;padding:.25rem .65rem;border-radius:20px;font-size:.75rem;font-weight:700;z-index:5"><i class="fas fa-hourglass-half"></i> Pending Confirmation</div>' };
+            return { pill: `<span style="${pillStyle};background:#dbeafe;color:#1d4ed8"><i class="fas fa-hourglass-half"></i> Pending</span>` };
         }
         if (daysRemaining !== null && daysRemaining < 0) {
-            return { badge: '<div style="position:absolute;top:.75rem;left:.75rem;background:#fee2e2;color:#dc2626;padding:.25rem .65rem;border-radius:20px;font-size:.75rem;font-weight:700;z-index:5"><i class="fas fa-exclamation-triangle"></i> Overdue</div>' };
+            return { pill: `<span style="${pillStyle};background:#fee2e2;color:#dc2626"><i class="fas fa-exclamation-triangle"></i> Overdue</span>` };
         }
-        return { badge: '<div style="position:absolute;top:.75rem;left:.75rem;background:#dbeafe;color:#2563eb;padding:.25rem .65rem;border-radius:20px;font-size:.75rem;font-weight:700;z-index:5"><i class="fas fa-clock"></i> Active</div>' };
+        return { pill: `<span style="${pillStyle};background:#dbeafe;color:#2563eb"><i class="fas fa-clock"></i> Active</span>` };
     }
 
     getDaysRemaining(toDate) {
