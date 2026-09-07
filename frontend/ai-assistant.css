@@ -96,6 +96,22 @@
     display: flex;
     align-items: center;
     gap: 12px;
+    min-width: 0;
+    flex: 1 1 auto;
+}
+
+.ai-header-text {
+    min-width: 0;
+    overflow: hidden;
+}
+
+.ai-header-text h3 {
+    margin: 0;
+    font-size: 1.1rem;
+    font-weight: 600;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
 }
 
 .ai-avatar {
@@ -107,12 +123,6 @@
     align-items: center;
     justify-content: center;
     font-size: 20px;
-}
-
-.ai-header-text h3 {
-    margin: 0;
-    font-size: 1.1rem;
-    font-weight: 600;
 }
 
 .ai-header-text p {
@@ -141,6 +151,7 @@
     cursor: pointer;
     padding: 0.5rem;
     transition: opacity 0.2s;
+    flex-shrink: 0;
 }
 
 .ai-close-btn:hover {
@@ -349,9 +360,10 @@
     flex: 1;
     border: none;
     background: none;
-    font-size: 0.95rem;
+    font-size: 1rem; /* must stay >=16px or iOS Safari auto-zooms the whole page on focus */
     color: #1e293b;
     outline: none;
+    min-width: 0;
 }
 
 .input-wrapper input::placeholder {
@@ -425,27 +437,32 @@
 @media (max-width: 768px) {
     #aiAssistantWidget,
     .ai-assistant-container {
-        bottom: 76px; /* clears the 60px bottom nav bar + spacing */
+        bottom: calc(76px + env(safe-area-inset-bottom, 0px)); /* clears the bottom nav bar + notch */
         left: 16px;
     }
 
     .ai-chat-window {
         width: calc(100vw - 32px);
         height: calc(100vh - 170px);
-        bottom: 136px;
+        height: calc(100dvh - 170px); /* dvh accounts for mobile browser chrome hiding/showing */
+        bottom: calc(136px + env(safe-area-inset-bottom, 0px));
         right: 16px;
         left: 16px;
         max-width: 100%;
     }
-    
+
     .ai-toggle-btn {
         width: 56px;
         height: 56px;
         font-size: 22px;
     }
-    
+
     .message-content {
         max-width: 85%;
+    }
+
+    .ai-header-text h3 {
+        font-size: 1rem;
     }
 }
 
@@ -453,12 +470,14 @@
     .ai-chat-window {
         width: 100vw;
         height: 100vh;
+        height: 100dvh; /* dvh accounts for mobile browser chrome hiding/showing */
         bottom: 0;
         right: 0;
         left: 0;
         border-radius: 0;
+        padding-bottom: env(safe-area-inset-bottom, 0px); /* clears the home-indicator on notched phones */
     }
-    
+
     .ai-toggle-btn {
         width: 52px;
         height: 52px;
@@ -466,8 +485,14 @@
 
     #aiAssistantWidget,
     .ai-assistant-container {
-        bottom: 76px;
+        bottom: calc(76px + env(safe-area-inset-bottom, 0px));
         left: 12px;
+    }
+
+    /* Hide the floating button while the fullscreen chat covers the whole
+       viewport — avoids a stray tappable/focusable element sitting under it. */
+    #aiAssistantWidget:has(.ai-chat-window.active) .ai-toggle-btn {
+        display: none;
     }
 }
 
