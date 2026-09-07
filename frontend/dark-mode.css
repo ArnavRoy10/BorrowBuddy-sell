@@ -40,10 +40,14 @@ html[data-theme="dark"] .no-invert {
 }
 
 /* ── Floating buttons already have hand-built dark styles —
-   un-invert them so they render as designed, not double-inverted ──*/
+   un-invert them so they render as designed, not double-inverted ──
+   NOTE: applied to each fixed-position element individually, not to
+   #aiAssistantWidget itself — a filter on that wrapper would make it the
+   containing block for .ai-chat-window's position:fixed, breaking its
+   on-screen placement in dark mode. */
 html[data-theme="dark"] #darkModeQuickToggle,
-html[data-theme="dark"] #aiAssistantWidget,
-html[data-theme="dark"] .ai-assistant-container,
+html[data-theme="dark"] .ai-toggle-btn,
+html[data-theme="dark"] .ai-chat-window,
 html[data-theme="dark"] #bottomNav,
 html[data-theme="dark"] #bnMoreSheet {
     filter: invert(1) hue-rotate(180deg);
