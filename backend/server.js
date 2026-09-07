@@ -1,5 +1,6 @@
 require('dotenv').config();
 const express = require('express');
+const helmet  = require('helmet');
 const cors = require('cors');
 const passport = require('passport');
 const session = require('express-session');
@@ -12,6 +13,27 @@ const app = express();
 // Render sits behind a reverse proxy — without this, req.ip is always the
 // proxy's IP, which would make the AI chat rate limiter useless.
 app.set('trust proxy', 1);
+
+// Security headers — adds X-Frame-Options, X-Content-Type-Options,
+// Referrer-Policy, HSTS, etc. CSP is intentionally permissive on
+// unsafe-inline since the frontend relies heavily on inline <style> and
+// <script> attributes; tightening this further would need a broader
+// frontend refactor (nonces/hashes) to avoid breaking pages.
+app.use(helmet({
+    contentSecurityPolicy: {
+        directives: {
+            defaultSrc: ["'self'"],
+            scriptSrc:  ["'self'", "'unsafe-inline'", "'unsafe-eval'", "https://checkout.razorpay.com", "https://cdnjs.cloudflare.com"],
+            styleSrc:   ["'self'", "'unsafe-inline'", "https://fonts.googleapis.com", "https://cdnjs.cloudflare.com"],
+            imgSrc:     ["'self'", "data:", "https:", "blob:"],
+            fontSrc:    ["'self'", "https://fonts.gstatic.com", "https://cdnjs.cloudflare.com"],
+            connectSrc: ["'self'", "https:"],
+            frameSrc:   ["https://api.razorpay.com", "https://checkout.razorpay.com"]
+        }
+    },
+    crossOriginEmbedderPolicy: false,
+    crossOriginResourcePolicy: { policy: 'cross-origin' }
+}));
 
 // Connect to database
 connectDB();
