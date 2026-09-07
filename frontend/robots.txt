@@ -1,0 +1,23 @@
+User-agent: *
+Allow: /
+Disallow: /dashboard*
+Disallow: /my-borrowed*
+Disallow: /my-items*
+Disallow: /my-lent*
+Disallow: /messages*
+Disallow: /requests*
+Disallow: /admin*
+Disallow: /settings*
+Disallow: /profile*
+Disallow: /cart*
+Disallow: /checkout*
+Disallow: /payment*
+Disallow: /secure-payment*
+Disallow: /add-item*
+Disallow: /disputes*
+Disallow: /transactions*
+Disallow: /sync-history*
+Disallow: /multi-tab-settings*
+Disallow: /items-example*
+
+Sitemap: https://borrow-buddy-sell.vercel.app/sitemap.xml

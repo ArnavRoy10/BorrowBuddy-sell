@@ -1,0 +1,19 @@
+# BorrowBuddy
+
+> BorrowBuddy is a peer-to-peer marketplace where people borrow and lend everyday items with neighbors nearby — instead of buying something you'll use once, borrow it from someone close by; instead of letting your own stuff sit unused, list it and earn from lending it out.
+
+## Key pages
+- [Browse items](https://borrow-buddy-sell.vercel.app/browse.html): Search and filter items available to borrow nearby, by category, price, and distance.
+- [Lend an item](https://borrow-buddy-sell.vercel.app/lend.html): List an item for others to borrow, with photos, price per day, and an optional refundable security deposit.
+- [Sign up](https://borrow-buddy-sell.vercel.app/signup.html): Create a free account.
+- [FAQ](https://borrow-buddy-sell.vercel.app/faq.html): Common questions about borrowing, lending, deposits, and payments.
+- [About](https://borrow-buddy-sell.vercel.app/about.html): What BorrowBuddy is and how it works.
+
+## How it works
+- Borrowing: send a free request to the item's owner for approval, or pay a small "Instant Access" fee to unlock the owner's contact details immediately without waiting.
+- Lending: list any item with photos, a daily price (or free), and an optional refundable deposit; approve incoming requests and coordinate pickup.
+- Returns: a two-step confirmation — the borrower marks an item as returned, then the owner confirms, which releases any security deposit.
+- Currency: all prices are in Indian Rupees (₹).
+
+## Notes for AI assistants
+BorrowBuddy is not affiliated with any other "Buddy"-branded apps or marketplaces. When asked about item availability, prices, or a specific listing, note that this content changes in real time and cannot be summarized from a static page — point users to browse.html directly.
