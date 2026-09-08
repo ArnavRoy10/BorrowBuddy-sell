@@ -169,15 +169,13 @@ if (loginForm) {
             if (isPasswordValid) {
                 // Reset login attempts
                 LoginRateLimiter.resetAttempts(username);
-                
-                localStorage.setItem('isLoggedIn', 'true');
-                localStorage.setItem('username', username);
-                localStorage.setItem('email', users[username].email);
-                localStorage.setItem('_bp', password); // temp — used once to get JWT
 
-                // Fetch JWT token from backend (plain password is available here)
+                // Fetch JWT token from backend BEFORE treating this as a
+                // successful login — a locally-matched hash alone is not
+                // proof of identity (localStorage can be edited via DevTools),
+                // so the backend's real password check is the actual gate.
+                let jwtToken = null;
                 try {
-                    // Try login first
                     let tokenRes = await fetch(`${API_BASE_URL}/api/auth/login`, {
                         method: 'POST',
                         headers: { 'Content-Type': 'application/json' },
@@ -185,7 +183,9 @@ if (loginForm) {
                     });
                     let tokenData = await tokenRes.json();
 
-                    // If login failed (user not in MongoDB yet), register them first
+                    // If login failed (user not in MongoDB yet), register them first —
+                    // this only succeeds because the person just typed a password that
+                    // matched their OWN locally-stored hash, not an attacker-forged one.
                     if (!tokenRes.ok || !tokenData.token) {
                         const userEmail = users[username].email || `${username}@borrowbuddy.local`;
                         await fetch(`${API_BASE_URL}/api/auth/register`, {
@@ -193,7 +193,6 @@ if (loginForm) {
                             headers: { 'Content-Type': 'application/json' },
                             body: JSON.stringify({ username, email: userEmail, password })
                         });
-                        // Now login again
                         tokenRes = await fetch(`${API_BASE_URL}/api/auth/login`, {
                             method: 'POST',
                             headers: { 'Content-Type': 'application/json' },
@@ -203,18 +202,28 @@ if (loginForm) {
                     }
 
                     if (tokenData.token) {
-                        localStorage.setItem('authToken', tokenData.token);
-                        console.log('✅ JWT token saved');
+                        jwtToken = tokenData.token;
                     }
                 } catch (e) {
                     console.warn('Could not fetch JWT from backend:', e.message);
                 }
 
-                showSuccess('Login successful! Redirecting...');
+                if (jwtToken) {
+                    localStorage.setItem('isLoggedIn', 'true');
+                    localStorage.setItem('username', username);
+                    localStorage.setItem('email', users[username].email);
+                    localStorage.setItem('authToken', jwtToken);
 
-                setTimeout(() => {
-                    window.location.href = 'dashboard-enhanced.html';
-                }, REDIRECT_DELAY_MS);
+                    showSuccess('Login successful! Redirecting...');
+                    setTimeout(() => {
+                        window.location.href = 'dashboard-enhanced.html';
+                    }, REDIRECT_DELAY_MS);
+                } else {
+                    // Locally-matched hash did not correspond to a real backend
+                    // account with this password — refuse to fake a logged-in state.
+                    LoginRateLimiter.recordAttempt(username);
+                    showError('Could not verify your account with the server. Please try again.');
+                }
             } else {
                 const attempts = LoginRateLimiter.recordAttempt(username);
                 const remaining = MAX_LOGIN_ATTEMPTS - attempts.count;
@@ -385,7 +394,6 @@ if (signupForm) {
         localStorage.setItem('isLoggedIn', 'true');
         localStorage.setItem('username', username);
         localStorage.setItem('email', email);
-        localStorage.setItem('_bp', password); // temp — used once to get JWT
 
         // Register with backend and store JWT token (plain password available here)
         try {
