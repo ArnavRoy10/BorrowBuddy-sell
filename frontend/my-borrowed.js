@@ -7,6 +7,11 @@ class MyBorrowedItems {
         this.token    = localStorage.getItem('authToken') || localStorage.getItem('token');
         this.borrowedItems = this.loadLocalCache(); // instant paint from cache while backend loads
         this.currentFilter = 'all';
+        // Items the user dismissed with the X button — persisted separately so
+        // the 4s poll (which re-fetches the full list from the backend) doesn't
+        // silently bring them back. The backend has no "hide from my list"
+        // concept, so this stays purely client-side.
+        this.hiddenIds = new Set(JSON.parse(localStorage.getItem(`hiddenBorrowed_${this.username}`) || '[]'));
         this.init();
     }
 
@@ -78,7 +83,7 @@ class MyBorrowedItems {
                     .map(r => this.mapRequestToItem(r))
                 : [];
 
-            this.borrowedItems = [...payments, ...requests];
+            this.borrowedItems = [...payments, ...requests].filter(i => !this.hiddenIds.has(i.transactionId));
             localStorage.setItem(`borrowed_${this.username}`, JSON.stringify(this.borrowedItems));
             this.renderItems();
         } catch (err) {
@@ -336,6 +341,8 @@ class MyBorrowedItems {
         if (idx === -1) return;
         this.borrowedItems.splice(idx, 1);
         this.saveBorrowedItems();
+        this.hiddenIds.add(txId);
+        localStorage.setItem(`hiddenBorrowed_${this.username}`, JSON.stringify([...this.hiddenIds]));
         this.renderItems();
         this.showNotification('Item removed.', 'success');
     }
