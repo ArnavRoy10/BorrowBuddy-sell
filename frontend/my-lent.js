@@ -7,6 +7,11 @@ class MyLentItems {
         this.token    = localStorage.getItem('authToken') || localStorage.getItem('token');
         this.lentItems = this.loadLocalCache();
         this.currentFilter = 'all';
+        // Items the user dismissed with the X button — persisted separately so
+        // the 4s poll (which re-fetches the full list from the backend) doesn't
+        // silently bring them back. The backend has no "hide from my list"
+        // concept, so this stays purely client-side.
+        this.hiddenIds = new Set(JSON.parse(localStorage.getItem(`hiddenLent_${this.username}`) || '[]'));
         this.init();
     }
 
@@ -82,7 +87,7 @@ class MyLentItems {
                     .map(r => this.mapRequestToItem(r))
                 : [];
 
-            this.lentItems = [...payments, ...requests];
+            this.lentItems = [...payments, ...requests].filter(i => !this.hiddenIds.has(i.transactionId));
             localStorage.setItem(`lent_${this.username}`, JSON.stringify(this.lentItems));
             this.renderItems();
             this.updateStats();
@@ -365,6 +370,8 @@ class MyLentItems {
         if (idx === -1) return;
         this.lentItems.splice(idx, 1);
         this.saveLentItems();
+        this.hiddenIds.add(txId);
+        localStorage.setItem(`hiddenLent_${this.username}`, JSON.stringify([...this.hiddenIds]));
         this.renderItems();
         this.updateStats();
         this.showNotification('Item removed.', 'success');
