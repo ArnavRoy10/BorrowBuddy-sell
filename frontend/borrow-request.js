@@ -13,12 +13,32 @@ document.addEventListener('DOMContentLoaded', () => {
 });
 
 // ── Load item ─────────────────────────────────────────────────────
-function loadItemDetails() {
+async function loadItemDetails() {
     const raw = localStorage.getItem('currentItem');
     if (!raw) { alert('Item not found'); window.location.href = 'browse.html'; return; }
-    currentItem = JSON.parse(raw);
+
+    currentItem = JSON.parse(raw); // instant paint from whatever snapshot we have
     displayItemPreview(currentItem);
     initCalendar(currentItem);
+
+    // The localStorage snapshot can go stale (old tab, back/forward navigation,
+    // an earlier visit before the owner changed the price) — always refresh
+    // from the backend so the price shown/calculated here is never wrong.
+    const itemId = currentItem.id || currentItem._id;
+    if (!itemId) return;
+
+    try {
+        const res  = await fetch(`${API}/api/items/${itemId}`);
+        const data = await res.json();
+        if (data.success && data.item) {
+            currentItem = { ...currentItem, ...data.item, id: data.item.id || data.item._id };
+            localStorage.setItem('currentItem', JSON.stringify(currentItem));
+            displayItemPreview(currentItem);
+            initCalendar(currentItem); // recompute with the live price
+        }
+    } catch (err) {
+        console.warn('Could not refresh item from server, using cached copy:', err.message);
+    }
 }
 
 function displayItemPreview(item) {
