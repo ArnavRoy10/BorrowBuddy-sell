@@ -5,6 +5,7 @@ const {
     getConfig,
     createOrder,
     verifyPayment,
+    verifyCartPayment,
     getPaymentHistory,
     checkUnlocked,
     getBorrowed,
@@ -21,6 +22,7 @@ router.get('/config', getConfig);
 // Protected — user must be logged in
 router.post('/create-order',    protect, createOrder);
 router.post('/verify',          protect, verifyPayment);
+router.post('/verify-cart',     protect, verifyCartPayment);
 router.get('/history',          protect, getPaymentHistory);
 router.get('/unlocked/:itemId', protect, checkUnlocked);
 
