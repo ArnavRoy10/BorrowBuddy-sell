@@ -423,13 +423,25 @@ async function processInstantCartPayment(fee) {
             },
             handler: async (response) => {
                 try {
-                    const verify = await fetch(`${CART_API}/payments/verify`, {
+                    const pending = JSON.parse(localStorage.getItem('pendingCartBorrow') || '{}');
+                    const items   = pending.items || cartItems;
+
+                    const verify = await fetch(`${CART_API}/payments/verify-cart`, {
                         method:  'POST',
                         headers: { 'Content-Type':'application/json', 'Authorization':`Bearer ${token}` },
                         body:    JSON.stringify({
                             razorpay_order_id:   response.razorpay_order_id,
                             razorpay_payment_id: response.razorpay_payment_id,
-                            razorpay_signature:  response.razorpay_signature
+                            razorpay_signature:  response.razorpay_signature,
+                            items: items.map(item => ({
+                                itemId:        item.id || item._id || null,
+                                ownerUsername: item.owner || '',
+                                itemName:      item.name,
+                                itemImage:     (item.images && item.images[0]) || item.image || '',
+                                fromDate:      item.fromDate,
+                                toDate:        item.toDate,
+                                amount:        calcItemRental(item)
+                            }))
                         })
                     });
                     const vData = await verify.json();
@@ -483,7 +495,12 @@ function simulateCartPayment(fee) {
     showCartSuccess('instant', cartItems.length);
 }
 
-// ── Record all borrows ────────────────────────────────────────────
+// ── Record borrows in the local cache for instant UI feedback ──────
+// NOTE: the real source of truth is now the backend (Payment records
+// created by /api/payments/verify-cart), which my-borrowed.js/my-lent.js
+// fetch directly — this local write is just for instant paint on this
+// device, not for notifying the owner (that only works via the backend,
+// since the owner is on a different browser/device entirely).
 function recordCartBorrows(paymentId) {
     const username = localStorage.getItem('username') || '';
     const pending  = JSON.parse(localStorage.getItem('pendingCartBorrow') || '{}');
@@ -499,7 +516,6 @@ function recordCartBorrows(paymentId) {
         const image    = (item.images && item.images[0]) || item.image || '';
         const rental   = calcItemRental(item);
 
-        // Borrower record
         if (!borrowedList.some(b => b.paymentId === pid)) {
             borrowedList.push({
                 id:          itemId,
@@ -513,27 +529,6 @@ function recordCartBorrows(paymentId) {
                 paymentId:   pid,
                 rentalDays:  item.rentalDays || 1
             });
-        }
-
-        // Owner lent record
-        if (owner && owner !== username) {
-            const lentKey  = `lent_${owner}`;
-            const lentList = JSON.parse(localStorage.getItem(lentKey) || '[]');
-            if (!lentList.some(l => l.paymentId === pid)) {
-                lentList.push({
-                    id:          itemId,
-                    itemName:    item.name,
-                    itemImage:   image,
-                    borrower:    username,
-                    status:      'active',
-                    borrowFrom:  item.fromDate,
-                    borrowTo:    item.toDate,
-                    totalEarned: rental > 0 ? `₹${rental.toFixed(2)}` : 'Free',
-                    paymentId:   pid,
-                    rentalDays:  item.rentalDays || 1
-                });
-                localStorage.setItem(lentKey, JSON.stringify(lentList));
-            }
         }
     });
 
