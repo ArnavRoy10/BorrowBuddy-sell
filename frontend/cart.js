@@ -446,8 +446,9 @@ async function processInstantCartPayment(fee) {
                     });
                     const vData = await verify.json();
                     if (vData.success) {
+                        const count = cartItems.length;
                         recordCartBorrows(response.razorpay_payment_id);
-                        showCartSuccess('instant', cartItems.length);
+                        showCartSuccess('instant', count);
                     } else {
                         alert('Payment verification failed. ID: ' + response.razorpay_payment_id);
                     }
@@ -491,8 +492,9 @@ function showDemoPayModal(fee) {
 }
 
 function simulateCartPayment(fee) {
+    const count = cartItems.length;
     recordCartBorrows('demo-cart-' + Date.now());
-    showCartSuccess('instant', cartItems.length);
+    showCartSuccess('instant', count);
 }
 
 // ── Record borrows in the local cache for instant UI feedback ──────
