@@ -421,6 +421,27 @@ async function processInstantCartPayment(fee) {
                 name:  localStorage.getItem('username') || '',
                 email: localStorage.getItem('email')    || ''
             },
+            // Surfaces a UPI QR code as the primary payment option.
+            config: {
+                display: {
+                    blocks: {
+                        upiBlock: {
+                            name: 'Pay by UPI / QR Code',
+                            instruments: [{ method: 'upi' }]
+                        },
+                        otherBlock: {
+                            name: 'Other payment methods',
+                            instruments: [
+                                { method: 'card' },
+                                { method: 'netbanking' },
+                                { method: 'wallet' }
+                            ]
+                        }
+                    },
+                    sequence: ['block.upiBlock', 'block.otherBlock'],
+                    preferences: { show_default_blocks: false }
+                }
+            },
             handler: async (response) => {
                 try {
                     const pending = JSON.parse(localStorage.getItem('pendingCartBorrow') || '{}');
