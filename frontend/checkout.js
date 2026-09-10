@@ -113,6 +113,30 @@ async function openRazorpay(amount) {
                 email: localStorage.getItem('email')    || ''
             },
             theme: { color: '#6366f1' },
+            // Surfaces a UPI QR code as the primary payment option — Razorpay
+            // shows a scannable QR automatically within the UPI block, plus a
+            // "Pay by any UPI app" collect-request option. Cards/netbanking/
+            // wallet remain available underneath.
+            config: {
+                display: {
+                    blocks: {
+                        upiBlock: {
+                            name: 'Pay by UPI / QR Code',
+                            instruments: [{ method: 'upi' }]
+                        },
+                        otherBlock: {
+                            name: 'Other payment methods',
+                            instruments: [
+                                { method: 'card' },
+                                { method: 'netbanking' },
+                                { method: 'wallet' }
+                            ]
+                        }
+                    },
+                    sequence: ['block.upiBlock', 'block.otherBlock'],
+                    preferences: { show_default_blocks: false }
+                }
+            },
 
             handler: async function (response) {
                 // Step 3 — Verify on backend
