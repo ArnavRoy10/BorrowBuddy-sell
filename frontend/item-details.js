@@ -126,6 +126,27 @@ async function processInstantPayment(fee) {
                 email: localStorage.getItem('email')    || ''
             },
             theme:  { color: '#7c3aed' },
+            // Surfaces a UPI QR code as the primary payment option.
+            config: {
+                display: {
+                    blocks: {
+                        upiBlock: {
+                            name: 'Pay by UPI / QR Code',
+                            instruments: [{ method: 'upi' }]
+                        },
+                        otherBlock: {
+                            name: 'Other payment methods',
+                            instruments: [
+                                { method: 'card' },
+                                { method: 'netbanking' },
+                                { method: 'wallet' }
+                            ]
+                        }
+                    },
+                    sequence: ['block.upiBlock', 'block.otherBlock'],
+                    preferences: { show_default_blocks: false }
+                }
+            },
             handler: async function (response) {
                 await verifyInstantPayment(response, pending);
             },
