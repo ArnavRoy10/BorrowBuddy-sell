@@ -146,6 +146,86 @@ exports.verifyPayment = async (req, res) => {
 };
 
 // ─────────────────────────────────────────────────────────────────────────────
+// POST /api/payments/verify-cart — verifies one Razorpay payment that covers
+// multiple cart items at once, then creates one real Payment/loan record PER
+// item so each shows up correctly in both the borrower's and each owner's
+// My Borrowed / My Lent lists. Previously the frontend only ever wrote these
+// to localStorage cross-user keys, which the other person's browser could
+// never actually see.
+// ─────────────────────────────────────────────────────────────────────────────
+exports.verifyCartPayment = async (req, res) => {
+    try {
+        const { razorpay_order_id, razorpay_payment_id, razorpay_signature, items } = req.body;
+
+        if (!Array.isArray(items) || items.length === 0) {
+            return res.status(400).json({ success: false, message: 'No cart items to record.' });
+        }
+
+        const body      = razorpay_order_id + '|' + razorpay_payment_id;
+        const expected  = crypto
+            .createHmac('sha256', process.env.RAZORPAY_KEY_SECRET)
+            .update(body)
+            .digest('hex');
+
+        if (expected !== razorpay_signature) {
+            return res.status(400).json({ success: false, message: 'Invalid payment signature' });
+        }
+
+        // Mark the original order-tracking Payment record as succeeded too, so
+        // there's still an audit trail of the actual Razorpay charge.
+        await Payment.findOneAndUpdate(
+            { orderId: razorpay_order_id, userId: req.user._id },
+            { status: 'succeeded', transactionId: razorpay_payment_id, paidAt: new Date() }
+        );
+
+        // Resolve every owner username once, not per item
+        const ownerUsernames = [...new Set(items.map(i => i.ownerUsername).filter(Boolean))];
+        const owners = await User.find({
+            $or: [
+                { username: { $in: ownerUsernames } },
+                { email: { $in: ownerUsernames } }
+            ]
+        });
+        const ownerMap = new Map();
+        owners.forEach(o => {
+            ownerMap.set(o.username, o._id);
+            ownerMap.set(o.email, o._id);
+        });
+
+        const isValidObjectId = (id) => typeof id === 'string' && /^[0-9a-fA-F]{24}$/.test(id);
+
+        const created = await Promise.all(items.map(item => Payment.create({
+            userId:        req.user._id,
+            itemId:        isValidObjectId(item.itemId) ? item.itemId : null,
+            amount:        item.amount || 0,
+            currency:      'inr',
+            provider:      'razorpay',
+            type:          'service_fee',
+            orderId:       razorpay_order_id,
+            transactionId: razorpay_payment_id,
+            status:        'succeeded',
+            paidAt:        new Date(),
+            ownerId:       ownerMap.get(item.ownerUsername) || null,
+            fromDate:      item.fromDate || undefined,
+            toDate:        item.toDate || undefined,
+            loanStatus:    'active',
+            metadata: {
+                itemName:     item.itemName,
+                itemImage:    item.itemImage,
+                lenderName:   item.ownerUsername,
+                borrowerName: req.user.username || req.user.email
+            }
+        })));
+
+        res.status(200).json({ success: true, message: `${created.length} item(s) unlocked`, payments: created });
+
+    } catch (error) {
+        console.error('Verify Cart Payment Error:', error);
+        res.status(500).json({ success: false, message: 'Cart verification failed', error: error.message });
+    }
+};
+
+// ─────────────────────────────────────────────────────────────────────────────
 // GET /api/payments/borrowed — items the current user has borrowed (paid for)
 // ─────────────────────────────────────────────────────────────────────────────
 exports.getBorrowed = async (req, res) => {
