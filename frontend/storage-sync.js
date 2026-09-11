@@ -74,13 +74,21 @@ class StorageSync {
 
     handleBorrowedItemsChange(e) {
         console.log('Borrowed items changed:', e.key);
-        
-        // Reload borrowed items page if it exists
-        if (typeof myBorrowedItems !== 'undefined') {
+
+        // Reload borrowed items page if it exists.
+        // NOTE: my-borrowed.js's source of truth is the backend (Payment +
+        // Request records), not localStorage — localStorage is just a cache
+        // that fetchBorrowed() overwrites on every refresh. Calling the old
+        // loadBorrowedItems()/updateStats() here (methods that don't exist
+        // on MyBorrowedItems) threw silently in some browsers and, worse,
+        // let this tab render from its own stale in-memory borrowedItems
+        // array right as the OTHER tab's fresh write landed — racing the
+        // 4s poll and occasionally painting both the stale and fresh item
+        // at once (the "2 items" duplicate). Re-fetching from the backend
+        // instead makes every tab converge on the same list.
+        if (typeof myBorrowedItems !== 'undefined' && typeof myBorrowedItems.fetchBorrowed === 'function') {
             console.log('Reloading borrowed items...');
-            myBorrowedItems.borrowedItems = myBorrowedItems.loadBorrowedItems();
-            myBorrowedItems.renderItems();
-            myBorrowedItems.updateStats();
+            myBorrowedItems.fetchBorrowed();
         }
     }
 
