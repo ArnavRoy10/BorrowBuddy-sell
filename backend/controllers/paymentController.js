@@ -47,17 +47,22 @@ exports.createOrder = async (req, res) => {
             }
         });
 
-        // Save pending payment to MongoDB
+        // Save pending payment to MongoDB.
+        // No itemId means this order isn't tied to one item — that's the
+        // cart flow's single covering order, which will later have its own
+        // per-item Payment docs created in verifyCartPayment. Flag it as a
+        // wrapper so it never gets counted as a loan itself.
         const payment = await Payment.create({
-            userId:   req.user._id,
-            itemId:   itemId || null,
-            amount:   amount,
-            currency: 'inr',
-            provider: 'razorpay',
-            type:     'service_fee',
-            orderId:  order.id,
-            status:   'pending',
-            metadata: { itemName }
+            userId:         req.user._id,
+            itemId:         itemId || null,
+            amount:         amount,
+            currency:       'inr',
+            provider:       'razorpay',
+            type:           'service_fee',
+            orderId:        order.id,
+            status:         'pending',
+            isOrderWrapper: !itemId,
+            metadata:       { itemName }
         });
 
         res.status(200).json({
@@ -230,8 +235,11 @@ exports.verifyCartPayment = async (req, res) => {
 // ─────────────────────────────────────────────────────────────────────────────
 exports.getBorrowed = async (req, res) => {
     try {
-        const payments = await Payment.find({ userId: req.user._id, status: 'succeeded' })
-            .sort({ createdAt: -1 });
+        const payments = await Payment.find({
+            userId:         req.user._id,
+            status:         'succeeded',
+            isOrderWrapper: { $ne: true }
+        }).sort({ createdAt: -1 });
         res.status(200).json({ success: true, payments });
     } catch (error) {
         res.status(500).json({ success: false, message: 'Failed to get borrowed items', error: error.message });
@@ -243,8 +251,11 @@ exports.getBorrowed = async (req, res) => {
 // ─────────────────────────────────────────────────────────────────────────────
 exports.getLent = async (req, res) => {
     try {
-        const payments = await Payment.find({ ownerId: req.user._id, status: 'succeeded' })
-            .sort({ createdAt: -1 });
+        const payments = await Payment.find({
+            ownerId:        req.user._id,
+            status:         'succeeded',
+            isOrderWrapper: { $ne: true }
+        }).sort({ createdAt: -1 });
         res.status(200).json({ success: true, payments });
     } catch (error) {
         res.status(500).json({ success: false, message: 'Failed to get lent items', error: error.message });
