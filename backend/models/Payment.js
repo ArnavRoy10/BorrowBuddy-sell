@@ -39,6 +39,14 @@ const paymentSchema = new mongoose.Schema({
     orderId:       String,   // Razorpay order ID (order_xxx)
     transactionId: String,   // Razorpay payment ID (pay_xxx)
 
+    // True only for the single order-tracking record created by createOrder
+    // when a cart checkout covers multiple items (no itemId on the order
+    // itself — the real per-item loan records are created separately in
+    // verifyCartPayment). Kept around purely as an audit trail of the
+    // Razorpay charge, so it must NOT be treated as a loan in
+    // getBorrowed/getLent even after its status flips to 'succeeded'.
+    isOrderWrapper: { type: Boolean, default: false },
+
     metadata: {
         itemName:     String,
         itemImage:    String,
