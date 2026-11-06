@@ -67,6 +67,26 @@
     });
   }
 
+  function cinematicPointerField() {
+    const field = document.querySelector('.hero-premium-wrap');
+    if (!field || !canAnimate || window.innerWidth < 768) return;
+    field.addEventListener('pointermove', (event) => {
+      const bounds = field.getBoundingClientRect();
+      const x = (event.clientX - bounds.left) / bounds.width - 0.5;
+      const y = (event.clientY - bounds.top) / bounds.height - 0.5;
+      field.style.setProperty('--pointer-x', `${x * 18}px`);
+      field.style.setProperty('--pointer-y', `${y * 14}px`);
+      field.querySelectorAll('.liquid-blob').forEach((blob, index) => {
+        blob.style.marginLeft = `${x * (index + 1) * 6}px`;
+        blob.style.marginTop = `${y * (index + 1) * 5}px`;
+      });
+    });
+    field.addEventListener('pointerleave', () => {
+      field.style.setProperty('--pointer-x', '0px');
+      field.style.setProperty('--pointer-y', '0px');
+    });
+  }
+
   window.BorrowBuddyMotion = {
     AnimatedPageTransition: (element) => element?.classList.add('is-visible'),
     ScrollReveal: revealElements,
@@ -95,6 +115,7 @@
     magneticButtons();
     perspectiveCards();
     gsapScrollEnhancement();
+    cinematicPointerField();
   }
 
   if (document.readyState === 'loading') document.addEventListener('DOMContentLoaded', init, { once: true });
