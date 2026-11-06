@@ -39,6 +39,9 @@
     <link rel="stylesheet" href="bottom-nav.css?v=10">
     <link rel="stylesheet" href="premium.css">
     <link rel="stylesheet" href="home-hero-fx.css">
+    <link rel="stylesheet" href="premium-system.css">
+    <script src="https://cdn.jsdelivr.net/npm/gsap@3.12.5/dist/gsap.min.js" defer></script>
+    <script src="https://cdn.jsdelivr.net/npm/gsap@3.12.5/dist/ScrollTrigger.min.js" defer></script>
     <!-- BorrowBuddy UX modules — deferred: none of these affect what's on
          screen at first paint (loading skeletons, empty states, onboarding
          modal, PWA install banner all only appear after interaction/JS runs) -->
@@ -135,10 +138,10 @@
                     and earn by lending what you don't use — right in your community.
                 </p>
                 <div class="hero-buttons">
-                    <a href="signup.html" class="btn btn-large btn-primary btn-glow">
+                    <a href="signup.html" class="btn btn-large btn-primary btn-glow magnetic-button">
                         <i class="fas fa-rocket"></i> Get Started Free
                     </a>
-                    <a href="browse.html" class="btn btn-large btn-secondary">
+                    <a href="browse.html" class="btn btn-large btn-secondary magnetic-button">
                         <i class="fas fa-search"></i> Browse Items
                     </a>
                 </div>
@@ -551,6 +554,7 @@
     <script src="storage-sync.js"></script>
     <script src="premium.js"></script>
     <script src="home-hero-fx.js"></script>
+    <script src="premium-system.js"></script>
     <script src="bottom-nav.js"></script>
     <script src="skeletons.js"></script>
     <script src="empty-states.js"></script>
