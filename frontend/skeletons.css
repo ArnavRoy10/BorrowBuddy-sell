@@ -1,15 +1,19 @@
-/* BorrowBuddy — Loading skeletons (replaces spinners) */
+/* BorrowBuddy — Midnight loading skeletons */
 
 :root {
-    --skeleton-base: #e8edf3;
-    --skeleton-shine: #f6f9fc;
+    --skeleton-base: #17243d;
+    --skeleton-shine: #26395d;
+    --skeleton-surface: rgba(16, 26, 46, .92);
+    --skeleton-border: rgba(153, 180, 226, .15);
 }
 
 body.dark-mode,
 .dark-mode {
-    --skeleton-base: #2a3342;
-    --skeleton-shine: #38445a;
+    --skeleton-base: #17243d;
+    --skeleton-shine: #26395d;
 }
+
+[data-skeleton] { color: transparent; }
 
 .skeleton {
     position: relative;
@@ -61,14 +65,14 @@ body.dark-mode,
 }
 
 .skeleton-card {
-    background: #fff;
-    border: 1px solid var(--border-color, #e2e8f0);
-    border-radius: 14px;
+    background: var(--skeleton-surface);
+    border: 1px solid var(--skeleton-border);
+    border-radius: 18px;
     overflow: hidden;
-    box-shadow: 0 1px 3px rgba(15, 23, 42, 0.06);
+    box-shadow: 0 16px 40px rgba(0, 0, 0, .18);
 }
 
-body.dark-mode .skeleton-card { background: #1e2534; border-color: #2f3a4c; }
+body.dark-mode .skeleton-card { background: var(--skeleton-surface); border-color: var(--skeleton-border); }
 
 .skeleton-card-body { padding: 1rem 1.1rem 1.25rem; }
 
@@ -87,12 +91,12 @@ body.dark-mode .skeleton-card { background: #1e2534; border-color: #2f3a4c; }
     gap: 1rem;
     align-items: center;
     padding: 1rem 1.1rem;
-    background: #fff;
-    border: 1px solid var(--border-color, #e2e8f0);
-    border-radius: 12px;
+    background: var(--skeleton-surface);
+    border: 1px solid var(--skeleton-border);
+    border-radius: 16px;
 }
 
-body.dark-mode .skeleton-row { background: #1e2534; border-color: #2f3a4c; }
+body.dark-mode .skeleton-row { background: var(--skeleton-surface); border-color: var(--skeleton-border); }
 
 .skeleton-row-main { flex: 1; min-width: 0; }
 
@@ -105,9 +109,9 @@ body.dark-mode .skeleton-row { background: #1e2534; border-color: #2f3a4c; }
 
 .skeleton-stat {
     padding: 1.25rem;
-    background: #fff;
-    border: 1px solid var(--border-color, #e2e8f0);
-    border-radius: 12px;
+    background: var(--skeleton-surface);
+    border: 1px solid var(--skeleton-border);
+    border-radius: 16px;
 }
 
-body.dark-mode .skeleton-stat { background: #1e2534; border-color: #2f3a4c; }
+body.dark-mode .skeleton-stat { background: var(--skeleton-surface); border-color: var(--skeleton-border); }
