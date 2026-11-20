@@ -158,3 +158,87 @@ body:has(.hero-premium-wrap) .hero-premium-wrap { background:radial-gradient(ell
   .messages-layout { border-radius:0 !important; }
 }
 @media (prefers-reduced-motion:reduce) { *,*::before,*::after { scroll-behavior:auto !important; animation-duration:.01ms !important; animation-iteration-count:1 !important; transition-duration:.01ms !important; } }
+
+/* BorrowBuddy home: an airy marketplace palette with clear comparison and booking cues. */
+body:has(.hero-premium-wrap) {
+  --home-bg:#F9FAFB;
+  --home-navy:#1E3A8A;
+  --home-blue:#2563EB;
+  --home-green:#10B981;
+  --home-muted:#64748B;
+  background:var(--home-bg) !important;
+  color:#172554 !important;
+}
+body:has(.hero-premium-wrap) .navbar,
+body:has(.hero-premium-wrap) .navbar-landing {
+  background:rgba(249,250,251,.94) !important;
+  border-bottom:1px solid #e2e8f0 !important;
+  box-shadow:0 5px 24px rgba(30,58,138,.06) !important;
+}
+body:has(.hero-premium-wrap) .nav-brand { color:var(--home-navy) !important; }
+body:has(.hero-premium-wrap) .nav-brand .brand-mark { background:var(--home-blue) !important; }
+body:has(.hero-premium-wrap) .nav-brand .brand-mark svg path { stroke:#fff !important; }
+body:has(.hero-premium-wrap) .nav-item { color:#334155 !important; }
+body:has(.hero-premium-wrap) .nav-item:hover,
+body:has(.hero-premium-wrap) .nav-item.active { color:var(--home-blue) !important; background:#eff6ff !important; }
+body:has(.hero-premium-wrap) .nav-toggle { color:var(--home-navy) !important; }
+body:has(.hero-premium-wrap) .hero-premium-wrap {
+  background:radial-gradient(ellipse at 78% 34%,rgba(37,99,235,.09),transparent 38%),linear-gradient(180deg,#F9FAFB,#F1F5F9) !important;
+}
+body:has(.hero-premium-wrap) .hero-title,
+body:has(.hero-premium-wrap) .hero-content h1 { color:var(--home-navy) !important; }
+body:has(.hero-premium-wrap) .hero-title .gradient-text { background:linear-gradient(100deg,#2563EB,#1E3A8A) !important; -webkit-background-clip:text !important; background-clip:text !important; }
+body:has(.hero-premium-wrap) .hero-subtitle { color:#475569 !important; }
+body:has(.hero-premium-wrap) .hero-eyebrow { color:#166534 !important; border-color:#bbf7d0 !important; background:#f0fdf4 !important; }
+body:has(.hero-premium-wrap) .hero-eyebrow .dot { background:var(--home-green) !important; box-shadow:0 0 0 4px rgba(16,185,129,.13) !important; }
+body:has(.hero-premium-wrap) .hero-buttons .btn-primary,
+body:has(.hero-premium-wrap) .hero-buttons .btn-glow { background:var(--home-blue) !important; box-shadow:0 10px 24px rgba(37,99,235,.2) !important; }
+body:has(.hero-premium-wrap) .hero-buttons .btn-secondary { color:var(--home-navy) !important; border:1px solid #cbd5e1 !important; background:#fff !important; }
+body:has(.hero-premium-wrap) .hero-stats .stat-item h3 { color:var(--home-blue) !important; }
+body:has(.hero-premium-wrap) .hero-stats .stat-item p { color:var(--home-muted) !important; }
+body:has(.hero-premium-wrap) .hero-image { background-color:transparent; }
+body:has(.hero-premium-wrap) .hero-scrubber { background:rgba(255,255,255,.94) !important; border-color:#dbeafe !important; box-shadow:0 14px 36px rgba(30,58,138,.12); color:var(--home-navy) !important; }
+body:has(.hero-premium-wrap) .hero-scrubber-label,
+body:has(.hero-premium-wrap) .hero-scrubber-label strong { color:var(--home-navy) !important; }
+body:has(.hero-premium-wrap) .features,
+body:has(.hero-premium-wrap) .how-it-works,
+body:has(.hero-premium-wrap) .categories { background:#F9FAFB !important; color:var(--home-navy) !important; }
+body:has(.hero-premium-wrap) .section-header h2 { color:var(--home-navy) !important; }
+body:has(.hero-premium-wrap) .section-header h2 .gradient-text { background:linear-gradient(100deg,#2563EB,#1E3A8A) !important; -webkit-background-clip:text !important; background-clip:text !important; }
+body:has(.hero-premium-wrap) .section-header p { color:var(--home-muted) !important; }
+body:has(.hero-premium-wrap) .feature-card,
+body:has(.hero-premium-wrap) .step.glass-card,
+body:has(.hero-premium-wrap) .category-card.glass-card {
+  background:#fff !important; border:1px solid #e2e8f0 !important;
+  box-shadow:0 10px 30px rgba(30,58,138,.055) !important; color:#334155 !important;
+}
+body:has(.hero-premium-wrap) .feature-icon,
+body:has(.hero-premium-wrap) .step-icon,
+body:has(.hero-premium-wrap) .category-card > i { color:var(--home-blue) !important; }
+body:has(.hero-premium-wrap) .feature-card h3,
+body:has(.hero-premium-wrap) .step h3,
+body:has(.hero-premium-wrap) .category-card h3 { color:var(--home-navy) !important; }
+body:has(.hero-premium-wrap) .feature-card p,
+body:has(.hero-premium-wrap) .step p,
+body:has(.hero-premium-wrap) .category-card p { color:var(--home-muted) !important; }
+body:has(.hero-premium-wrap) .step-number { background:#eff6ff !important; color:var(--home-blue) !important; }
+body:has(.hero-premium-wrap) .step-connector { color:#93c5fd !important; }
+body:has(.hero-premium-wrap) .showcase { background:#eff6ff !important; color:var(--home-navy) !important; }
+body:has(.hero-premium-wrap) .showcase .section-header h2 { color:var(--home-navy) !important; }
+body:has(.hero-premium-wrap) .showcase .section-header p { color:var(--home-muted) !important; }
+body:has(.hero-premium-wrap) .showcase-card { background:#fff !important; border:1px solid #dbeafe !important; box-shadow:0 14px 34px rgba(30,58,138,.1) !important; }
+body:has(.hero-premium-wrap) .showcase-title { color:var(--home-navy) !important; }
+body:has(.hero-premium-wrap) .showcase-desc { color:var(--home-muted) !important; }
+body:has(.hero-premium-wrap) .cta { background:linear-gradient(120deg,#1E3A8A,#2563EB) !important; }
+body:has(.hero-premium-wrap) .cta-content h2,
+body:has(.hero-premium-wrap) .cta-content p { color:#fff !important; }
+body:has(.hero-premium-wrap) .cta .btn-white { color:var(--home-navy) !important; background:#fff !important; }
+body:has(.hero-premium-wrap) .footer { background:#1E3A8A !important; border-top:0 !important; color:#dbeafe !important; }
+body:has(.hero-premium-wrap) .footer h3,
+body:has(.hero-premium-wrap) .footer h4 { color:#fff !important; }
+body:has(.hero-premium-wrap) .footer a { color:#dbeafe !important; }
+body:has(.hero-premium-wrap) .footer a:hover { color:#fff !important; }
+body:has(.hero-premium-wrap) .footer-bottom { border-color:rgba(219,234,254,.2) !important; }
+@media (max-width:800px) {
+  body:has(.hero-premium-wrap) .nav-menu { background:#F9FAFB !important; border:1px solid #e2e8f0 !important; box-shadow:0 16px 32px rgba(30,58,138,.12) !important; }
+}
